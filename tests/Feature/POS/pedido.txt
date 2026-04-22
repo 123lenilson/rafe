@@ -1,0 +1,108 @@
+Feature: Gerir o carrinho de compras (Pedido)
+
+  O operador de caixa vai adicionando produtos e serviços ao carrinho antes de emitir
+  uma factura. O carrinho é chamado de Pedido. Cada item do carrinho é um ItemPedido.
+  O Pedido agrega todos os itens e calcula os totais.
+
+  Notas:
+  - O desconto é sempre 0 por enquanto
+  - O imposto chega já resolvido como percentagem (o Service resolve o ID)
+  - A validação de stock é feita pelo Service antes de chegar ao Domain
+
+  # ─────────────────────────────────────────────────────────
+  # CRIAÇÃO VÁLIDA
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador cria um carrinho com um produto
+    Given que o operador tem um item "Caneta BIC" quantidade 2 preço 150 Kz IVA 14%
+    When o operador cria o carrinho com esse item
+    Then o carrinho deve ter 1 item
+    And o total ilíquido deve ser 300 Kz
+    And o total IVA deve ser 42 Kz
+    And o total retenção deve ser 0 Kz
+    And o valor a pagar deve ser 342 Kz
+
+  Scenario: Operador cria um carrinho com múltiplos itens
+    Given que o operador tem os seguintes itens no carrinho:
+      | produto          | qty | preco   | imposto |
+      | Caneta BIC       |  2  | 150.00  | 14.0    |
+      | Caderno A4       |  1  | 500.00  |  0.0    |
+      | Instalação de AC |  1  | 5000.00 |  6.5    |
+    When o operador cria o carrinho com esses itens
+    Then o carrinho deve ter 3 itens
+    And o total ilíquido deve ser 5800 Kz
+    And o total IVA deve ser 42 Kz
+    And o total retenção deve ser 325 Kz
+    And o valor a pagar deve ser 5842 Kz
+
+  # ─────────────────────────────────────────────────────────
+  # CARRINHO VAZIO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador tenta criar um carrinho sem itens
+    Given que o operador não seleccionou nenhum produto
+    When o operador tenta criar o carrinho vazio
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Pedido não pode ser criado sem itens"
+
+  # ─────────────────────────────────────────────────────────
+  # ADICIONAR ITEM
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador adiciona um novo produto ao carrinho
+    Given que o carrinho já tem o produto "Caneta BIC" quantidade 2
+    When o operador adiciona o produto "Caderno A4" quantidade 1 preço 500 Kz
+    Then o carrinho deve ter 2 itens
+    And deve conter o produto "Caderno A4"
+
+  Scenario: Operador adiciona um produto que já existe no carrinho — actualiza a quantidade
+    Given que o carrinho já tem o produto "Caneta BIC" com id 10 e quantidade 2
+    When o operador adiciona o produto "Caneta BIC" com id 10 e quantidade 5
+    Then o carrinho deve continuar com 1 item
+    And a quantidade do produto "Caneta BIC" deve ser 5
+
+  # ─────────────────────────────────────────────────────────
+  # REMOVER ITEM
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador remove um produto do carrinho enviando quantidade zero
+    Given que o carrinho tem dois produtos "Caneta BIC" e "Caderno A4"
+    When o operador envia o produto "Caneta BIC" com quantidade 0
+    Then o produto "Caneta BIC" deve ser removido do carrinho
+    And o carrinho deve ter 1 item
+
+  Scenario: Operador tenta remover um produto que não está no carrinho
+    Given que o carrinho tem apenas o produto "Caneta BIC"
+    When o operador tenta remover o produto com id 99 que não existe no carrinho
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Produto não encontrado no carrinho"
+
+  # ─────────────────────────────────────────────────────────
+  # CÁLCULOS DOS TOTAIS
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema calcula total ilíquido como soma dos subtotais dos itens
+    Given que o carrinho tem os seguintes itens:
+      | produto    | qty | preco  | imposto |
+      | Produto A  |  2  | 100.00 |  0.0    |
+      | Produto B  |  3  | 200.00 |  0.0    |
+    When o sistema calcula os totais
+    Then o total ilíquido deve ser 800 Kz
+    And o valor a pagar deve ser 800 Kz
+
+  Scenario: Sistema separa IVA de retenção nos totais
+    Given que o carrinho tem os seguintes itens:
+      | produto          | qty | preco   | imposto |
+      | Produto com IVA  |  1  | 1000.00 | 14.0    |
+      | Serviço AC       |  1  | 2000.00 |  6.5    |
+    When o sistema calcula os totais
+    Then o total IVA deve ser 140 Kz
+    And o total retenção deve ser 130 Kz
+    And o valor a pagar deve ser 1140 Kz
+
+  Scenario: Sistema calcula valor a pagar sem incluir retenção
+    Given que o carrinho tem apenas um serviço com preço 1000 Kz e retenção 6.5%
+    When o sistema calcula os totais
+    Then o total retenção deve ser 65 Kz
+    And o valor a pagar deve ser 1000 Kz
+    And a retenção não deve ser somada ao valor a pagar

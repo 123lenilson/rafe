@@ -1,0 +1,15 @@
+{
+    "source": {
+        "directories": [
+            "app/Modules/POS/Domain"
+        ]
+    },
+    "testFramework": "phpunit",
+    "testFrameworkOptions": "--filter=\\bItemPedidoTest\\b",
+    "minMsi": 100,
+    "minCoveredMsi": 100,
+    "logs": {
+        "text": "infection-log.txt",
+        "html": "infection-report.html"
+    }
+}

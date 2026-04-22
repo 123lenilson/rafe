@@ -1,0 +1,129 @@
+Feature: Representar uma linha de um documento fiscal emitido (LinhaVenda)
+
+  Quando um documento fiscal é emitido, cada produto ou serviço do carrinho
+  é convertido numa LinhaVenda. A LinhaVenda congela os valores no momento
+  da emissão — quantidade, preço, desconto e imposto — e calcula os totais
+  da linha. É imutável após criação.
+
+  Notas:
+  - Os valores são congelados no momento da emissão
+  - A lógica de cálculo é idêntica à do ItemPedido
+  - Retenção (6.5%) é identificada pela percentagem — igual ao ItemPedido
+  - Retenção é informativa — não soma ao total da linha
+  - A LinhaVenda não conhece o DocumentoFiscal — pertence a ele
+
+  # ─────────────────────────────────────────────────────────
+  # CRIAÇÃO VÁLIDA
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador emite linha com produto com IVA
+    Given um produto "Caneta BIC" quantidade 2 preço 150 Kz IVA 14%
+    When a linha de venda é criada com esses dados
+    Then a linha deve ter quantidade 2
+    And o subtotal deve ser 300 Kz
+    And o valor do IVA deve ser 42 Kz
+    And o total da linha deve ser 342 Kz
+    And a linha não deve ser identificada como retenção
+
+  Scenario: Operador emite linha com serviço com retenção
+    Given um serviço "Instalação de AC" quantidade 1 preço 5000 Kz retenção 6.5%
+    When a linha de venda é criada com esses dados
+    Then o subtotal deve ser 5000 Kz
+    And o valor da retenção deve ser 325 Kz
+    And o total da linha deve ser 5000 Kz
+    And a linha deve ser identificada como retenção
+    And a retenção não deve somar ao total da linha
+
+  Scenario: Operador emite linha com produto isento
+    Given um produto "Caderno A4" quantidade 1 preço 500 Kz isento de imposto
+    When a linha de venda é criada com esses dados
+    Then o subtotal deve ser 500 Kz
+    And o valor do imposto deve ser 0 Kz
+    And o total da linha deve ser 500 Kz
+
+  Scenario: Operador emite linha com desconto
+    Given um produto "Monitor" quantidade 2 preço 500 Kz desconto 10% IVA 14%
+    When a linha de venda é criada com esses dados
+    Then o subtotal bruto deve ser 1000 Kz
+    And o subtotal com desconto deve ser 900 Kz
+    And o valor do IVA deve ser calculado sobre 900 Kz
+    And o total da linha deve ser 1026 Kz
+
+  # ─────────────────────────────────────────────────────────
+  # VALIDAÇÕES — QUANTIDADE
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema rejeita linha com quantidade zero
+    Given um produto com quantidade 0
+    When o sistema tenta criar a linha de venda
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Quantidade deve ser maior que zero"
+
+  Scenario: Sistema rejeita linha com quantidade negativa
+    Given um produto com quantidade -1
+    When o sistema tenta criar a linha de venda
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Quantidade deve ser maior que zero"
+
+  Scenario: Sistema aceita linha com quantidade mínima de 1
+    Given um produto com quantidade 1 preço 100 Kz
+    When a linha de venda é criada
+    Then a linha deve ser criada com sucesso
+    And o subtotal deve ser 100 Kz
+
+  # ─────────────────────────────────────────────────────────
+  # VALIDAÇÕES — PREÇO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema rejeita linha com preço negativo
+    Given um produto com preço -10 Kz
+    When o sistema tenta criar a linha de venda
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Preço não pode ser negativo"
+
+  Scenario: Sistema aceita linha com preço zero (brinde)
+    Given um produto "Brinde" quantidade 1 preço 0 Kz
+    When a linha de venda é criada
+    Then a linha deve ser criada com sucesso
+    And o total da linha deve ser 0 Kz
+
+  # ─────────────────────────────────────────────────────────
+  # VALIDAÇÕES — DESCONTO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema rejeita linha com desconto negativo
+    Given um produto com desconto -5%
+    When o sistema tenta criar a linha de venda
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Desconto não pode ser negativo"
+
+  Scenario: Sistema rejeita linha com desconto acima de 100%
+    Given um produto com desconto 101%
+    When o sistema tenta criar a linha de venda
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Desconto não pode ser superior a 100%"
+
+  Scenario: Sistema aceita linha com desconto de exactamente 100%
+    Given um produto "Oferta" quantidade 1 preço 100 Kz desconto 100%
+    When a linha de venda é criada
+    Then o subtotal com desconto deve ser 0 Kz
+    And o total da linha deve ser 0 Kz
+
+  # ─────────────────────────────────────────────────────────
+  # FRONTEIRAS — IMPOSTO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Imposto de exactamente 6.5% é identificado como retenção
+    Given um serviço com imposto 6.5%
+    When a linha de venda é criada
+    Then a linha deve ser identificada como retenção
+
+  Scenario: Imposto de 6.4% não é retenção
+    Given um produto com imposto 6.4%
+    When a linha de venda é criada
+    Then a linha não deve ser identificada como retenção
+
+  Scenario: Imposto de 6.6% não é retenção
+    Given um produto com imposto 6.6%
+    When a linha de venda é criada
+    Then a linha não deve ser identificada como retenção

@@ -1,0 +1,140 @@
+Feature: Representar um documento fiscal emitido (DocumentoFiscal)
+
+  Quando o operador finaliza a venda, o Pedido é convertido num DocumentoFiscal.
+  O DocumentoFiscal agrega todas as LinhaVenda e calcula os totais globais.
+  É imutável após criação — representa o documento tal como foi emitido.
+
+  Tipos de documento suportados: Fatura, Fatura-Recibo, Factura-Proforma, Orçamento
+
+  Notas:
+  - Não pode ser criado sem linhas
+  - Não pode ser criado com tipo de documento inválido
+  - total ilíquido = soma dos subtotais com desconto de todas as linhas
+  - total IVA = soma do valorImposto das linhas que NÃO são retenção
+  - total retenção = soma do valorImposto das linhas que SÃO retenção
+  - valor a pagar = total ilíquido + total IVA
+  - Retenção é informativa — não soma ao valor a pagar
+
+  # ─────────────────────────────────────────────────────────
+  # CRIAÇÃO VÁLIDA
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador emite uma Fatura com um produto com IVA
+    Given um documento do tipo "Fatura" com a linha:
+      | produto    | qty | preco  | desconto | imposto |
+      | Caneta BIC |  2  | 150.00 |   0.0    |  14.0   |
+    When o documento fiscal é criado
+    Then o documento deve ter 1 linha
+    And o total ilíquido deve ser 300 Kz
+    And o total IVA deve ser 42 Kz
+    And o total retenção deve ser 0 Kz
+    And o valor a pagar deve ser 342 Kz
+
+  Scenario: Operador emite uma Fatura com múltiplas linhas
+    Given um documento do tipo "Fatura" com as linhas:
+      | produto          | qty | preco   | desconto | imposto |
+      | Caneta BIC       |  2  | 150.00  |   0.0    |  14.0   |
+      | Caderno A4       |  1  | 500.00  |   0.0    |   0.0   |
+      | Instalação de AC |  1  | 5000.00 |   0.0    |   6.5   |
+    When o documento fiscal é criado
+    Then o documento deve ter 3 linhas
+    And o total ilíquido deve ser 5800 Kz
+    And o total IVA deve ser 42 Kz
+    And o total retenção deve ser 325 Kz
+    And o valor a pagar deve ser 5842 Kz
+
+  Scenario: Operador emite uma Fatura-Recibo
+    Given um documento do tipo "Fatura-Recibo" com uma linha válida
+    When o documento fiscal é criado
+    Then o documento deve ser criado com sucesso
+    And o tipo do documento deve ser "Fatura-Recibo"
+
+  Scenario: Operador emite uma Factura-Proforma
+    Given um documento do tipo "Factura-Proforma" com uma linha válida
+    When o documento fiscal é criado
+    Then o documento deve ser criado com sucesso
+    And o tipo do documento deve ser "Factura-Proforma"
+
+  Scenario: Operador emite um Orçamento
+    Given um documento do tipo "Orçamento" com uma linha válida
+    When o documento fiscal é criado
+    Then o documento deve ser criado com sucesso
+    And o tipo do documento deve ser "Orçamento"
+
+  # ─────────────────────────────────────────────────────────
+  # VALIDAÇÕES — DOCUMENTO SEM LINHAS
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema rejeita documento fiscal sem linhas
+    Given um documento do tipo "Fatura" sem nenhuma linha
+    When o sistema tenta criar o documento fiscal
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Documento fiscal não pode ser criado sem linhas"
+
+  # ─────────────────────────────────────────────────────────
+  # VALIDAÇÕES — TIPO DE DOCUMENTO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema rejeita documento com tipo inválido
+    Given um documento com tipo "NotaDeCredito" que não é suportado
+    When o sistema tenta criar o documento fiscal
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Tipo de documento inválido"
+
+  Scenario: Sistema rejeita documento com tipo vazio
+    Given um documento com tipo ""
+    When o sistema tenta criar o documento fiscal
+    Then o sistema deve rejeitar
+    And deve mostrar o erro "Tipo de documento inválido"
+
+  # ─────────────────────────────────────────────────────────
+  # CÁLCULOS DOS TOTAIS
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema calcula total ilíquido como soma dos subtotais com desconto
+    Given um documento com as linhas:
+      | produto   | qty | preco  | desconto | imposto |
+      | Produto A |  2  | 100.00 |   0.0    |   0.0   |
+      | Produto B |  3  | 200.00 |   0.0    |   0.0   |
+    When o sistema calcula os totais
+    Then o total ilíquido deve ser 800 Kz
+    And o valor a pagar deve ser 800 Kz
+
+  Scenario: Sistema calcula total ilíquido com desconto nas linhas
+    Given um documento com as linhas:
+      | produto   | qty | preco  | desconto | imposto |
+      | Produto A |  2  | 500.00 |  10.0    |   0.0   |
+      | Produto B |  1  | 200.00 |  25.0    |   0.0   |
+    When o sistema calcula os totais
+    Then o total ilíquido deve ser 1050 Kz
+
+  Scenario: Sistema separa IVA de retenção nos totais globais
+    Given um documento com as linhas:
+      | produto         | qty | preco   | desconto | imposto |
+      | Produto com IVA |  1  | 1000.00 |   0.0    |  14.0   |
+      | Serviço AC      |  1  | 2000.00 |   0.0    |   6.5   |
+    When o sistema calcula os totais
+    Then o total IVA deve ser 140 Kz
+    And o total retenção deve ser 130 Kz
+    And o valor a pagar deve ser 3140 Kz
+
+  Scenario: Sistema calcula valor a pagar sem incluir retenção
+    Given um documento com apenas um serviço preço 1000 Kz retenção 6.5%
+    When o sistema calcula os totais
+    Then o total retenção deve ser 65 Kz
+    And o valor a pagar deve ser 1000 Kz
+    And a retenção não deve ser somada ao valor a pagar
+
+  # ─────────────────────────────────────────────────────────
+  # CONSULTAS
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Sistema devolve todas as linhas do documento
+    Given um documento com 3 linhas válidas
+    When o sistema devolve as linhas
+    Then devem ser devolvidas exactamente 3 linhas
+
+  Scenario: Sistema devolve o tipo do documento
+    Given um documento do tipo "Fatura"
+    When o sistema devolve o tipo
+    Then deve devolver "Fatura"

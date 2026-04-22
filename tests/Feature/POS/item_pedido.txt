@@ -1,0 +1,112 @@
+Feature: Adicionar item ao carrinho (Pedido)
+
+  O operador de caixa selecciona produtos e serviços antes de emitir uma factura.
+  Cada item adicionado ao carrinho tem quantidade, preço, desconto e imposto.
+  O sistema deve calcular correctamente os valores e rejeitar dados inválidos.
+
+  # ─────────────────────────────────────────────────────────
+  # CRIAÇÃO VÁLIDA
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador adiciona um produto com IVA ao carrinho
+    Given que o operador seleccionou o produto "Caneta BIC" com preço 150 Kz
+    And a quantidade é 2
+    And o imposto do produto é 14%
+    When o operador adiciona o produto ao carrinho
+    Then o carrinho deve conter o item "Caneta BIC"
+    And o subtotal do item deve ser 300 Kz
+    And o valor do IVA do item deve ser 42 Kz
+    And o total da linha deve ser 342 Kz
+
+  Scenario: Operador adiciona um produto com desconto
+    Given que o operador seleccionou o produto "Caderno A4" com preço 500 Kz
+    And a quantidade é 2
+    And o desconto aplicado é 10%
+    And o imposto do produto é 0%
+    When o operador adiciona o produto ao carrinho
+    Then o subtotal do item deve ser 1000 Kz
+    And o subtotal com desconto deve ser 900 Kz
+    And o total da linha deve ser 900 Kz
+
+  Scenario: Operador adiciona um serviço com retenção
+    Given que o operador seleccionou o serviço "Instalação de AC" com preço 1000000 Kz
+    And a quantidade é 1
+    And o imposto do serviço é 6.5% de retenção
+    When o operador adiciona o serviço ao carrinho
+    Then o item deve ser identificado como tendo retenção
+    And o valor da retenção deve ser 65000 Kz
+    And o total da linha deve ser 1000000 Kz
+    And a retenção não deve ser somada ao total da linha
+
+  Scenario: Operador adiciona um produto isento de imposto
+    Given que o operador seleccionou o produto "Produto Isento" com preço 200 Kz
+    And a quantidade é 1
+    And o imposto do produto é 0%
+    When o operador adiciona o produto ao carrinho
+    Then o valor do IVA do item deve ser 0 Kz
+    And o total da linha deve ser 200 Kz
+
+  Scenario: Operador adiciona um brinde gratuito
+    Given que o operador seleccionou o produto "Brinde" com preço 0 Kz
+    And a quantidade é 1
+    And o imposto do produto é 0%
+    When o operador adiciona o produto ao carrinho
+    Then o item deve ser criado com sucesso
+    And o total da linha deve ser 0 Kz
+
+  # ─────────────────────────────────────────────────────────
+  # QUANTIDADE INVÁLIDA
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador tenta adicionar um produto com quantidade zero
+    Given que o operador seleccionou o produto "Produto X" com preço 100 Kz
+    And a quantidade é 0
+    When o operador tenta adicionar o produto ao carrinho
+    Then o sistema deve rejeitar o item
+    And deve mostrar o erro "Quantidade tem de ser maior que zero"
+
+  Scenario: Operador tenta adicionar um produto com quantidade negativa
+    Given que o operador seleccionou o produto "Produto X" com preço 100 Kz
+    And a quantidade é -1
+    When o operador tenta adicionar o produto ao carrinho
+    Then o sistema deve rejeitar o item
+    And deve mostrar o erro "Quantidade tem de ser maior que zero"
+
+  # ─────────────────────────────────────────────────────────
+  # PREÇO INVÁLIDO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador tenta adicionar um produto com preço negativo
+    Given que o operador seleccionou o produto "Produto X" com preço -50 Kz
+    And a quantidade é 1
+    When o operador tenta adicionar o produto ao carrinho
+    Then o sistema deve rejeitar o item
+    And deve mostrar o erro "Preço não pode ser negativo"
+
+  # ─────────────────────────────────────────────────────────
+  # DESCONTO INVÁLIDO
+  # ─────────────────────────────────────────────────────────
+
+  Scenario: Operador tenta aplicar desconto negativo
+    Given que o operador seleccionou o produto "Produto X" com preço 100 Kz
+    And a quantidade é 1
+    And o desconto aplicado é -5%
+    When o operador tenta adicionar o produto ao carrinho
+    Then o sistema deve rejeitar o item
+    And deve mostrar o erro "Desconto não pode ser negativo"
+
+  Scenario: Operador tenta aplicar desconto acima de 100%
+    Given que o operador seleccionou o produto "Produto X" com preço 100 Kz
+    And a quantidade é 1
+    And o desconto aplicado é 101%
+    When o operador tenta adicionar o produto ao carrinho
+    Then o sistema deve rejeitar o item
+    And deve mostrar o erro "Desconto não pode ser superior a 100%"
+
+  Scenario: Operador aplica desconto de exactamente 100%
+    Given que o operador seleccionou o produto "Produto X" com preço 100 Kz
+    And a quantidade é 1
+    And o desconto aplicado é 100%
+    When o operador adiciona o produto ao carrinho
+    Then o item deve ser criado com sucesso
+    And o subtotal com desconto deve ser 0 Kz
