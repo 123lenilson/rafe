@@ -60,4 +60,10 @@ Domain POS completo e testado com BDD + unitários + mutação:
 *(nenhum por agora)*
 
 ---
+
+## Session Continuity
+
+Last session: 2026-04-25T05:32:39+01:00
+Stopped at: Session resumed, proceeding to user selection
+
 *Criado: 2026-04-22 após inicialização do projecto*
