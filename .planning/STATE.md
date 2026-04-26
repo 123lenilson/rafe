@@ -2,17 +2,17 @@
 
 ## Posição Actual
 
-- **Fase:** Não iniciada — Ports de Suporte (Fase 1)
-- **Plano:** —
-- **Estado:** Pronto para planear a Fase 1
-- **Última actividade:** 2026-04-22 — Projecto inicializado com GSD
+- **Fase:** 1 — Ports de Suporte (Fase 1)
+- **Plano:** Completo
+- **Estado:** Fase 1 concluída. Pronto para avançar para a Fase 2 (Fake Adapters)
+- **Última actividade:** 2026-04-25 — Execução da Fase 1 concluída
 
 ## Referência do Projecto
 
 Ver: `.planning/PROJECT.md` (actualizado 2026-04-22)
 
 **Valor Central:** Domain isolado de qualquer infraestrutura — testável sem BD, sem HTTP, sem framework.
-**Foco actual:** Fase 1 — Ports de Suporte (Stock, Clientes, Pagamentos)
+**Foco actual:** Concluída Fase 1 — Ports de Suporte. Próximo: Fase 2 (Fakes e GerirPedidoService)
 
 ## Contexto Acumulado
 
@@ -26,9 +26,12 @@ Domain POS completo e testado com BDD + unitários + mutação:
 
 ### O que está por fazer
 
-**Fase 1 (próxima):**
-- Criar 5 interfaces PHP puras (Ports de saída) para Stock, Clientes e Pagamentos
+**Fase 1 (concluída):**
+- Criadas 5 interfaces PHP puras (Ports de saída) e 2 Value Objects para Stock, Clientes e Pagamentos
 - Sem implementação — apenas contratos
+- ✅ BuscadorDeProdutoPort, VerificadorDeStockPort, StockRepositorioPort
+- ✅ ClienteRepositorioPort
+- ✅ PagamentoRepositorioPort
 
 **Fase 2:**
 - 3 Fake Adapters em memória
@@ -63,7 +66,7 @@ Domain POS completo e testado com BDD + unitários + mutação:
 
 ## Session Continuity
 
-Last session: 2026-04-25T05:32:39+01:00
-Stopped at: Session resumed, proceeding to user selection
+Last session: 2026-04-25T05:35:00+01:00
+Stopped at: Concluída a execução da Fase 1, a aguardar decisão do utilizador
 
 *Criado: 2026-04-22 após inicialização do projecto*

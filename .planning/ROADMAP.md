@@ -120,8 +120,8 @@ tests/BDD/features/pos/
 
 | Fase | Estado | Progresso |
 |------|--------|-----------|
-| 1 — Ports de Suporte | 🔲 Por iniciar | 0% |
-| 2 — Fake Adapters + GerirPedidoService | 🔲 Bloqueada | — |
+| 1 — Ports de Suporte | ✅ Completa | 100% |
+| 2 — Fake Adapters + GerirPedidoService | 🔲 Por iniciar | 0% |
 | 3 — FinalizarVendaService | 🔲 Bloqueada | — |
 
 ---
@@ -135,4 +135,4 @@ tests/BDD/features/pos/
 
 ---
 *Roadmap criado: 2026-04-22*
-*Última actualização: 2026-04-22 após inicialização do projecto*
+*Última actualização: 2026-04-25 após conclusão da Fase 1*
