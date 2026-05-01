@@ -33,8 +33,8 @@ Domain POS completo e testado com BDD + unitários + mutação:
 - ✅ ClienteRepositorioPort
 - ✅ PagamentoRepositorioPort
 
-**Fase 2:**
-- 3 Fake Adapters em memória
+- ✅ Fakes de Stock, Clientes e Pagamentos (feitos nos respectivos módulos)
+- 🔄 Fake Adapters do módulo POS (Seeder, Pedido, DocumentoFiscal)
 - BDD → Unit → Mutation para `GerirPedidoService`
 
 **Fase 3:**

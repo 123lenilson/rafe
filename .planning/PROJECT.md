@@ -8,42 +8,38 @@ Sistema de Facturação SaaS para pequenas e médias empresas angolanas (PMEs). 
 
 O Domain de negócio tem de ser completamente isolado de qualquer infraestrutura — testável sem base de dados, sem HTTP, sem framework — para garantir que as regras fiscais angolanas são correctamente implementadas e verificáveis.
 
-## Requisitos
+## Current State (v1.0 Shipped)
 
-### Validados
+- **Domain POS**: Entidades de negócio (`Pedido`, `LinhaVenda`, `DocumentoFiscal`, `ItemPedido`) 100% testadas e isoladas.
+- **Ports de Suporte**: Interfaces para Stock, Clientes, Pagamentos e Transacção definidas.
+- **Services POS**: `GerirPedidoService` e `FinalizarVendaService` implementados com gestão atómica de estado.
+- **Fake Adapters**: Camada de repositórios em memória concluída e operacional para suportar testes BDD.
+- **Qualidade**: 100% BDD Coverage, Testes Unitários a Verde e 100% MSI (Infection).
 
-<!-- Entregues e confirmados como valiosos. -->
+## Next Milestone Goals (v2.0)
 
+- **Adapters de Saída**: Implementar repositórios em Eloquent (MySQL) ligando os Ports do Módulo POS, Stock e Clientes.
+- **Adapters de Entrada**: Criar os Controllers, Middlewares e Rotas Laravel (API HTTP).
+- **Testes de Integração**: Testar o ciclo completo desde o HTTP até à Base de Dados.
+
+<details>
+<summary>Histórico Anterior (v0.1 - Planeamento)</summary>
+
+### Requisitos Validados
 - ✓ **POS-DOM-01** — `ItemPedido` com regras de negócio (quantidade, preço, desconto) — Domain Phase 1
 - ✓ **POS-DOM-02** — `Pedido` como agregado de `ItemPedido` com validações de estado — Domain Phase 1
 - ✓ **POS-DOM-03** — `LinhaVenda` com cálculo de subtotal, imposto e retenção — Domain Phase 1
 - ✓ **POS-DOM-04** — `DocumentoFiscal` com cálculo de totais (ilíquido, IVA, retenção, a pagar) — Domain Phase 1
 - ✓ **POS-TEST-01** — Cobertura completa BDD + unitários + mutação (Infection) para todo o Domain POS — Domain Phase 1
 
-### Activos
-
-<!-- Âmbito actual. Em construção. -->
-
-- [ ] **STOCK-PORT-01** — Port de saída `BuscarProdutoPorId` (nome, preço, tipo P/S, imposto)
-- [ ] **STOCK-PORT-02** — Port de saída `VerificarStockDisponivel` (produtoId, quantidade) → bool
-- [ ] **STOCK-PORT-03** — Port de saída `SubtrairStock` (produtoId, quantidade) → void
-- [ ] **CLI-PORT-01** — Port de saída `BuscarClientePorId` (id) → dados do cliente
-- [ ] **PAG-PORT-01** — Port de saída `RegistarPagamento` (documentoFiscalId, valor, método) → void
-- [ ] **POS-SRV-01** — `GerirPedidoService` — orquestrador do ciclo de vida do Pedido (abrir, adicionar item, remover item, fechar)
-- [ ] **POS-SRV-02** — `FinalizarVendaService` — orquestrador da emissão do DocumentoFiscal (recolha → Domain → efeitos em transacção)
-- [ ] **POS-TEST-02** — Fake Adapters para todos os Ports de suporte (para testes dos Services sem BD)
-- [ ] **POS-TEST-03** — Cobertura completa BDD + unitários + mutação para `GerirPedidoService` e `FinalizarVendaService`
-
 ### Fora do Âmbito
-
-<!-- Limites explícitos com justificação. -->
-
 - Adapters Laravel (Eloquent, Controllers, Routes, Middleware) — implementados numa fase posterior após os Services estarem validados
 - Frontend React — foco posterior ao backend estar completo
 - Integração AGT (comunicação real) — fase posterior (após Services e Adapters estarem estáveis)
 - Exportação SAFT-AO — fase posterior
 - Módulos Financeiro, Compras, Relatórios — fases posteriores
 - Autenticação e multi-tenancy — fora do âmbito do Milestone 1
+</details>
 
 ## Contexto
 
@@ -67,18 +63,6 @@ O Domain de negócio tem de ser completamente isolado de qualquer infraestrutura
 - React + Vite (frontend — fase posterior)
 - XAMPP/WAMP no Windows (servidor local)
 
-**Estado actual do código:**
-- `app/Modules/POS/Domain/` — 4 entidades completas e testadas
-- `app/Http/`, `app/Models/`, `app/Providers/` — scaffold Laravel
-- Sem Controllers, Services, Adapters, nem Ports criados ainda
-
-**Conformidade legal:**
-- Sistema destinado ao mercado angolano
-- Deve cumprir SAFT-AO (ficheiro XML fiscal mensal)
-- Comunicação com a AGT (Autoridade Geral Tributária)
-- Validação de NIF angolano
-- Moeda: AOA (Kwanza angolano)
-
 ## Restrições
 
 - **Arquitectura**: Domain e Services em PHP puro — nunca tocar em PDO, Eloquent, `$_SERVER` ou qualquer artefacto de framework dentro do Hexágono
@@ -94,26 +78,10 @@ O Domain de negócio tem de ser completamente isolado de qualquer infraestrutura
 | PHP puro para o Hexágono (sem Laravel no Domain) | Isola regras fiscais de qualquer framework; testabilidade máxima | ✓ Validado |
 | Laravel apenas nos Adapters | Permite trocar o framework sem tocar nas regras de negócio | ✓ Validado |
 | BDD → Unit → Mutation como metodologia obrigatória | Garante que cada classe tem comportamento especificado, implementado e resistente a mutantes | ✓ Validado |
-| Ports de suporte antes dos Services | Services dependem de dados externos; Ports desbloqueiam o desenvolvimento sem esperar pelos Adapters | — Pendente |
-| Fake Adapters para testes dos Services | Permite testar Services sem BD real; alinha com a arquitectura Hexagonal | — Pendente |
+| Ports de suporte antes dos Services | Services dependem de dados externos; Ports desbloqueiam o desenvolvimento sem esperar pelos Adapters | ✓ Validado |
+| Fake Adapters para testes dos Services | Permite testar Services sem BD real; alinha com a arquitectura Hexagonal | ✓ Validado |
+| TransacaoPort para gerir atomicidade | Isola o Service da implementação `DB::transaction` do Laravel | ✓ Validado |
 | Módulo POS (não "Facturação") | Nome reflecte o ponto de entrada comercial do sistema | ✓ Validado |
 
-## Evolução
-
-Este documento evolui nas transições de fase e nas fronteiras de milestone.
-
-**Após cada transição de fase** (via `/gsd-transition`):
-1. Requisitos invalidados? → Mover para Fora do Âmbito com motivo
-2. Requisitos validados? → Mover para Validados com referência à fase
-3. Novos requisitos? → Adicionar a Activos
-4. Decisões a registar? → Adicionar a Decisões-Chave
-5. "O que é isto" ainda é preciso? → Actualizar se houver desvio
-
-**Após cada milestone** (via `/gsd-complete-milestone`):
-1. Revisão completa de todas as secções
-2. Valor Central — ainda é a prioridade certa?
-3. Auditoria de Fora do Âmbito — os motivos ainda são válidos?
-4. Actualizar Contexto com o estado actual
-
 ---
-*Última actualização: 2026-04-22 — após inicialização do projecto*
+*Última actualização: 2026-05-01 — Encerramento da v1.0*
