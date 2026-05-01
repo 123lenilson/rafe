@@ -43,10 +43,21 @@ class DocumentoFiscal
     public function __construct(
         private readonly string $tipo,
         array $linhas,
+        private ?int $idDocumento = null
     ) {
         $this->validarTipo();
         $this->validarLinhas($linhas);
         $this->linhas = $linhas;
+    }
+
+    public function idDocumento(): ?int
+    {
+        return $this->idDocumento;
+    }
+
+    public function definirIdDocumento(int $id): void
+    {
+        $this->idDocumento = $id;
     }
 
     // ─── Validação ────────────────────────────────────────────────────────────

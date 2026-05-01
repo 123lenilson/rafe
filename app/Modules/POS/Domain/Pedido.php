@@ -31,8 +31,9 @@ class Pedido
 
     /**
      * @param ItemPedido[] $itens
+     * @param int|null $idPedido
      */
-    public function __construct(array $itens)
+    public function __construct(array $itens, private ?int $idPedido = null)
     {
         if (empty($itens)) {
             throw new \DomainException('Pedido não pode ser criado sem itens');
@@ -41,6 +42,18 @@ class Pedido
         foreach ($itens as $item) {
             $this->adicionarItem($item);
         }
+    }
+
+    // ─── Identidade ───────────────────────────────────────────────────────────
+
+    public function idPedido(): ?int
+    {
+        return $this->idPedido;
+    }
+
+    public function definirIdPedido(int $id): void
+    {
+        $this->idPedido = $id;
     }
 
     // ─── Comandos ─────────────────────────────────────────────────────────────
