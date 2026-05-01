@@ -13,7 +13,7 @@ Funcionalidade: Finalizar venda e emitir documento fiscal
     E o pagamento é registado
     E o stock do produto "10" é reduzido
     E o pedido aberto "1" deixa de existir na lista de espera
-
+ 
   Cenário: Falha ao tentar finalizar um pedido sem itens
     Dado que tenho um pedido aberto "2" sem qualquer item adicionado
     Quando eu tento finalizar a venda do pedido "2"

@@ -59,7 +59,7 @@ class GerirPedidoService
         );
 
         $pedido = $this->pedidoRepo->buscarPorId($idPedido);
-        
+
         if ($pedido === null) {
             // É o primeiro item! Criamos a entidade Pedido.
             $pedido = new Pedido([$item], $idPedido);
@@ -69,5 +69,21 @@ class GerirPedidoService
         }
 
         $this->pedidoRepo->salvar($pedido);
+    }
+
+    public function removerItem(int $idPedido, int $idProduto): void
+    {
+        $pedido = $this->pedidoRepo->buscarPorId($idPedido);
+        if ($pedido === null) {
+            throw new DomainException('Pedido não encontrado');
+        }
+
+        $pedido->removerItem($idProduto);
+
+        if (empty($pedido->itens())) {
+            $this->pedidoRepo->eliminar($idPedido);
+        } else {
+            $this->pedidoRepo->salvar($pedido);
+        }
     }
 }

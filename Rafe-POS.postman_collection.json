@@ -1,0 +1,86 @@
+{
+	"info": {
+		"_postman_id": "1d8b671a-2e38-4e12-b94f-123456789abc",
+		"name": "Rafe POS API (Milestone 2)",
+		"description": "Homologação do Módulo POS com Arquitetura Hexagonal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Iniciar Pedido",
+			"request": {
+				"method": "POST",
+				"header": [
+					{"key": "Accept", "value": "application/json"}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/pos/pedido/iniciar",
+					"host": ["{{base_url}}"],
+					"path": ["api", "pos", "pedido", "iniciar"]
+				}
+			}
+		},
+		{
+			"name": "2. Adicionar Item ao Pedido",
+			"request": {
+				"method": "POST",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"},
+					{"key": "Accept", "value": "application/json"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"produto_id\": 1,\n    \"quantidade\": 2,\n    \"desconto_percentagem\": 0\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pos/pedido/{{pedido_id}}/itens",
+					"host": ["{{base_url}}"],
+					"path": ["api", "pos", "pedido", "{{pedido_id}}", "itens"]
+				}
+			}
+		},
+		{
+			"name": "3. Remover Item do Pedido",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{"key": "Accept", "value": "application/json"}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/pos/pedido/{{pedido_id}}/itens/1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "pos", "pedido", "{{pedido_id}}", "itens", "1"]
+				}
+			}
+		},
+		{
+			"name": "4. Finalizar Venda",
+			"request": {
+				"method": "POST",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"},
+					{"key": "Accept", "value": "application/json"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pedido_id\": {{pedido_id}},\n    \"valor_entregue\": 50000.0,\n    \"metodo_pagamento\": \"numerario\",\n    \"tipo_documento\": \"Fatura-Recibo\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pos/venda/finalizar",
+					"host": ["{{base_url}}"],
+					"path": ["api", "pos", "venda", "finalizar"]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/rafe/public"
+		},
+		{
+			"key": "pedido_id",
+			"value": "1"
+		}
+	]
+}
