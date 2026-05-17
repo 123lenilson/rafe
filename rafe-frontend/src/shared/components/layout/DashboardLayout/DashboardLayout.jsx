@@ -1,0 +1,126 @@
+import { Outlet, useLocation, Link } from 'react-router-dom'
+import {
+  Sidebar, SidebarContent, SidebarFooter, SidebarHeader,
+  SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  SidebarProvider, SidebarTrigger, SidebarGroup,
+  SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton
+} from '@/shared/components/ui/sidebar'
+import {
+  LayoutDashboard, ShoppingCart, Package,
+  Users, BarChart2, UserCog, Settings, ChevronDown
+} from 'lucide-react'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+
+const navItems = [
+  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  {
+    label: 'Vendas', icon: ShoppingCart, children: [
+      { label: 'Ponto de Venda', path: '/pos' },
+      { label: 'Facturas', path: '/invoicing' },
+    ]
+  },
+  {
+    label: 'Produtos', icon: Package, children: [
+      { label: 'Lista', path: '/products' },
+    ]
+  },
+  {
+    label: 'Clientes', icon: Users, children: [
+      { label: 'Lista', path: '/clients' },
+    ]
+  },
+  {
+    label: 'Finanças', icon: BarChart2, children: [
+      { label: 'Relatórios', path: '/finances' },
+    ]
+  },
+  { label: 'Utilizadores', path: '/users', icon: UserCog },
+  { label: 'Configurações', path: '/settings', icon: Settings },
+]
+
+export function DashboardLayout() {
+  const location = useLocation()
+  const [openMenus, setOpenMenus] = useState({})
+
+  const toggleMenu = (label) => {
+    setOpenMenus(prev => ({ ...prev, [label]: !prev[label] }))
+  }
+
+  return (
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        <SidebarHeader className="p-4 border-b border-sidebar-border">
+          <span className="font-bold text-lg">Rafe</span>
+        </SidebarHeader>
+
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarMenu>
+              {navItems.map((item) => {
+                const Icon = item.icon
+                const isActive = item.path && location.pathname.startsWith(item.path)
+                const isOpen = openMenus[item.label]
+
+                if (item.children) {
+                  return (
+                    <SidebarMenuItem key={item.label}>
+                      <SidebarMenuButton
+                        onClick={() => toggleMenu(item.label)}
+                        className="justify-between"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Icon />
+                          <span>{item.label}</span>
+                        </div>
+                        <ChevronDown className={cn(
+                          "h-4 w-4 transition-transform",
+                          isOpen && "rotate-180"
+                        )} />
+                      </SidebarMenuButton>
+                      {isOpen && (
+                        <SidebarMenuSub>
+                          {item.children.map((child) => (
+                            <SidebarMenuSubItem key={child.path}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={location.pathname === child.path}
+                              >
+                                <Link to={child.path}>{child.label}</Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      )}
+                    </SidebarMenuItem>
+                  )
+                }
+
+                return (
+                  <SidebarMenuItem key={item.path}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <Link to={item.path}>
+                        <Icon />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter className="p-4 border-t border-sidebar-border">
+          <p className="text-xs text-sidebar-foreground/50">v1.0.0</p>
+        </SidebarFooter>
+      </Sidebar>
+
+      <SidebarInset>
+        <main className="flex-1 overflow-y-auto bg-zinc-50 p-6">
+          <Outlet />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}

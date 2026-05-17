@@ -6,15 +6,15 @@
 ## v1 Requirements
 
 ### Core Architecture
-- [ ] **CORE-01**: Estrutura base de rotas com React Router v6
-- [ ] **CORE-02**: DashboardLayout (componente principal de estrutura)
+- [x] **CORE-01**: Estrutura base de rotas com React Router v6
+- [x] **CORE-02**: DashboardLayout (componente principal de estrutura)
 
 ### Navigation (Sidebar)
-- [ ] **NAV-01**: Sidebar estilo Square (minimalista, preto e branco)
-- [ ] **NAV-02**: Navegação em submenu deslizante na Sidebar
+- [x] **NAV-01**: Sidebar estilo Square (minimalista, preto e branco)
+- [x] **NAV-02**: Navegação em submenu deslizante na Sidebar
 
 ### TopBar
-- [ ] **TOP-01**: Componente TopBar no DashboardLayout
+- [x] **TOP-01**: Componente TopBar no DashboardLayout
 
 ## v2 Requirements
 
@@ -30,11 +30,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | Phase 1 | Pending |
-| CORE-02 | Phase 1 | Pending |
-| NAV-01 | Phase 1 | Pending |
-| NAV-02 | Phase 1 | Pending |
-| TOP-01 | Phase 1 | Pending |
+| CORE-01 | Phase 1 | Complete |
+| CORE-02 | Phase 1 | Complete |
+| NAV-01 | Phase 1 | Complete |
+| NAV-02 | Phase 1 | Complete |
+| TOP-01 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 5 total
@@ -43,4 +43,4 @@
 
 ---
 *Requirements defined: 2026-05-13*
-*Last updated: 2026-05-13 after initial definition*
+*Last updated: 2026-05-16*
