@@ -50,8 +50,15 @@ export function DashboardLayout() {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
-        <SidebarHeader className="p-4 border-b border-sidebar-border">
-          <span className="font-bold text-lg">Rafe</span>
+        <SidebarHeader className="p-4">
+          <div className="flex flex-col gap-2">
+            <div className="-mx-4 px-4 flex items-center border-b border-sidebar-border pb-2">
+              <span className="font-bold text-lg">Rafe</span>
+            </div>
+            <div>
+              <span className="text-sm text-sidebar-foreground/50">Aqui terá botão de pesquisa</span>
+            </div>
+          </div>
         </SidebarHeader>
 
         <SidebarContent>
