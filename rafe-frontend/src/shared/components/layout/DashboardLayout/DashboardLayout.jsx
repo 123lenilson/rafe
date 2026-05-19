@@ -11,6 +11,25 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader as SheetHeaderComponent,
+  SheetTitle,
+  SheetDescription,
+} from '@/shared/components/ui/sheet'
+import { CompanySelector } from './CompanySelector'
+import { SearchButton } from '@/shared/components/ui/search-button'
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/shared/components/ui/command"
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -42,6 +61,7 @@ const navItems = [
 export function DashboardLayout() {
   const location = useLocation()
   const [openMenus, setOpenMenus] = useState({})
+  const [searchOpen, setSearchOpen] = useState(false)
 
   const toggleMenu = (label) => {
     setOpenMenus(prev => ({ ...prev, [label]: !prev[label] }))
@@ -52,11 +72,40 @@ export function DashboardLayout() {
       <Sidebar collapsible="icon">
         <SidebarHeader className="p-4">
           <div className="flex flex-col gap-2">
-            <div className="-mx-4 px-4 flex items-center border-b border-sidebar-border pb-2">
-              <span className="font-bold text-lg">Rafe</span>
+            <div className="-mx-4 px-4 pb-2 border-b border-sidebar-border">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <CompanySelector companyName="Rafe" plan="Enterprise" />
+                </SheetTrigger>
+                <SheetContent side="right" className="bg-white">
+                  <SheetHeaderComponent>
+                    <SheetTitle>Editar Empresa</SheetTitle>
+                    <SheetDescription>
+                      Atualize os dados e configurações da sua empresa aqui.
+                    </SheetDescription>
+                  </SheetHeaderComponent>
+                  <div className="mt-6">
+                    {/* Formulário ou dados da empresa entrarão aqui no futuro */}
+                    <p className="text-sm text-muted-foreground">Conteúdo do formulário em breve...</p>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
-            <div>
-              <span className="text-sm text-sidebar-foreground/50">Aqui terá botão de pesquisa</span>
+            <div className="my-3">
+              <SearchButton onClick={() => setSearchOpen(true)} />
+              <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
+                <Command>
+                  <CommandInput placeholder="Escreva um comando ou pesquise..." />
+                  <CommandList>
+                    <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+                    <CommandGroup heading="Sugestões">
+                      <CommandItem>Dashboard</CommandItem>
+                      <CommandItem>Vendas</CommandItem>
+                      <CommandItem>Configurações</CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </CommandDialog>
             </div>
           </div>
         </SidebarHeader>
