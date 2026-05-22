@@ -11,7 +11,7 @@ export const CompanySelector = React.forwardRef(({
     <div
       ref={ref}
       onClick={onClick}
-      className="flex flex-row items-center justify-between gap-3 px-4 py-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-150"
+      className="flex flex-row items-center justify-between gap-3 px-4 py-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-colors duration-150"
       {...props}
     >
       {/* Icone da Empresa */}

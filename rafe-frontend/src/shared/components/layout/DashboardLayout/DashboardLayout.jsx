@@ -70,7 +70,7 @@ export function DashboardLayout() {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
-        <SidebarHeader className="p-4">
+        <SidebarHeader className="p-4 sticky top-0 z-20 bg-sidebar">
           <div className="flex flex-col gap-2">
             <div className="-mx-4 px-4 pb-2 border-b border-sidebar-border">
               <Sheet>
@@ -115,7 +115,7 @@ export function DashboardLayout() {
             <SidebarMenu>
               {navItems.map((item) => {
                 const Icon = item.icon
-                const isActive = item.path && location.pathname.startsWith(item.path)
+                const isActive = item.path && (location.pathname.startsWith(item.path) || (location.pathname === '/' && item.path === '/dashboard'))
                 const isOpen = openMenus[item.label]
 
                 if (item.children) {
@@ -123,7 +123,7 @@ export function DashboardLayout() {
                     <SidebarMenuItem key={item.label}>
                       <SidebarMenuButton
                         onClick={() => toggleMenu(item.label)}
-                        className="justify-between"
+                        className="justify-between hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-3 h-auto"
                       >
                         <div className="flex items-center gap-2">
                           <Icon />
@@ -141,6 +141,7 @@ export function DashboardLayout() {
                               <SidebarMenuSubButton
                                 asChild
                                 isActive={location.pathname === child.path}
+                                className="hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-2.5 h-auto"
                               >
                                 <Link to={child.path}>{child.label}</Link>
                               </SidebarMenuSubButton>
@@ -154,7 +155,7 @@ export function DashboardLayout() {
 
                 return (
                   <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton asChild isActive={isActive}>
+                    <SidebarMenuButton asChild isActive={isActive} className="hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-3 h-auto">
                       <Link to={item.path}>
                         <Icon />
                         <span>{item.label}</span>
@@ -167,7 +168,7 @@ export function DashboardLayout() {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="p-4 border-t border-sidebar-border">
+        <SidebarFooter className="p-4 border-t border-sidebar-border sticky bottom-0 z-20 bg-sidebar">
           <p className="text-xs text-sidebar-foreground/50">v1.0.0</p>
         </SidebarFooter>
       </Sidebar>

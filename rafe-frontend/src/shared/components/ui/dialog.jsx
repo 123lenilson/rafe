@@ -2,6 +2,7 @@ import * as React from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { XIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Overlay } from "@/shared/components/ui/overlay"
 
 function Dialog({ ...props }) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -19,27 +20,14 @@ function DialogClose({ ...props }) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
-function DialogOverlay({ className, ...props }) {
-  return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-black/5 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
 function DialogContent({ className, children, showCloseButton = true, ...props }) {
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <Overlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed left-1/2 top-1/3 z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border bg-popover p-0 shadow-lg data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed left-1/2 top-1/3 z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border bg-popover p-0 shadow-lg transition-all data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-open:duration-200 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-closed:duration-150",
           className
         )}
         {...props}
@@ -90,7 +78,6 @@ export {
   DialogTrigger,
   DialogPortal,
   DialogClose,
-  DialogOverlay,
   DialogContent,
   DialogHeader,
   DialogTitle,

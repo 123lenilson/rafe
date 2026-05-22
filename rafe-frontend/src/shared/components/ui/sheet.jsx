@@ -7,6 +7,7 @@ import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/shared/components/ui/button"
+import { Overlay } from "@/shared/components/ui/overlay"
 
 function Sheet({ ...props }) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
@@ -22,19 +23,6 @@ function SheetClose({ ...props }) {
 
 function SheetPortal({ ...props }) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
-}
-
-function SheetOverlay({ className, ...props }) {
-  return (
-    <SheetPrimitive.Overlay
-      data-slot="sheet-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-black/20 duration-300 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
-        className
-      )}
-      {...props}
-    />
-  )
 }
 
 const sheetVariants = cva(
@@ -63,7 +51,7 @@ function SheetContent({
 }) {
   return (
     <SheetPortal>
-      <SheetOverlay />
+      <Overlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
         data-side={side}
