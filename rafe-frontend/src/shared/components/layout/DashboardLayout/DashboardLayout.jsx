@@ -1,4 +1,5 @@
 import { Outlet, useLocation, Link } from 'react-router-dom'
+import * as Collapsible from '@radix-ui/react-collapsible'
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarHeader,
   SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -112,7 +113,7 @@ export function DashboardLayout() {
 
         <SidebarContent>
           <SidebarGroup>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon
                 const isActive = item.path && (location.pathname.startsWith(item.path) || (location.pathname === '/' && item.path === '/dashboard'))
@@ -125,30 +126,35 @@ export function DashboardLayout() {
                         onClick={() => toggleMenu(item.label)}
                         className="justify-between hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-3 h-auto"
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-4">
                           <Icon />
                           <span>{item.label}</span>
                         </div>
                         <ChevronDown className={cn(
-                          "h-4 w-4 transition-transform",
-                          isOpen && "rotate-180"
+                          "h-4 w-4 transition-all duration-200 ease-in-out opacity-0",
+                          "group-hover/menu-item:opacity-100",
+                          isOpen && "opacity-100 rotate-180"
                         )} />
                       </SidebarMenuButton>
-                      {isOpen && (
-                        <SidebarMenuSub>
-                          {item.children.map((child) => (
-                            <SidebarMenuSubItem key={child.path}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={location.pathname === child.path}
-                                className="hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-2.5 h-auto"
-                              >
-                                <Link to={child.path}>{child.label}</Link>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      )}
+                      <Collapsible.Root open={isOpen} onOpenChange={() => toggleMenu(item.label)}>
+                        <Collapsible.Content className="grid overflow-hidden transition-all duration-300 ease-in-out data-[state=open]:grid-rows-[1fr] data-[state=closed]:grid-rows-[0fr]">
+                          <div className="overflow-hidden">
+                            <SidebarMenuSub>
+                              {item.children.map((child) => (
+                                <SidebarMenuSubItem key={child.path}>
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    isActive={location.pathname === child.path}
+                                    className="hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-2.5 h-auto"
+                                  >
+                                    <Link to={child.path}>{child.label}</Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </div>
+                        </Collapsible.Content>
+                      </Collapsible.Root>
                     </SidebarMenuItem>
                   )
                 }
@@ -156,7 +162,7 @@ export function DashboardLayout() {
                 return (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton asChild isActive={isActive} className="hover:bg-[#f0f0f0] data-[active=true]:bg-[#f0f0f0] py-3 h-auto">
-                      <Link to={item.path}>
+                      <Link to={item.path} className="flex items-center gap-4">
                         <Icon />
                         <span>{item.label}</span>
                       </Link>
