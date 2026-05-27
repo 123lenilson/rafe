@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { SidebarProvider } from '@/context/SidebarContext'
+import { SidebarProvider } from '@/shared/components/ui/sidebar'
 import { AppSidebar } from '@/shared/components/layout/Sidebar/Sidebar'
 
 export function DashboardLayout() {

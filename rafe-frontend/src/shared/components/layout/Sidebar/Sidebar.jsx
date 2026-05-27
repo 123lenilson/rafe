@@ -11,7 +11,8 @@ import {
   Settings,
   ChevronDown,
   Briefcase,
-  ChevronsUpDown
+  ChevronsUpDown,
+  Search
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -112,9 +113,9 @@ export function AppSidebar() {
   // Estilo para botões de categoria pai (com submenu) para manter a seta justificada à direita e habilitar animações group-hover/trigger isoladas
   const triggerClass = cn(inactiveClass, "w-full flex items-center justify-between group/trigger")
 
-  // Estilo comum para submenus (preto bold, padding vertical maior, fonte ainda menor, transição super suave idêntica e cor #f0f0f0)
+  // Estilo comum para submenus (preto bold, padding vertical maior, fonte próxima do link principal, transição super suave idêntica e cor #f0f0f0)
   const getSubmenuClass = ({ isActive }) => cn(
-    "w-full h-auto px-4 py-2 text-[11px] font-bold text-black transition-all duration-300 ease-in-out block rounded-md",
+    "w-full h-auto px-4 py-2 text-[14px] font-bold text-black transition-all duration-300 ease-in-out block rounded-md",
     isActive
       ? "bg-[#f0f0f0]"
       : "text-black hover:bg-[#f0f0f0]"
@@ -133,14 +134,24 @@ export function AppSidebar() {
             <CompanySelector companyName="Rafe" plan="Ecosystem" />
           </div>
 
-          {/* Bloco 2: Informação adicional */}
-          {state !== 'collapsed' && (
-            <div>
-              <span className="inline-block text-[11px] font-bold text-zinc-400 bg-[#f0f0f0] px-2.5 py-1.5 rounded-md transition-all duration-300">
-                Aqui vai ter algo
-              </span>
-            </div>
-          )}
+          {/* Bloco 2: Barra de Pesquisa Interativa (Garante visibilidade responsiva em expandido/colapsado com estilos do SearchButton) */}
+          <div className="flex w-full justify-center">
+            {state !== 'collapsed' ? (
+              <button
+                className="flex items-center gap-2 px-3 py-2 w-full max-w-xs rounded-full border border-gray-300 bg-white text-gray-500 text-sm transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none cursor-default"
+              >
+                <Search className="h-4 w-4 text-black shrink-0" />
+                <span className="flex-1 text-left">Pesquisar...</span>
+              </button>
+            ) : (
+              <button
+                title="Pesquisar"
+                className="flex items-center justify-center h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-500 transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none shrink-0 cursor-default"
+              >
+                <Search className="h-4 w-4 text-black shrink-0" />
+              </button>
+            )}
+          </div>
         </div>
       </SidebarHeader>
 
