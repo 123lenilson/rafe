@@ -155,60 +155,14 @@ export function AppSidebar() {
               <SheetContent side="right" className="bg-white border-l border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
                 <SheetHeader className="p-0 border-b border-zinc-100 pb-4">
                   <SheetTitle className="text-black font-extrabold text-xl tracking-tight">Rafe Ecosystem</SheetTitle>
-                  <SheetDescription className="text-zinc-500 mt-1">
-                    Informações da empresa e subscrição atual no sistema.
+                  <SheetDescription className="text-zinc-400 mt-1">
+                    Configurações da empresa
                   </SheetDescription>
                 </SheetHeader>
-                
-                <div className="flex flex-col gap-6 overflow-y-auto pr-1">
-                  {/* Detalhes Corporativos */}
-                  <div className="flex flex-col gap-4 border-b border-zinc-100 pb-6">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Nome Legal</span>
-                      <span className="text-sm font-bold text-black">Rafe Tecnologias, Lda</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">NIF</span>
-                      <span className="text-sm font-bold text-black font-mono">500432981</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Sede</span>
-                      <span className="text-sm font-bold text-black">Luanda, Angola</span>
-                    </div>
-                  </div>
-
-                  {/* Subscrição */}
-                  <div className="flex flex-col gap-4 border-b border-zinc-100 pb-6">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Plano de Subscrição</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[11px] font-bold bg-black text-white px-2.5 py-1 rounded-full uppercase tracking-wider">Ecosystem Enterprise</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Utilizadores na Licença</span>
-                      <span className="text-sm font-bold text-black">4 ativos / 10 disponíveis</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Renovação</span>
-                      <span className="text-sm font-bold text-black">25 de Maio de 2027 (Anual)</span>
-                    </div>
-                  </div>
-
-                  {/* Estatísticas */}
-                  <div className="flex flex-col gap-3">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Métricas do Sistema</span>
-                    <div className="grid grid-cols-2 gap-3 mt-1">
-                      <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-lg flex flex-col gap-1.5">
-                        <span className="text-[9px] uppercase font-bold text-zinc-400 block tracking-wider leading-none">POS Ativos</span>
-                        <span className="text-2xl font-extrabold text-black leading-none">02</span>
-                      </div>
-                      <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-lg flex flex-col gap-1.5">
-                        <span className="text-[9px] uppercase font-bold text-zinc-400 block tracking-wider leading-none">Faturas Emitidas</span>
-                        <span className="text-2xl font-extrabold text-black leading-none">0</span>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex-1 flex items-center justify-center text-center p-4">
+                  <span className="text-zinc-500 text-sm font-semibold leading-relaxed">
+                    Aqui terá configurações de conta da empresa
+                  </span>
                 </div>
               </SheetContent>
             </Sheet>
