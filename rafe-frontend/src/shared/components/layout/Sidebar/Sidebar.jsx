@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   Home,
   ShoppingCart,
@@ -39,6 +39,14 @@ import {
   SheetTitle,
   SheetDescription
 } from '@/shared/components/ui/sheet'
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem
+} from '@/shared/components/ui/command'
 
 const byPrefixAndName = {
   fas: {
@@ -88,9 +96,11 @@ export function CompanySelector({
 
 export function AppSidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const { state } = useSidebar()
   const [openMenu, setOpenMenu] = useState(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   // Determinar qual submenu expandir com base no path actual
   useEffect(() => {
@@ -172,15 +182,17 @@ export function AppSidebar() {
           <div className="flex w-full justify-center pt-4">
             {state !== 'collapsed' ? (
               <button
-                className="flex items-center gap-2 px-3 py-2 w-full max-w-xs rounded-full border border-gray-300 bg-white text-gray-500 text-sm transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none cursor-default"
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 w-full max-w-xs rounded-full border border-gray-300 bg-white text-gray-500 text-sm transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none cursor-pointer"
               >
                 <Search className="h-4 w-4 text-black shrink-0" />
                 <span className="flex-1 text-left">Pesquisar...</span>
               </button>
             ) : (
               <button
+                onClick={() => setIsSearchOpen(true)}
                 title="Pesquisar"
-                className="flex items-center justify-center h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-500 transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none shrink-0 cursor-default"
+                className="flex items-center justify-center h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-500 transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none shrink-0 cursor-pointer"
               >
                 <Search className="h-4 w-4 text-black shrink-0" />
               </button>
@@ -539,6 +551,73 @@ export function AppSidebar() {
           </div>
         </div>
       </SidebarFooter>
+
+      <CommandDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} title="Menu de Pesquisa" description="Escreva um termo para pesquisar ou navegar...">
+        <CommandInput placeholder="Escreva para pesquisar..." />
+        <CommandList>
+          <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+          <CommandGroup heading="Links Principais">
+            <CommandItem onSelect={() => { navigate('/dashboard'); setIsSearchOpen(false); }}>
+              <Home className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Home / Dashboard</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/pos'); setIsSearchOpen(false); }}>
+              <ShoppingCart className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>POS (Ponto de Venda)</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/clients'); setIsSearchOpen(false); }}>
+              <Users className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Clientes</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/users'); setIsSearchOpen(false); }}>
+              <UserCog className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Utilizadores</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Facturação">
+            <CommandItem onSelect={() => { navigate('/faturacao/orcamento'); setIsSearchOpen(false); }}>
+              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Orçamentos</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/faturacao/facturas'); setIsSearchOpen(false); }}>
+              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Facturas</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/faturacao/proforma'); setIsSearchOpen(false); }}>
+              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Proformas</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/faturacao/recibo'); setIsSearchOpen(false); }}>
+              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Recibos</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Produtos">
+            <CommandItem onSelect={() => { navigate('/produtos/listar'); setIsSearchOpen(false); }}>
+              <Package className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Listar Produtos</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/produtos/entrada-saida'); setIsSearchOpen(false); }}>
+              <Package className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Entrada / Saída</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Finanças">
+            <CommandItem onSelect={() => { navigate('/financas/fluxo-caixa'); setIsSearchOpen(false); }}>
+              <Wallet className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Fluxo de Caixa</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/financas/contas-bancos'); setIsSearchOpen(false); }}>
+              <Wallet className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Contas / Bancos</span>
+            </CommandItem>
+            <CommandItem onSelect={() => { navigate('/financas/despesas'); setIsSearchOpen(false); }}>
+              <Wallet className="mr-2 h-4 w-4 text-zinc-500" />
+              <span>Despesas</span>
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
     </Sidebar>
   )
 }
