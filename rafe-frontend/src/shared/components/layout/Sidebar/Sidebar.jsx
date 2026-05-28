@@ -483,7 +483,7 @@ export function AppSidebar() {
 
               <button
                 title="Caixa - Fechado"
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-50 text-red-600 border border-red-100/80 transition-all duration-300 ease-in-out cursor-pointer hover:bg-red-100/50"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-50 text-red-600 border border-red-50 transition-all duration-300 ease-in-out cursor-pointer hover:bg-red-100/50"
               >
                 <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
                 <span className="text-xs font-bold leading-none">Fechado</span>
