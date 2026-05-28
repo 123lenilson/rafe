@@ -40,6 +40,7 @@ Progress: [██████████] 100%
 | Task | Slug | Status | Completed |
 |------|------|--------|-----------|
 | Refine cash-register in SidebarFooter | refine-sidebar-cash-register | complete ✓ | 2026-05-28 |
+| Integrate Sheet with CompanySelector in SidebarHeader | integrate-sidebar-company-sheet | complete ✓ | 2026-05-28 |
 
 ## Accumulated Context
 

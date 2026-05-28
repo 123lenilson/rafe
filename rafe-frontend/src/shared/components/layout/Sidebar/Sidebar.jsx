@@ -32,6 +32,13 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription
+} from '@/shared/components/ui/sheet'
 
 const byPrefixAndName = {
   fas: {
@@ -83,6 +90,7 @@ export function AppSidebar() {
   const location = useLocation()
   const { state } = useSidebar()
   const [openMenu, setOpenMenu] = useState(null)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   // Determinar qual submenu expandir com base no path actual
   useEffect(() => {
@@ -142,7 +150,68 @@ export function AppSidebar() {
         <div className="flex flex-col gap-2 w-full">
           {/* Bloco 1: Dados da Empresa (RAFE Brand - Botão CompanySelector) */}
           <div className="flex flex-col gap-0.5 border-b border-zinc-200 pt-0 pb-0 -mx-3 px-3">
-            <CompanySelector companyName="Rafe" plan="Ecosystem" />
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <CompanySelector companyName="Rafe" plan="Ecosystem" onClick={() => setIsSheetOpen(true)} />
+              <SheetContent side="left" className="bg-white border-r border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
+                <SheetHeader className="p-0 border-b border-zinc-100 pb-4">
+                  <SheetTitle className="text-black font-extrabold text-xl tracking-tight">Rafe Ecosystem</SheetTitle>
+                  <SheetDescription className="text-zinc-500 mt-1">
+                    Informações da empresa e subscrição atual no sistema.
+                  </SheetDescription>
+                </SheetHeader>
+                
+                <div className="flex flex-col gap-6 overflow-y-auto pr-1">
+                  {/* Detalhes Corporativos */}
+                  <div className="flex flex-col gap-4 border-b border-zinc-100 pb-6">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Nome Legal</span>
+                      <span className="text-sm font-bold text-black">Rafe Tecnologias, Lda</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">NIF</span>
+                      <span className="text-sm font-bold text-black font-mono">500432981</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Sede</span>
+                      <span className="text-sm font-bold text-black">Luanda, Angola</span>
+                    </div>
+                  </div>
+
+                  {/* Subscrição */}
+                  <div className="flex flex-col gap-4 border-b border-zinc-100 pb-6">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Plano de Subscrição</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[11px] font-bold bg-black text-white px-2.5 py-1 rounded-full uppercase tracking-wider">Ecosystem Enterprise</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Utilizadores na Licença</span>
+                      <span className="text-sm font-bold text-black">4 ativos / 10 disponíveis</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Renovação</span>
+                      <span className="text-sm font-bold text-black">25 de Maio de 2027 (Anual)</span>
+                    </div>
+                  </div>
+
+                  {/* Estatísticas */}
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Métricas do Sistema</span>
+                    <div className="grid grid-cols-2 gap-3 mt-1">
+                      <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-lg flex flex-col gap-1.5">
+                        <span className="text-[9px] uppercase font-bold text-zinc-400 block tracking-wider leading-none">POS Ativos</span>
+                        <span className="text-2xl font-extrabold text-black leading-none">02</span>
+                      </div>
+                      <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-lg flex flex-col gap-1.5">
+                        <span className="text-[9px] uppercase font-bold text-zinc-400 block tracking-wider leading-none">Faturas Emitidas</span>
+                        <span className="text-2xl font-extrabold text-black leading-none">0</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
 
           {/* Bloco 2: Barra de Pesquisa Interativa (Garante visibilidade responsiva em expandido/colapsado com estilos do SearchButton) */}
