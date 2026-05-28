@@ -152,7 +152,7 @@ export function AppSidebar() {
           <div className="flex flex-col gap-0.5 border-b border-zinc-200 pt-0 pb-0 -mx-3 px-3">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <CompanySelector companyName="Rafe" plan="Ecosystem" onClick={() => setIsSheetOpen(true)} />
-              <SheetContent side="left" className="bg-white border-r border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
+              <SheetContent side="right" className="bg-white border-l border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
                 <SheetHeader className="p-0 border-b border-zinc-100 pb-4">
                   <SheetTitle className="text-black font-extrabold text-xl tracking-tight">Rafe Ecosystem</SheetTitle>
                   <SheetDescription className="text-zinc-500 mt-1">
