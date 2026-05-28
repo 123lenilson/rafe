@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
-  LayoutDashboard,
+  Home,
   ShoppingCart,
   FileText,
   Package,
@@ -12,7 +12,9 @@ import {
   ChevronDown,
   Briefcase,
   ChevronsUpDown,
-  Search
+  Search,
+  BellDot,
+  MessageCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -27,6 +29,15 @@ import {
   SidebarMenuSubItem,
   useSidebar
 } from '@/shared/components/ui/sidebar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
+
+const byPrefixAndName = {
+  fas: {
+    'cash-register': faCashRegister
+  }
+}
 
 export function CompanySelector({
   companyName = "RAFE",
@@ -39,7 +50,7 @@ export function CompanySelector({
     <div
       onClick={onClick}
       className={cn(
-        "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] border border-zinc-100 transition-all duration-300 ease-in-out",
+        "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out",
         state === 'collapsed' ? "p-2 justify-center" : "px-4 py-3 justify-between"
       )}
     >
@@ -127,15 +138,15 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-zinc-200 bg-white">
       {/* Cabeçalho do Sidebar - RAFE Brand */}
-      <SidebarHeader className="py-3 px-5 bg-white">
-        <div className="flex flex-col gap-3 w-full">
+      <SidebarHeader className="pt-0 pb-1 px-3 bg-white">
+        <div className="flex flex-col gap-2 w-full">
           {/* Bloco 1: Dados da Empresa (RAFE Brand - Botão CompanySelector) */}
-          <div className="flex flex-col gap-0.5 border-b border-zinc-100 pb-3">
+          <div className="flex flex-col gap-0.5 border-b border-zinc-200 pt-0 pb-0 -mx-3 px-3">
             <CompanySelector companyName="Rafe" plan="Ecosystem" />
           </div>
 
           {/* Bloco 2: Barra de Pesquisa Interativa (Garante visibilidade responsiva em expandido/colapsado com estilos do SearchButton) */}
-          <div className="flex w-full justify-center">
+          <div className="flex w-full justify-center pt-4">
             {state !== 'collapsed' ? (
               <button
                 className="flex items-center gap-2 px-3 py-2 w-full max-w-xs rounded-full border border-gray-300 bg-white text-gray-500 text-sm transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none cursor-default"
@@ -156,10 +167,10 @@ export function AppSidebar() {
       </SidebarHeader>
 
       {/* Conteúdo Principal de Navegação */}
-      <SidebarContent className="bg-white px-2 py-4">
+      <SidebarContent className="bg-white px-3 pt-1 pb-4">
         <SidebarMenu className="gap-0.5">
           
-          {/* Dashboard */}
+          {/* Home */}
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
@@ -170,13 +181,30 @@ export function AppSidebar() {
               )}
             >
               <NavLink to="/dashboard">
-                <LayoutDashboard className="h-4 w-4 shrink-0" />
-                <span>Dashboard</span>
+                <Home className="h-4 w-4 shrink-0" />
+                <span>Home</span>
               </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          {/* Faturação (Submenu) */}
+          {/* POS */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isPathActive('/pos')}
+              className={cn(
+                "transition-colors duration-150",
+                isPathActive('/pos') ? activeClass : inactiveClass
+              )}
+            >
+              <NavLink to="/pos">
+                <ShoppingCart className="h-4 w-4 shrink-0" />
+                <span>POS</span>
+              </NavLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {/* Facturação (Submenu) */}
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => toggleSubmenu('faturacao')}
@@ -184,12 +212,13 @@ export function AppSidebar() {
             >
               <div className="flex items-center gap-4">
                 <FileText className="h-4 w-4 shrink-0" />
-                <span>Faturação</span>
+                <span>Facturação</span>
               </div>
               {state !== 'collapsed' && (
                 <ChevronDown
+                  strokeWidth={2.5}
                   className={cn(
-                    "h-3.5 w-3.5 text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-90 group-hover/trigger:scale-100",
+                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
                     openMenu === 'faturacao' && "rotate-180"
                   )}
                 />
@@ -242,23 +271,6 @@ export function AppSidebar() {
             </div>
           </SidebarMenuItem>
 
-          {/* POS */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={isPathActive('/pos')}
-              className={cn(
-                "transition-colors duration-150",
-                isPathActive('/pos') ? activeClass : inactiveClass
-              )}
-            >
-              <NavLink to="/pos">
-                <ShoppingCart className="h-4 w-4 shrink-0" />
-                <span>POS</span>
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
           {/* Produtos (Submenu) */}
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -271,8 +283,9 @@ export function AppSidebar() {
               </div>
               {state !== 'collapsed' && (
                 <ChevronDown
+                  strokeWidth={2.5}
                   className={cn(
-                    "h-3.5 w-3.5 text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-90 group-hover/trigger:scale-100",
+                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
                     openMenu === 'produtos' && "rotate-180"
                   )}
                 />
@@ -309,23 +322,6 @@ export function AppSidebar() {
             </div>
           </SidebarMenuItem>
 
-          {/* Clientes */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={isPathActive('/clients')}
-              className={cn(
-                "transition-colors duration-150",
-                isPathActive('/clients') ? activeClass : inactiveClass
-              )}
-            >
-              <NavLink to="/clients">
-                <Users className="h-4 w-4 shrink-0" />
-                <span>Clientes</span>
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
           {/* Finanças (Submenu) */}
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -338,8 +334,9 @@ export function AppSidebar() {
               </div>
               {state !== 'collapsed' && (
                 <ChevronDown
+                  strokeWidth={2.5}
                   className={cn(
-                    "h-3.5 w-3.5 text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-90 group-hover/trigger:scale-100",
+                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
                     openMenu === 'financas' && "rotate-180"
                   )}
                 />
@@ -384,6 +381,23 @@ export function AppSidebar() {
             </div>
           </SidebarMenuItem>
 
+          {/* Clientes */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isPathActive('/clients')}
+              className={cn(
+                "transition-colors duration-150",
+                isPathActive('/clients') ? activeClass : inactiveClass
+              )}
+            >
+              <NavLink to="/clients">
+                <Users className="h-4 w-4 shrink-0" />
+                <span>Clientes</span>
+              </NavLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
           {/* Utilizadores */}
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -413,8 +427,9 @@ export function AppSidebar() {
               </div>
               {state !== 'collapsed' && (
                 <ChevronDown
+                  strokeWidth={2.5}
                   className={cn(
-                    "h-3.5 w-3.5 text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-90 group-hover/trigger:scale-100",
+                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
                     openMenu === 'definicoes' && "rotate-180"
                   )}
                 />
@@ -447,17 +462,58 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Rodapé do Sidebar */}
-      <SidebarFooter className="p-4 border-t border-zinc-100 bg-white">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center font-bold text-xs text-black">
-            OP
-          </div>
+      <SidebarFooter className="py-3 px-3 border-t border-zinc-100 bg-white">
+        <div className="flex flex-col gap-1 w-full">
+          {/* Bloco 1: Sidebar Utility Bar (Menu de Ícones) */}
           {state !== 'collapsed' && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-semibold text-black truncate">Operador Rafe</span>
-              <span className="text-[10px] text-zinc-400 truncate">operator@rafe.com</span>
+            <div className="flex flex-row items-center justify-around w-full py-1">
+              <button
+                title="Notificações"
+                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out cursor-pointer"
+              >
+                <BellDot className="h-4 w-4 shrink-0" />
+              </button>
+
+              <button
+                title="Mensagens"
+                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out cursor-pointer"
+              >
+                <MessageCircle className="h-4 w-4 shrink-0" />
+              </button>
+
+              <button
+                title="Caixa - Fechado"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-50 text-red-600 border border-red-100/80 transition-all duration-300 ease-in-out cursor-pointer hover:bg-red-100/50"
+              >
+                <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
+                <span className="text-xs font-bold leading-none">Fechado</span>
+              </button>
             </div>
           )}
+
+          {/* Bloco 2: Informação do Utilizador (Avatar + Detalhes) */}
+          <div className="flex w-full justify-center">
+            <div
+              className={cn(
+                "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out w-full",
+                state === 'collapsed' ? "p-2 justify-center" : "px-4 py-2 justify-between"
+              )}
+            >
+              <Avatar className="h-8 w-8 select-none shrink-0">
+                <AvatarImage src="" alt="Operador Rafe" />
+                <AvatarFallback className="font-bold text-[10px] text-black bg-zinc-100 border border-zinc-200">OP</AvatarFallback>
+              </Avatar>
+              {state !== 'collapsed' && (
+                <>
+                  <div className="flex flex-col min-w-0 flex-1 text-left gap-0.5">
+                    <span className="text-sm font-semibold text-black truncate leading-tight">Operador Rafe</span>
+                    <span className="text-[10px] text-zinc-400 truncate leading-tight">operator@rafe.com</span>
+                  </div>
+                  <ChevronsUpDown className="w-4 h-4 text-zinc-400 shrink-0" />
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

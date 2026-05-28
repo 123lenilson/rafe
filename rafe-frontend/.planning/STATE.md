@@ -35,6 +35,12 @@ Progress: [██████████] 100%
 
 *Updated after each plan completion*
 
+## Quick Tasks Completed
+
+| Task | Slug | Status | Completed |
+|------|------|--------|-----------|
+| Refine cash-register in SidebarFooter | refine-sidebar-cash-register | complete ✓ | 2026-05-28 |
+
 ## Accumulated Context
 
 ### Decisions
