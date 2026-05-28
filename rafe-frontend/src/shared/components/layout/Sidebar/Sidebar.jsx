@@ -558,61 +558,61 @@ export function AppSidebar() {
           <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
           <CommandGroup heading="Links Principais">
             <CommandItem onSelect={() => { navigate('/dashboard'); setIsSearchOpen(false); }}>
-              <Home className="mr-2 h-4 w-4 text-zinc-500" />
+              <Home className="text-zinc-400 shrink-0" />
               <span>Home / Dashboard</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/pos'); setIsSearchOpen(false); }}>
-              <ShoppingCart className="mr-2 h-4 w-4 text-zinc-500" />
+              <ShoppingCart className="text-zinc-400 shrink-0" />
               <span>POS (Ponto de Venda)</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/clients'); setIsSearchOpen(false); }}>
-              <Users className="mr-2 h-4 w-4 text-zinc-500" />
+              <Users className="text-zinc-400 shrink-0" />
               <span>Clientes</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/users'); setIsSearchOpen(false); }}>
-              <UserCog className="mr-2 h-4 w-4 text-zinc-500" />
+              <UserCog className="text-zinc-400 shrink-0" />
               <span>Utilizadores</span>
             </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Facturação">
             <CommandItem onSelect={() => { navigate('/faturacao/orcamento'); setIsSearchOpen(false); }}>
-              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <FileText className="text-zinc-400 shrink-0" />
               <span>Orçamentos</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/faturacao/facturas'); setIsSearchOpen(false); }}>
-              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <FileText className="text-zinc-400 shrink-0" />
               <span>Facturas</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/faturacao/proforma'); setIsSearchOpen(false); }}>
-              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <FileText className="text-zinc-400 shrink-0" />
               <span>Proformas</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/faturacao/recibo'); setIsSearchOpen(false); }}>
-              <FileText className="mr-2 h-4 w-4 text-zinc-500" />
+              <FileText className="text-zinc-400 shrink-0" />
               <span>Recibos</span>
             </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Produtos">
             <CommandItem onSelect={() => { navigate('/produtos/listar'); setIsSearchOpen(false); }}>
-              <Package className="mr-2 h-4 w-4 text-zinc-500" />
+              <Package className="text-zinc-400 shrink-0" />
               <span>Listar Produtos</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/produtos/entrada-saida'); setIsSearchOpen(false); }}>
-              <Package className="mr-2 h-4 w-4 text-zinc-500" />
+              <Package className="text-zinc-400 shrink-0" />
               <span>Entrada / Saída</span>
             </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Finanças">
             <CommandItem onSelect={() => { navigate('/financas/fluxo-caixa'); setIsSearchOpen(false); }}>
-              <Wallet className="mr-2 h-4 w-4 text-zinc-500" />
+              <Wallet className="text-zinc-400 shrink-0" />
               <span>Fluxo de Caixa</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/financas/contas-bancos'); setIsSearchOpen(false); }}>
-              <Wallet className="mr-2 h-4 w-4 text-zinc-500" />
+              <Wallet className="text-zinc-400 shrink-0" />
               <span>Contas / Bancos</span>
             </CommandItem>
             <CommandItem onSelect={() => { navigate('/financas/despesas'); setIsSearchOpen(false); }}>
-              <Wallet className="mr-2 h-4 w-4 text-zinc-500" />
+              <Wallet className="text-zinc-400 shrink-0" />
               <span>Despesas</span>
             </CommandItem>
           </CommandGroup>
