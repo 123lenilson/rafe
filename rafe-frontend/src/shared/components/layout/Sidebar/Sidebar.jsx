@@ -14,7 +14,11 @@ import {
   ChevronsUpDown,
   Search,
   BellDot,
-  MessageCircle
+  MessageCircle,
+  User,
+  LogOut,
+  CreditCard,
+  HelpCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -47,6 +51,15 @@ import {
   CommandGroup,
   CommandItem
 } from '@/shared/components/ui/command'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuGroup
+} from '@/shared/components/ui/dropdown-menu'
 
 const byPrefixAndName = {
   fas: {
@@ -528,26 +541,64 @@ export function AppSidebar() {
 
           {/* Bloco 2: Informação do Utilizador (Avatar + Detalhes) */}
           <div className="flex w-full justify-center">
-            <div
-              className={cn(
-                "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out w-full",
-                state === 'collapsed' ? "p-2 justify-center" : "px-4 py-2 justify-between"
-              )}
-            >
-              <Avatar className="h-8 w-8 select-none shrink-0">
-                <AvatarImage src="" alt="Operador Rafe" />
-                <AvatarFallback className="font-bold text-[10px] text-black bg-zinc-100 border border-zinc-200">OP</AvatarFallback>
-              </Avatar>
-              {state !== 'collapsed' && (
-                <>
-                  <div className="flex flex-col min-w-0 flex-1 text-left gap-0.5">
-                    <span className="text-sm font-semibold text-black truncate leading-tight">Operador Rafe</span>
-                    <span className="text-[10px] text-zinc-400 truncate leading-tight">operator@rafe.com</span>
-                  </div>
-                  <ChevronsUpDown className="w-4 h-4 text-zinc-400 shrink-0" />
-                </>
-              )}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div
+                  className={cn(
+                    "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out w-full focus:outline-none select-none",
+                    state === 'collapsed' ? "p-2 justify-center" : "px-4 py-2 justify-between"
+                  )}
+                >
+                  <Avatar className="h-8 w-8 select-none shrink-0">
+                    <AvatarImage src="" alt="Operador Rafe" />
+                    <AvatarFallback className="font-bold text-[10px] text-black bg-zinc-100 border border-zinc-200">OP</AvatarFallback>
+                  </Avatar>
+                  {state !== 'collapsed' && (
+                    <>
+                      <div className="flex flex-col min-w-0 flex-1 text-left gap-0.5">
+                        <span className="text-sm font-semibold text-black truncate leading-tight">Operador Rafe</span>
+                        <span className="text-[10px] text-zinc-400 truncate leading-tight">operator@rafe.com</span>
+                      </div>
+                      <ChevronsUpDown className="w-4 h-4 text-zinc-400 shrink-0" />
+                    </>
+                  )}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side={state === 'collapsed' ? "right" : "top"}
+                align="end"
+                sideOffset={12}
+                className="w-56 bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1"
+              >
+                <DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-zinc-500">
+                  A minha conta
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-zinc-100 -mx-1 my-1 h-px" />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
+                    <User className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <span>O meu perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black" onSelect={() => navigate('/definicoes')}>
+                    <Settings className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <span>Definições</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
+                    <CreditCard className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <span>Subscrição & Faturamento</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
+                    <HelpCircle className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <span>Suporte & Ajuda</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator className="bg-zinc-100 -mx-1 my-1 h-px" />
+                <DropdownMenuItem variant="destructive" className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-red-600 rounded-md cursor-pointer hover:bg-red-50 hover:text-red-600 transition-all duration-150 ease-in-out focus:bg-red-50 focus:text-red-600">
+                  <LogOut className="h-4 w-4 text-red-600 shrink-0" />
+                  <span>Terminar Sessão</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </SidebarFooter>
