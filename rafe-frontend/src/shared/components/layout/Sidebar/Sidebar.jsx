@@ -9,7 +9,7 @@ import {
   Wallet,
   UserCog,
   Settings,
-  ChevronDown,
+  ChevronRight,
   Briefcase,
   ChevronsUpDown,
   Search,
@@ -18,7 +18,8 @@ import {
   User,
   LogOut,
   CreditCard,
-  HelpCircle
+  HelpCircle,
+  History
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -78,7 +79,7 @@ export function CompanySelector({
     <div
       onClick={onClick}
       className={cn(
-        "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out",
+        "flex flex-row items-center gap-3 bg-transparent rounded-lg cursor-pointer hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out",
         state === 'collapsed' ? "p-2 justify-center" : "px-4 py-3 justify-between"
       )}
     >
@@ -115,6 +116,147 @@ export function AppSidebar() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
+  // Cash Register States & History Simulator
+  const [isCashDrawerOpen, setIsCashDrawerOpen] = useState(false)
+  const [isCashRegisterOpened, setIsCashRegisterOpened] = useState(false)
+  const [cashRegisterValue, setCashRegisterValue] = useState("0")
+  const [cashRegisterObservation, setCashRegisterObservation] = useState("")
+  const [cashRegisterHistory, setCashRegisterHistory] = useState([
+    {
+      id: 1,
+      operatorName: "Ana Nogueira",
+      operatorInitials: "AN",
+      openingDate: "02/06/2026",
+      openingTime: "08:15",
+      closingDate: "02/06/2026",
+      closingTime: "12:30",
+      initialValue: 10000,
+      finalValue: 45200,
+      difference: 0,
+      observation: "Caixa fechado sem inconformidades. Vendas do turno da manhã.",
+      isClosed: true
+    },
+    {
+      id: 2,
+      operatorName: "João Oliveira",
+      operatorInitials: "JO",
+      openingDate: "01/06/2026",
+      openingTime: "14:00",
+      closingDate: "01/06/2026",
+      closingTime: "22:15",
+      initialValue: 15000,
+      finalValue: 98450,
+      difference: -150,
+      observation: "Falta de 150 kz devido a arredondamento de trocos no POS.",
+      isClosed: true
+    },
+    {
+      id: 3,
+      operatorName: "Operador Rafe",
+      operatorInitials: "OP",
+      openingDate: "01/06/2026",
+      openingTime: "08:00",
+      closingDate: "01/06/2026",
+      closingTime: "13:45",
+      initialValue: 10000,
+      finalValue: 32500,
+      difference: 0,
+      observation: "Tudo em ordem. Caixa inicial padrão.",
+      isClosed: true
+    }
+  ])
+
+  const formatCurrency = (value) => {
+    if (value === undefined || value === null) return '0,00'
+    const num = typeof value === 'string' ? parseFloat(value) : value
+    if (isNaN(num)) return '0,00'
+    return num.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+
+  const formatDisplayValue = (val) => {
+    if (!val) return '0,00'
+    const clean = val.replace(/[^0-9.]/g, '')
+    if (!clean) return '0,00'
+    const parts = clean.split('.')
+    const integerPart = parts[0]
+    const decimalPart = parts[1]
+    const formattedInteger = parseInt(integerPart || '0', 10).toLocaleString('pt-AO')
+    if (decimalPart !== undefined) {
+      return `${formattedInteger},${decimalPart}`
+    }
+    if (clean.endsWith('.')) {
+      return `${formattedInteger},`
+    }
+    return formattedInteger
+  }
+
+  const handleKeypadPress = (key) => {
+    if (key === 'clear') {
+      setCashRegisterValue("0")
+    } else if (key === 'backspace') {
+      setCashRegisterValue(prev => {
+        if (prev.length <= 1) return "0"
+        return prev.slice(0, -1)
+      })
+    } else if (key === '.') {
+      setCashRegisterValue(prev => {
+        if (prev.includes('.')) return prev
+        return prev + '.'
+      })
+    } else {
+      setCashRegisterValue(prev => {
+        if (prev === "0") return key
+        return prev + key
+      })
+    }
+  }
+
+  const handleOpenCashRegister = () => {
+    const val = parseFloat(cashRegisterValue)
+    if (isNaN(val) || val < 0) return
+    const newEntry = {
+      id: Date.now(),
+      operatorName: "Operador Rafe",
+      operatorInitials: "OP",
+      openingDate: new Date().toLocaleDateString('pt-PT'),
+      openingTime: new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
+      closingDate: "",
+      closingTime: "",
+      initialValue: val,
+      finalValue: 0,
+      difference: 0,
+      observation: cashRegisterObservation,
+      isClosed: false
+    }
+    setCashRegisterHistory(prev => [newEntry, ...prev])
+    setIsCashRegisterOpened(true)
+    setIsCashDrawerOpen(false)
+    setCashRegisterValue("0")
+    setCashRegisterObservation("")
+  }
+
+  const handleCloseCashRegister = () => {
+    setCashRegisterHistory(prev => {
+      return prev.map(item => {
+        if (!item.isClosed) {
+          const finalVal = item.initialValue + 32500
+          const diff = 0
+          return {
+            ...item,
+            isClosed: true,
+            closingDate: new Date().toLocaleDateString('pt-PT'),
+            closingTime: new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
+            finalValue: finalVal,
+            difference: diff
+          }
+        }
+        return item
+      })
+    })
+    setIsCashRegisterOpened(false)
+    setIsCashDrawerOpen(false)
+  }
+
   // Determinar qual submenu expandir com base no path actual
   useEffect(() => {
     const path = location.pathname
@@ -149,33 +291,33 @@ export function AppSidebar() {
   }
 
   // Estilos de link activo e inactivo para botões principais (preto bold, fonte maior, padding vertical aumentado, transição super suave, cor #f0f0f0 e gap-4 para ícones)
-  const activeClass = "h-auto py-3 px-4 bg-[#f0f0f0] text-black font-bold text-[15px] hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out gap-4"
-  const inactiveClass = "h-auto py-3 px-4 text-black font-bold text-[15px] hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out gap-4"
+  const activeClass = "h-auto py-[10px] px-[18px] bg-white shadow-xs border border-zinc-200/20 text-black font-bold text-[14px] hover:bg-white transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
+  const inactiveClass = "h-auto py-[10px] px-[18px] text-zinc-800 font-bold text-[14px] hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
 
   // Estilo para botões de categoria pai (com submenu) para manter a seta justificada à direita e habilitar animações group-hover/trigger isoladas
   const triggerClass = cn(inactiveClass, "w-full flex items-center justify-between group/trigger")
 
   // Estilo comum para submenus (preto bold, padding vertical maior, fonte próxima do link principal, transição super suave idêntica e cor #f0f0f0)
   const getSubmenuClass = ({ isActive }) => cn(
-    "w-full h-auto px-4 py-2 text-[14px] font-bold text-black transition-all duration-300 ease-in-out block rounded-md",
+    "w-full h-auto px-[18px] py-[8px] text-[13px] font-bold transition-all duration-300 ease-in-out block rounded-lg",
     isActive
-      ? "bg-[#f0f0f0]"
-      : "text-black hover:bg-[#f0f0f0]"
+      ? "bg-white shadow-xs border border-zinc-200/10 text-black"
+      : "text-zinc-600 hover:text-black hover:bg-[#e4e4e7]/40"
   )
 
 
 
 
   return (
-    <Sidebar className="border-r border-zinc-200 bg-white">
+    <Sidebar className="border-none border-r-0 group-data-[side=left]:border-r-0 bg-transparent shadow-none">
       {/* Cabeçalho do Sidebar - RAFE Brand */}
-      <SidebarHeader className="pt-0 pb-1 px-3 bg-white">
+      <SidebarHeader className="pt-0 pb-1 px-3 bg-transparent">
         <div className="flex flex-col gap-2 w-full">
           {/* Bloco 1: Dados da Empresa (RAFE Brand - Botão CompanySelector) */}
-          <div className="flex flex-col gap-0.5 border-b border-zinc-200 pt-0 pb-0 -mx-3 px-3">
+          <div className="flex flex-col gap-0.5 border-none pt-0 pb-0 -mx-3 px-3">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <CompanySelector companyName="Rafe" plan="Ecosystem" onClick={() => setIsSheetOpen(true)} />
-              <SheetContent side="right" className="bg-white border-l border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
+              <SheetContent side="right" className="bg-white border border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
                 <SheetHeader className="p-0 border-b border-zinc-100 pb-4">
                   <SheetTitle className="text-black font-extrabold text-xl tracking-tight">Rafe Ecosystem</SheetTitle>
                   <SheetDescription className="text-zinc-400 mt-1">
@@ -196,7 +338,7 @@ export function AppSidebar() {
             {state !== 'collapsed' ? (
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 w-full max-w-xs rounded-full border border-gray-300 bg-white text-gray-500 text-sm transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none cursor-pointer"
+                className="flex items-center gap-2 px-3 py-2 w-full max-w-xs rounded-full border border-transparent bg-[#e4e4e7]/60 text-gray-500 text-sm transition-all duration-300 hover:bg-[#e4e4e7]/60 active:border-black focus:border-black select-none cursor-pointer focus:outline-none"
               >
                 <Search className="h-4 w-4 text-black shrink-0" />
                 <span className="flex-1 text-left">Pesquisar...</span>
@@ -205,7 +347,7 @@ export function AppSidebar() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 title="Pesquisar"
-                className="flex items-center justify-center h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-500 transition-colors hover:border-gray-400 active:border-black focus:outline-none focus:border-black select-none shrink-0 cursor-pointer"
+                className="flex items-center justify-center h-9 w-9 rounded-full border border-transparent bg-[#e4e4e7]/60 text-gray-500 transition-all duration-300 hover:bg-[#e4e4e7]/60 active:border-black focus:border-black select-none shrink-0 cursor-pointer focus:outline-none"
               >
                 <Search className="h-4 w-4 text-black shrink-0" />
               </button>
@@ -215,7 +357,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       {/* Conteúdo Principal de Navegação */}
-      <SidebarContent className="bg-white px-3 pt-1 pb-4">
+      <SidebarContent className="bg-transparent px-3 pt-1 pb-4">
         <SidebarMenu className="gap-0.5">
           
           {/* Home */}
@@ -263,11 +405,11 @@ export function AppSidebar() {
                 <span>Facturação</span>
               </div>
               {state !== 'collapsed' && (
-                <ChevronDown
+                <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
-                    openMenu === 'faturacao' && "rotate-180"
+                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    openMenu === 'faturacao' && "rotate-90"
                   )}
                 />
               )}
@@ -330,11 +472,11 @@ export function AppSidebar() {
                 <span>Produtos</span>
               </div>
               {state !== 'collapsed' && (
-                <ChevronDown
+                <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
-                    openMenu === 'produtos' && "rotate-180"
+                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    openMenu === 'produtos' && "rotate-90"
                   )}
                 />
               )}
@@ -381,11 +523,11 @@ export function AppSidebar() {
                 <span>Finanças</span>
               </div>
               {state !== 'collapsed' && (
-                <ChevronDown
+                <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
-                    openMenu === 'financas' && "rotate-180"
+                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    openMenu === 'financas' && "rotate-90"
                   )}
                 />
               )}
@@ -474,11 +616,11 @@ export function AppSidebar() {
                 <span>Definições</span>
               </div>
               {state !== 'collapsed' && (
-                <ChevronDown
+                <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 opacity-0 group-hover/trigger:opacity-100 transition-all duration-300 transform scale-95 group-hover/trigger:scale-100",
-                    openMenu === 'definicoes' && "rotate-180"
+                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    openMenu === 'definicoes' && "rotate-90"
                   )}
                 />
               )}
@@ -510,32 +652,82 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Rodapé do Sidebar */}
-      <SidebarFooter className="py-3 px-3 border-t border-zinc-100 bg-white">
+      <SidebarFooter className="py-3 px-3 border-none bg-transparent">
         <div className="flex flex-col gap-1 w-full">
           {/* Bloco 1: Sidebar Utility Bar (Menu de Ícones) */}
           {state !== 'collapsed' && (
             <div className="flex flex-row items-center justify-around w-full py-1">
               <button
                 title="Notificações"
-                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out cursor-pointer"
+                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out cursor-pointer"
               >
                 <BellDot className="h-4 w-4 shrink-0" />
               </button>
 
               <button
                 title="Mensagens"
-                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out cursor-pointer"
+                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out cursor-pointer"
               >
                 <MessageCircle className="h-4 w-4 shrink-0" />
               </button>
 
-              <button
-                title="Caixa - Fechado"
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-50 text-red-600 border border-red-50 transition-all duration-300 ease-in-out cursor-pointer hover:bg-red-100/50"
-              >
-                <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
-                <span className="text-xs font-bold leading-none">Fechado</span>
-              </button>
+              <Sheet open={isCashDrawerOpen} onOpenChange={setIsCashDrawerOpen}>
+                <button
+                  onClick={() => setIsCashDrawerOpen(true)}
+                  title={isCashRegisterOpened ? "Caixa - Aberto" : "Caixa - Fechada"}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-300 ease-in-out cursor-pointer border",
+                    isCashRegisterOpened
+                      ? "bg-green-50 text-green-600 border-green-50 hover:bg-green-100/50"
+                      : "bg-red-50 text-red-600 border-red-50 hover:bg-red-100/50"
+                  )}
+                >
+                  <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
+                  <span className="text-xs font-bold leading-none">
+                    {isCashRegisterOpened ? "Aberto" : "Fechada"}
+                  </span>
+                </button>
+                <SheetContent 
+                  side="right" 
+                  className="bg-white border border-zinc-200 p-6 flex flex-col gap-6 w-full sm:!w-[60vw] sm:!max-w-[60vw]"
+                >
+                  {/* 1. Header do Painel */}
+                  <div className="p-[1px] shrink-0" />
+
+                  {/* 2. Container Center / Main */}
+                  <div className="flex-1 grid grid-cols-[40fr_60fr] gap-3 min-h-0 overflow-hidden">
+                    {/* Coluna 1: Abrir Caixa */}
+                    <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden">
+                      {/* Header da Coluna 1 */}
+                      <div className="py-0 shrink-0 flex items-center gap-2">
+                        <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                        <h3 className="text-xs font-normal text-zinc-600 font-sans">Abrir Caixa</h3>
+                      </div>
+                      {/* Main da Coluna 1 */}
+                      <div className="flex-1 flex items-center justify-center text-center p-4 bg-transparent">
+                        <span className="text-zinc-500 text-xs font-normal font-sans">
+                          Por enquanto escreve somente aqui vai ter coisa
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Coluna 2: Histórico de Caixa */}
+                    <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden">
+                      {/* Header da Coluna 2 */}
+                      <div className="py-0 shrink-0 flex items-center gap-2">
+                        <History className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                        <h3 className="text-xs font-normal text-zinc-600 font-sans">Histórico de Caixa</h3>
+                      </div>
+                      {/* Main da Coluna 2 */}
+                      <div className="flex-1 flex items-center justify-center text-center p-4 bg-transparent">
+                        <span className="text-zinc-500 text-xs font-normal font-sans">
+                          Por enquanto escreve somente aqui vai ter coisa
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           )}
 
@@ -545,7 +737,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <div
                   className={cn(
-                    "flex flex-row items-center gap-3 bg-white rounded-lg cursor-pointer hover:bg-[#f0f0f0] transition-all duration-300 ease-in-out w-full focus:outline-none select-none",
+                    "flex flex-row items-center gap-3 bg-transparent rounded-lg cursor-pointer hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out w-full focus:outline-none select-none",
                     state === 'collapsed' ? "p-2 justify-center" : "px-4 py-2 justify-between"
                   )}
                 >
@@ -575,25 +767,25 @@ export function AppSidebar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-zinc-100 -mx-1 my-1 h-px" />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
                     <User className="h-4 w-4 text-zinc-400 shrink-0" />
                     <span>O meu perfil</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black" onSelect={() => navigate('/definicoes')}>
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black" onSelect={() => navigate('/definicoes')}>
                     <Settings className="h-4 w-4 text-zinc-400 shrink-0" />
                     <span>Definições</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
                     <CreditCard className="h-4 w-4 text-zinc-400 shrink-0" />
                     <span>Subscrição & Faturamento</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
+                  <DropdownMenuItem className="flex items-center gap-2 px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out focus:bg-[#f0f0f0] focus:text-black">
                     <HelpCircle className="h-4 w-4 text-zinc-400 shrink-0" />
                     <span>Suporte & Ajuda</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-zinc-100 -mx-1 my-1 h-px" />
-                <DropdownMenuItem variant="destructive" className="flex items-center gap-2 px-2 py-1.5 text-sm font-bold text-red-600 rounded-md cursor-pointer hover:bg-red-50 hover:text-red-600 transition-all duration-150 ease-in-out focus:bg-red-50 focus:text-red-600">
+                <DropdownMenuItem variant="destructive" className="flex items-center gap-2 px-2 py-1.5 text-xs font-light text-red-600 rounded-md cursor-pointer hover:bg-red-50 hover:text-red-600 transition-all duration-150 ease-in-out focus:bg-red-50 focus:text-red-600">
                   <LogOut className="h-4 w-4 text-red-600 shrink-0" />
                   <span>Terminar Sessão</span>
                 </DropdownMenuItem>
