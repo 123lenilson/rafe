@@ -18,8 +18,7 @@ import {
   User,
   LogOut,
   CreditCard,
-  HelpCircle,
-  History
+  HelpCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -37,13 +36,9 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription
-} from '@/shared/components/ui/sheet'
+import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
+import { CompanySettingsDrawer } from '@/features/settings/components/CompanySettingsDrawer'
+import { CashRegisterDrawer } from '@/features/pos/components/CashRegisterDrawer'
 import {
   CommandDialog,
   CommandInput,
@@ -115,147 +110,10 @@ export function AppSidebar() {
   const [openMenu, setOpenMenu] = useState(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-
-  // Cash Register States & History Simulator
   const [isCashDrawerOpen, setIsCashDrawerOpen] = useState(false)
-  const [isCashRegisterOpened, setIsCashRegisterOpened] = useState(false)
-  const [cashRegisterValue, setCashRegisterValue] = useState("0")
-  const [cashRegisterObservation, setCashRegisterObservation] = useState("")
-  const [cashRegisterHistory, setCashRegisterHistory] = useState([
-    {
-      id: 1,
-      operatorName: "Ana Nogueira",
-      operatorInitials: "AN",
-      openingDate: "02/06/2026",
-      openingTime: "08:15",
-      closingDate: "02/06/2026",
-      closingTime: "12:30",
-      initialValue: 10000,
-      finalValue: 45200,
-      difference: 0,
-      observation: "Caixa fechado sem inconformidades. Vendas do turno da manhã.",
-      isClosed: true
-    },
-    {
-      id: 2,
-      operatorName: "João Oliveira",
-      operatorInitials: "JO",
-      openingDate: "01/06/2026",
-      openingTime: "14:00",
-      closingDate: "01/06/2026",
-      closingTime: "22:15",
-      initialValue: 15000,
-      finalValue: 98450,
-      difference: -150,
-      observation: "Falta de 150 kz devido a arredondamento de trocos no POS.",
-      isClosed: true
-    },
-    {
-      id: 3,
-      operatorName: "Operador Rafe",
-      operatorInitials: "OP",
-      openingDate: "01/06/2026",
-      openingTime: "08:00",
-      closingDate: "01/06/2026",
-      closingTime: "13:45",
-      initialValue: 10000,
-      finalValue: 32500,
-      difference: 0,
-      observation: "Tudo em ordem. Caixa inicial padrão.",
-      isClosed: true
-    }
-  ])
 
-  const formatCurrency = (value) => {
-    if (value === undefined || value === null) return '0,00'
-    const num = typeof value === 'string' ? parseFloat(value) : value
-    if (isNaN(num)) return '0,00'
-    return num.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
-
-  const formatDisplayValue = (val) => {
-    if (!val) return '0,00'
-    const clean = val.replace(/[^0-9.]/g, '')
-    if (!clean) return '0,00'
-    const parts = clean.split('.')
-    const integerPart = parts[0]
-    const decimalPart = parts[1]
-    const formattedInteger = parseInt(integerPart || '0', 10).toLocaleString('pt-AO')
-    if (decimalPart !== undefined) {
-      return `${formattedInteger},${decimalPart}`
-    }
-    if (clean.endsWith('.')) {
-      return `${formattedInteger},`
-    }
-    return formattedInteger
-  }
-
-  const handleKeypadPress = (key) => {
-    if (key === 'clear') {
-      setCashRegisterValue("0")
-    } else if (key === 'backspace') {
-      setCashRegisterValue(prev => {
-        if (prev.length <= 1) return "0"
-        return prev.slice(0, -1)
-      })
-    } else if (key === '.') {
-      setCashRegisterValue(prev => {
-        if (prev.includes('.')) return prev
-        return prev + '.'
-      })
-    } else {
-      setCashRegisterValue(prev => {
-        if (prev === "0") return key
-        return prev + key
-      })
-    }
-  }
-
-  const handleOpenCashRegister = () => {
-    const val = parseFloat(cashRegisterValue)
-    if (isNaN(val) || val < 0) return
-    const newEntry = {
-      id: Date.now(),
-      operatorName: "Operador Rafe",
-      operatorInitials: "OP",
-      openingDate: new Date().toLocaleDateString('pt-PT'),
-      openingTime: new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
-      closingDate: "",
-      closingTime: "",
-      initialValue: val,
-      finalValue: 0,
-      difference: 0,
-      observation: cashRegisterObservation,
-      isClosed: false
-    }
-    setCashRegisterHistory(prev => [newEntry, ...prev])
-    setIsCashRegisterOpened(true)
-    setIsCashDrawerOpen(false)
-    setCashRegisterValue("0")
-    setCashRegisterObservation("")
-  }
-
-  const handleCloseCashRegister = () => {
-    setCashRegisterHistory(prev => {
-      return prev.map(item => {
-        if (!item.isClosed) {
-          const finalVal = item.initialValue + 32500
-          const diff = 0
-          return {
-            ...item,
-            isClosed: true,
-            closingDate: new Date().toLocaleDateString('pt-PT'),
-            closingTime: new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
-            finalValue: finalVal,
-            difference: diff
-          }
-        }
-        return item
-      })
-    })
-    setIsCashRegisterOpened(false)
-    setIsCashDrawerOpen(false)
-  }
+  const cashRegister = useCashRegister()
+  const { isCashRegisterOpened } = cashRegister
 
   // Determinar qual submenu expandir com base no path actual
   useEffect(() => {
@@ -315,22 +173,8 @@ export function AppSidebar() {
         <div className="flex flex-col gap-2 w-full">
           {/* Bloco 1: Dados da Empresa (RAFE Brand - Botão CompanySelector) */}
           <div className="flex flex-col gap-0.5 border-none pt-0 pb-0 -mx-3 px-3">
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <CompanySelector companyName="Rafe" plan="Ecosystem" onClick={() => setIsSheetOpen(true)} />
-              <SheetContent side="right" className="bg-white border border-zinc-200 p-6 flex flex-col gap-6 w-[320px] sm:w-[350px]">
-                <SheetHeader className="p-0 border-b border-zinc-100 pb-4">
-                  <SheetTitle className="text-black font-extrabold text-xl tracking-tight">Rafe Ecosystem</SheetTitle>
-                  <SheetDescription className="text-zinc-400 mt-1">
-                    Configurações da empresa
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="flex-1 flex items-center justify-center text-center p-4">
-                  <span className="text-zinc-500 text-sm font-semibold leading-relaxed">
-                    Aqui terá configurações de conta da empresa
-                  </span>
-                </div>
-              </SheetContent>
-            </Sheet>
+            <CompanySelector companyName="Rafe" plan="Ecosystem" onClick={() => setIsSheetOpen(true)} />
+            <CompanySettingsDrawer open={isSheetOpen} onOpenChange={setIsSheetOpen} />
           </div>
 
           {/* Bloco 2: Barra de Pesquisa Interativa (Garante visibilidade responsiva em expandido/colapsado com estilos do SearchButton) */}
@@ -671,63 +515,22 @@ export function AppSidebar() {
                 <MessageCircle className="h-4 w-4 shrink-0" />
               </button>
 
-              <Sheet open={isCashDrawerOpen} onOpenChange={setIsCashDrawerOpen}>
-                <button
-                  onClick={() => setIsCashDrawerOpen(true)}
-                  title={isCashRegisterOpened ? "Caixa - Aberto" : "Caixa - Fechada"}
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-300 ease-in-out cursor-pointer border",
-                    isCashRegisterOpened
-                      ? "bg-green-50 text-green-600 border-green-50 hover:bg-green-100/50"
-                      : "bg-red-50 text-red-600 border-red-50 hover:bg-red-100/50"
-                  )}
-                >
-                  <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
-                  <span className="text-xs font-bold leading-none">
-                    {isCashRegisterOpened ? "Aberto" : "Fechada"}
-                  </span>
-                </button>
-                <SheetContent 
-                  side="right" 
-                  className="bg-white border border-zinc-200 p-6 flex flex-col gap-6 w-full sm:!w-[60vw] sm:!max-w-[60vw]"
-                >
-                  {/* 1. Header do Painel */}
-                  <div className="p-[1px] shrink-0" />
-
-                  {/* 2. Container Center / Main */}
-                  <div className="flex-1 grid grid-cols-[40fr_60fr] gap-3 min-h-0 overflow-hidden">
-                    {/* Coluna 1: Abrir Caixa */}
-                    <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden">
-                      {/* Header da Coluna 1 */}
-                      <div className="py-0 shrink-0 flex items-center gap-2">
-                        <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-                        <h3 className="text-xs font-normal text-zinc-600 font-sans">Abrir Caixa</h3>
-                      </div>
-                      {/* Main da Coluna 1 */}
-                      <div className="flex-1 flex items-center justify-center text-center p-4 bg-transparent">
-                        <span className="text-zinc-500 text-xs font-normal font-sans">
-                          Por enquanto escreve somente aqui vai ter coisa
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Coluna 2: Histórico de Caixa */}
-                    <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden">
-                      {/* Header da Coluna 2 */}
-                      <div className="py-0 shrink-0 flex items-center gap-2">
-                        <History className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-                        <h3 className="text-xs font-normal text-zinc-600 font-sans">Histórico de Caixa</h3>
-                      </div>
-                      {/* Main da Coluna 2 */}
-                      <div className="flex-1 flex items-center justify-center text-center p-4 bg-transparent">
-                        <span className="text-zinc-500 text-xs font-normal font-sans">
-                          Por enquanto escreve somente aqui vai ter coisa
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
+              <button
+                onClick={() => setIsCashDrawerOpen(true)}
+                title={isCashRegisterOpened ? "Caixa - Aberto" : "Caixa - Fechada"}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-300 ease-in-out cursor-pointer border",
+                  isCashRegisterOpened
+                    ? "bg-green-50 text-green-600 border-green-50 hover:bg-green-100/50"
+                    : "bg-red-50 text-red-600 border-red-50 hover:bg-red-100/50"
+                )}
+              >
+                <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
+                <span className="text-xs font-bold leading-none">
+                  {isCashRegisterOpened ? "Aberto" : "Fechada"}
+                </span>
+              </button>
+              <CashRegisterDrawer open={isCashDrawerOpen} onOpenChange={setIsCashDrawerOpen} cashRegister={cashRegister} />
             </div>
           )}
 
