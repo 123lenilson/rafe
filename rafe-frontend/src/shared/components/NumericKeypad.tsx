@@ -1,4 +1,5 @@
 import React from 'react'
+import { RippleButton } from '@/shared/components/ui/ripple-button'
 
 interface NumericKeypadProps {
   onKeyPress: (key: string) => void
@@ -25,17 +26,18 @@ export function NumericKeypad({ onKeyPress }: NumericKeypadProps) {
   return (
     <div className="grid grid-cols-3 gap-2 w-full max-w-xs mx-auto">
       {keys.map((key) => (
-        <button
+        <RippleButton
           key={key.value}
           onClick={() => onKeyPress(key.value)}
+          rippleColor="#a1a1aa"
           className={`
             py-3 text-[18px] border-[0.5px] border-zinc-200 rounded-[8px] bg-white 
-            hover:bg-zinc-50 active:bg-zinc-100 transition-colors font-semibold text-black 
+            hover:bg-zinc-50/50 transition-colors font-semibold text-black 
             select-none cursor-pointer focus:outline-none ${key.className || ''}
           `}
         >
           {key.label}
-        </button>
+        </RippleButton>
       ))}
     </div>
   )

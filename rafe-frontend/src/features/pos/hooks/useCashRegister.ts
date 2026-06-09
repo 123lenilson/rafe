@@ -85,11 +85,20 @@ export function useCashRegister() {
     } else if (key === '.') {
       setCashRegisterValue(prev => {
         if (prev.includes('.')) return prev
+        if (prev.length >= 10) return prev
         return prev + '.'
       })
     } else {
       setCashRegisterValue(prev => {
         if (prev === "0") return key
+        if (prev.includes('.')) {
+          const parts = prev.split('.')
+          const decimals = parts[1] || ""
+          if (decimals.length >= 2) {
+            return prev
+          }
+        }
+        if (prev.length >= 10) return prev
         return prev + key
       })
     }

@@ -129,12 +129,10 @@ export function AppSidebar() {
       target = 'definicoes'
     }
 
-    if (target) {
-      const timer = setTimeout(() => {
-        setOpenMenu(target)
-      }, 0)
-      return () => clearTimeout(timer)
-    }
+    const timer = setTimeout(() => {
+      setOpenMenu(target)
+    }, 0)
+    return () => clearTimeout(timer)
   }, [location.pathname])
 
   const toggleSubmenu = (menuName) => {
@@ -149,7 +147,7 @@ export function AppSidebar() {
   }
 
   // Estilos de link activo e inactivo para botões principais (preto bold, fonte maior, padding vertical aumentado, transição super suave, cor #f0f0f0 e gap-4 para ícones)
-  const activeClass = "h-auto py-[10px] px-[18px] bg-white shadow-xs border border-zinc-200/20 text-black font-bold text-[14px] hover:bg-white transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
+  const activeClass = "h-auto py-[10px] px-[18px] bg-[#e4e4e7] text-black font-bold text-[14px] hover:bg-[#e4e4e7] transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
   const inactiveClass = "h-auto py-[10px] px-[18px] text-zinc-800 font-bold text-[14px] hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
 
   // Estilo para botões de categoria pai (com submenu) para manter a seta justificada à direita e habilitar animações group-hover/trigger isoladas
@@ -159,7 +157,7 @@ export function AppSidebar() {
   const getSubmenuClass = ({ isActive }) => cn(
     "w-full h-auto px-[18px] py-[8px] text-[13px] font-bold transition-all duration-300 ease-in-out block rounded-lg",
     isActive
-      ? "bg-white shadow-xs border border-zinc-200/10 text-black"
+      ? "bg-[#e4e4e7] text-black hover:bg-[#e4e4e7]"
       : "text-zinc-600 hover:text-black hover:bg-[#e4e4e7]/40"
   )
 
@@ -209,6 +207,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               isActive={isPathActive('/dashboard')}
+              onClick={() => setOpenMenu(null)}
               className={cn(
                 "transition-colors duration-150",
                 isPathActive('/dashboard') ? activeClass : inactiveClass
@@ -226,6 +225,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               isActive={isPathActive('/pos')}
+              onClick={() => setOpenMenu(null)}
               className={cn(
                 "transition-colors duration-150",
                 isPathActive('/pos') ? activeClass : inactiveClass
@@ -420,6 +420,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               isActive={isPathActive('/clients')}
+              onClick={() => setOpenMenu(null)}
               className={cn(
                 "transition-colors duration-150",
                 isPathActive('/clients') ? activeClass : inactiveClass
@@ -437,6 +438,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               isActive={isPathActive('/users')}
+              onClick={() => setOpenMenu(null)}
               className={cn(
                 "transition-colors duration-150",
                 isPathActive('/users') ? activeClass : inactiveClass
