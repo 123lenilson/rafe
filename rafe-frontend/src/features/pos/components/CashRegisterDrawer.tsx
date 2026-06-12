@@ -60,13 +60,13 @@ export function CashRegisterDrawer({ open, onOpenChange, cashRegister: propCashR
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="bg-white p-6 flex flex-col gap-6 w-full sm:!w-[60vw] sm:!max-w-[60vw]"
+        className="bg-white p-6 flex flex-col gap-6 w-full sm:!w-[780px] sm:!max-w-[780px]"
       >
         {/* 1. Header do Painel */}
         <div className="p-[1px] shrink-0" />
 
         {/* 2. Container Center / Main */}
-        <div className="flex-1 grid grid-cols-[40fr_60fr] gap-3 min-h-0 overflow-hidden">
+        <div className="flex-1 grid grid-cols-[300px_1fr] gap-3 min-h-0 overflow-hidden">
           {/* Coluna 1: Abrir Caixa */}
           <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden pr-3">
             {/* Header da Coluna 1 */}

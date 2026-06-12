@@ -18,8 +18,10 @@ export function DashboardLayout() {
       {/* O container principal à direita contendo a área de conteúdo */}
       <div className="flex flex-col flex-1 min-w-0 bg-transparent overflow-hidden">
         <main className="flex-1 p-6 overflow-y-auto bg-white rounded-t-[16px] rounded-b-none my-3 mr-3 ml-1 shadow-sm border border-[#E2E2E2]">
-          {/* Outlet renderiza os subcomponentes de rota */}
-          <Outlet />
+          <div className="w-full max-w-[1200px] mx-auto">
+            {/* Outlet renderiza os subcomponentes de rota */}
+            <Outlet />
+          </div>
         </main>
       </div>
     </SidebarProvider>
