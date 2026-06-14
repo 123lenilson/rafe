@@ -5,7 +5,8 @@ import { MonetaryDisplay } from '@/shared/components/MonetaryDisplay'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
-import { History } from 'lucide-react'
+import { History, X } from 'lucide-react'
+import { RippleButton } from '@/shared/components/ui/ripple-button'
 
 interface CashRegisterDrawerProps {
   open: boolean
@@ -60,19 +61,28 @@ export function CashRegisterDrawer({ open, onOpenChange, cashRegister: propCashR
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="bg-white p-6 flex flex-col gap-6 w-full sm:!w-[780px] sm:!max-w-[780px]"
+        showCloseButton={false}
+        className="bg-white p-0 flex flex-col w-full sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px] overflow-hidden"
       >
-        {/* 1. Header do Painel */}
-        <div className="p-[1px] shrink-0" />
 
         {/* 2. Container Center / Main */}
-        <div className="flex-1 grid grid-cols-[300px_1fr] gap-3 min-h-0 overflow-hidden">
+        <div className="flex-1 grid grid-cols-[300px_1fr] min-h-0 overflow-hidden h-full w-full">
           {/* Coluna 1: Abrir Caixa */}
-          <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden pr-3">
+          <div className="flex flex-col p-6 bg-[#F5F5F5] h-full overflow-y-auto border-r border-zinc-200 shrink-0">
             {/* Header da Coluna 1 */}
-            <div className="py-0 shrink-0 flex items-center gap-2 mb-4">
-              <FontAwesomeIcon icon={faCashRegister} className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-              <h3 className="text-xs font-normal text-zinc-600 font-sans">Abrir Caixa</h3>
+            <div className="py-0 shrink-0 flex items-center justify-between mb-4 min-h-[32px]">
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faCashRegister} className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                <h3 className="text-xs font-normal text-zinc-600 font-sans">Abrir Caixa</h3>
+              </div>
+              <RippleButton
+                onClick={() => onOpenChange(false)}
+                rippleColor="#a1a1aa"
+                rippleOnHover={true}
+                className="w-[32px] h-[32px] rounded-full bg-[#F5F5F5] hover:bg-zinc-200/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none"
+              >
+                <X className="h-[16px] w-[16px]" />
+              </RippleButton>
             </div>
             {/* Main da Coluna 1 */}
             <div className="flex-1 flex flex-col gap-4 bg-transparent mt-2">
@@ -82,11 +92,21 @@ export function CashRegisterDrawer({ open, onOpenChange, cashRegister: propCashR
           </div>
 
           {/* Coluna 2: Histórico de Caixa */}
-          <div className="flex flex-col pt-0 pb-4 px-0 overflow-hidden">
+          <div className="flex flex-col p-6 h-full overflow-y-auto bg-white max-w-[540px] w-full">
             {/* Header da Coluna 2 */}
-            <div className="py-0 shrink-0 flex items-center gap-2 mb-4">
-              <History className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-              <h3 className="text-xs font-normal text-zinc-600 font-sans">Histórico de Caixa</h3>
+            <div className="py-0 shrink-0 flex items-center justify-between mb-4 min-h-[32px]">
+              <div className="flex items-center gap-2">
+                <History className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                <h3 className="text-xs font-normal text-zinc-600 font-sans">Histórico de Caixa</h3>
+              </div>
+              <RippleButton
+                onClick={() => onOpenChange(false)}
+                rippleColor="#a1a1aa"
+                rippleOnHover={true}
+                className="w-[32px] h-[32px] rounded-full bg-white hover:bg-zinc-50/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none"
+              >
+                <X className="h-[16px] w-[16px]" />
+              </RippleButton>
             </div>
             {/* Main da Coluna 2 - Placeholder */}
             <div className="flex-1 flex items-center justify-center text-center p-4 bg-transparent">

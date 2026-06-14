@@ -44,7 +44,7 @@ export function MonetaryDisplay({ value }: MonetaryDisplayProps) {
   return (
     <div 
       ref={containerRef}
-      className="w-full p-4 bg-white flex items-center justify-end select-none overflow-hidden h-20"
+      className="w-full p-4 bg-[#F5F5F5] flex items-center justify-end select-none overflow-hidden h-20"
     >
       <span 
         ref={textRef}

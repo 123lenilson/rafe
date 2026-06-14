@@ -111,6 +111,21 @@
   animation: rippling var(--duration, 600ms) ease-out;
 }
 
+@keyframes ripple-hover {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-ripple-hover {
+  animation: ripple-hover 250ms ease-out forwards;
+}
+
 @theme inline {
   @keyframes rippling {
   0% {
