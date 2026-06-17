@@ -5,7 +5,7 @@ import { MonetaryDisplay } from '@/shared/components/MonetaryDisplay'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
-import { History, X } from 'lucide-react'
+import { History, X, Send, Check } from 'lucide-react'
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 
 interface CashRegisterDrawerProps {
@@ -18,6 +18,17 @@ export function CashRegisterDrawer({ open, onOpenChange, cashRegister: propCashR
   // Chamada ao hook useCashRegister para obter estados e funções locais como fallback
   const localCashRegister = useCashRegister()
   const cashRegister = propCashRegister || localCashRegister
+
+  const [isObservationSent, setIsObservationSent] = React.useState(false)
+
+  const handleSendObservation = () => {
+    if (!cashRegister.cashRegisterObservation.trim()) return
+    setIsObservationSent(true)
+    console.log("Observação enviada:", cashRegister.cashRegisterObservation)
+    setTimeout(() => {
+      setIsObservationSent(false)
+    }, 2000)
+  }
 
   // Capturar eventos de teclado físico quando o painel de caixa está aberto
   React.useEffect(() => {
@@ -85,9 +96,48 @@ export function CashRegisterDrawer({ open, onOpenChange, cashRegister: propCashR
               </RippleButton>
             </div>
             {/* Main da Coluna 1 */}
-            <div className="flex-1 flex flex-col gap-4 bg-transparent mt-2">
-              <MonetaryDisplay value={cashRegister.formatDisplayValue(cashRegister.cashRegisterValue)} />
-              <NumericKeypad onKeyPress={cashRegister.handleKeypadPress} />
+            <div className="flex-1 flex flex-col gap-4 bg-transparent mt-2 justify-between">
+              <div className="flex flex-col gap-4 bg-transparent">
+                <MonetaryDisplay value={cashRegister.formatDisplayValue(cashRegister.cashRegisterValue)} />
+                <NumericKeypad onKeyPress={cashRegister.handleKeypadPress} />
+              </div>
+
+              {/* Novo Container para Observações e Botão de Abrir Caixa */}
+              <div className="flex flex-col gap-3 mt-4">
+                <div className="relative w-full">
+                  <textarea
+                    value={cashRegister.cashRegisterObservation}
+                    onChange={(e) => cashRegister.setCashRegisterObservation(e.target.value)}
+                    placeholder="Observações..."
+                    className="w-full h-[80px] min-h-[80px] pl-3 pr-10 py-2 resize-y rounded-lg border border-zinc-200 bg-white text-sm text-black placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
+                    rows={3}
+                  />
+                  {cashRegister.cashRegisterObservation.trim() && (
+                    <button
+                      type="button"
+                      onClick={handleSendObservation}
+                      title="Enviar observação"
+                      className="absolute top-2 right-2 p-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-black transition-all cursor-pointer border-0 flex items-center justify-center focus:outline-none"
+                    >
+                      {isObservationSent ? (
+                        <Check className="h-3.5 w-3.5 text-green-600 animate-in zoom-in duration-200" />
+                      ) : (
+                        <Send className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </div>
+                <RippleButton
+                  onClick={() => {
+                    cashRegister.handleOpenCashRegister()
+                    onOpenChange(false)
+                  }}
+                  rippleColor="#ffffff40"
+                  className="w-full py-4 text-sm font-bold text-white bg-black hover:bg-black/90 rounded-lg text-center flex items-center justify-center transition-all select-none cursor-pointer border-0 focus:outline-none"
+                >
+                  Abrir Caixa
+                </RippleButton>
+              </div>
             </div>
           </div>
 
