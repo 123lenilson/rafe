@@ -7,10 +7,10 @@
 
 ### Navigation
 
-- [ ] **NAV-01**: User can view a minimalist black-and-white Sidebar on the dashboard.
-- [ ] **NAV-02**: Sidebar uses shadcn/ui components (`SidebarProvider`, `Sidebar`, `SidebarHeader`, `SidebarContent`, `SidebarMenu`, `SidebarMenuItem`, `SidebarMenuButton`, `SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarFooter`, `SidebarTrigger`).
-- [ ] **NAV-03**: Sidebar integrates NavLink from `react-router-dom` with active route detection (`isActive` styling).
-- [ ] **NAV-04**: Sidebar includes navigation items:
+- [x] **NAV-01**: User can view a minimalist black-and-white Sidebar on the dashboard.
+- [x] **NAV-02**: Sidebar uses shadcn/ui components (`SidebarProvider`, `Sidebar`, `SidebarHeader`, `SidebarContent`, `SidebarMenu`, `SidebarMenuItem`, `SidebarMenuButton`, `SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarFooter`, `SidebarTrigger`).
+- [x] **NAV-03**: Sidebar integrates NavLink from `react-router-dom` with active route detection (`isActive` styling).
+- [x] **NAV-04**: Sidebar includes navigation items:
   - Dashboard (`/dashboard`)
   - Faturação (submenus: Orçamento, Facturas, Proforma, Recibo)
   - POS (`/pos`)
@@ -19,7 +19,7 @@
   - Finanças (submenus: Fluxo de Caixa, Contas/Bancos, Despesas)
   - Utilizadores (`/users`)
   - Definições (submenu: Métodos de Pagamento)
-- [ ] **NAV-05**: SidebarProvider wraps `DashboardLayout.jsx` and SidebarTrigger is placed in `TopBar`.
+- [x] **NAV-05**: SidebarProvider wraps `DashboardLayout.jsx` and SidebarTrigger is placed in `TopBar`.
 
 ## Out of Scope
 
@@ -32,11 +32,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | Phase 1 | Pending |
-| NAV-02 | Phase 1 | Pending |
-| NAV-03 | Phase 1 | Pending |
-| NAV-04 | Phase 1 | Pending |
-| NAV-05 | Phase 1 | Pending |
+| NAV-01 | Phase 1 | Complete |
+| NAV-02 | Phase 1 | Complete |
+| NAV-03 | Phase 1 | Complete |
+| NAV-04 | Phase 1 | Complete |
+| NAV-05 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 5 total
@@ -45,4 +45,4 @@
 
 ---
 *Requirements defined: 2026-05-25*
-*Last updated: 2026-05-25 after initial definition*
+*Last updated: 2026-06-23 after completing Phase 1*

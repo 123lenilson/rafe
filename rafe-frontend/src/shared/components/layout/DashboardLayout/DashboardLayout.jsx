@@ -1,30 +1,40 @@
 import { Outlet } from 'react-router-dom'
 import { SidebarProvider } from '@/shared/components/ui/sidebar'
 import { AppSidebar } from '@/shared/components/layout/Sidebar/Sidebar'
+import { TopBar } from '@/shared/components/layout/TopBar/TopBar'
+import ClickSpark from '@/shared/components/ClickSpark'
 
 export function DashboardLayout() {
   return (
-    <SidebarProvider 
-      className="bg-[#F5F5F5] h-screen overflow-hidden text-black"
-      style={{ 
-        "--sidebar-width": "230px",
-        "--sidebar": "#F5F5F5",
-        "--sidebar-border": "transparent"
-      }}
-    >
-      {/* AppSidebar será renderizado à esquerda com fundo integrado */}
-      <AppSidebar />
-      
-      {/* O container principal à direita contendo a área de conteúdo */}
-      <div className="flex flex-col flex-1 min-w-0 bg-transparent overflow-hidden">
-        <main className="flex-1 p-6 overflow-y-auto bg-white rounded-t-[16px] rounded-b-none my-3 mr-3 ml-1 shadow-sm border border-[#E2E2E2]">
-          <div className="w-full max-w-[1200px] mx-auto">
-            {/* Outlet renderiza os subcomponentes de rota */}
-            <Outlet />
-          </div>
-        </main>
-      </div>
-    </SidebarProvider>
+    <ClickSpark>
+      <SidebarProvider 
+        className="bg-[#F5F5F5] h-screen overflow-hidden text-black"
+        style={{ 
+          "--sidebar-width": "230px",
+          "--sidebar": "#F5F5F5",
+          "--sidebar-border": "transparent"
+        }}
+      >
+        {/* AppSidebar será renderizado à esquerda com fundo integrado */}
+        <AppSidebar />
+        
+        {/* O container principal à direita contendo a área de conteúdo */}
+        <div className="flex flex-col flex-1 min-w-0 bg-transparent overflow-hidden">
+          <main className="flex-1 flex flex-col overflow-hidden bg-white rounded-t-[16px] rounded-b-none my-3 mr-3 ml-1 shadow-sm border border-[#E2E2E2]">
+            {/* TopBar no topo do container principal */}
+            <TopBar />
+            
+            {/* Área de conteúdo rolável */}
+            <div className="flex-1 p-[24px] overflow-y-auto">
+              <div className="w-full max-w-[1200px] mx-auto">
+                {/* Outlet renderiza os subcomponentes de rota */}
+                <Outlet />
+              </div>
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    </ClickSpark>
   )
 }
 

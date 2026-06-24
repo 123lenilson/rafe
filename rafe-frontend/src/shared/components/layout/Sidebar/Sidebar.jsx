@@ -115,6 +115,51 @@ export function AppSidebar() {
   const cashRegister = useCashRegister()
   const { isCashRegisterOpened } = cashRegister
 
+  const [elapsedTime, setElapsedTime] = useState('00:00:00')
+
+  useEffect(() => {
+    if (!isCashRegisterOpened) {
+      const resetId = setTimeout(() => {
+        setElapsedTime('00:00:00')
+      }, 0)
+      return () => clearTimeout(resetId)
+    }
+
+    const activeSession = cashRegister.cashRegisterHistory.find(h => !h.isClosed)
+    if (!activeSession) return
+
+    const getOpeningDateTime = (dateStr, timeStr) => {
+      if (!dateStr || !timeStr) return null
+      const dateParts = dateStr.split('/')
+      const timeParts = timeStr.split(':')
+      if (dateParts.length !== 3 || timeParts.length < 2) return null
+      const day = parseInt(dateParts[0], 10)
+      const month = parseInt(dateParts[1], 10) - 1
+      const year = parseInt(dateParts[2], 10)
+      const hour = parseInt(timeParts[0], 10)
+      const minute = parseInt(timeParts[1], 10)
+      return new Date(year, month, day, hour, minute, 0)
+    }
+
+    const openingTime = getOpeningDateTime(activeSession.openingDate, activeSession.openingTime)
+    if (!openingTime) return
+
+    const updateTimer = () => {
+      const diffMs = Date.now() - openingTime.getTime()
+      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000))
+      const hours = Math.floor(totalSeconds / 3600)
+      const minutes = Math.floor((totalSeconds % 3600) / 60)
+      const seconds = totalSeconds % 60
+      setElapsedTime(
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+      )
+    }
+
+    updateTimer()
+    const timerId = setInterval(updateTimer, 1000)
+    return () => clearInterval(timerId)
+  }, [isCashRegisterOpened, cashRegister.cashRegisterHistory])
+
   // Determinar qual submenu expandir com base no path actual
   useEffect(() => {
     const path = location.pathname
@@ -519,7 +564,7 @@ export function AppSidebar() {
 
               <button
                 onClick={() => setIsCashDrawerOpen(true)}
-                title={isCashRegisterOpened ? "Caixa - Aberto" : "Caixa - Fechada"}
+                title={isCashRegisterOpened ? `Caixa - Aberto a ${elapsedTime}` : "Caixa - Fechada"}
                 className={cn(
                   "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-300 ease-in-out cursor-pointer border",
                   isCashRegisterOpened
@@ -529,7 +574,7 @@ export function AppSidebar() {
               >
                 <FontAwesomeIcon icon={byPrefixAndName.fas['cash-register']} className="h-3.5 w-3.5 shrink-0" />
                 <span className="text-xs font-bold leading-none">
-                  {isCashRegisterOpened ? "Aberto" : "Fechada"}
+                  {isCashRegisterOpened ? `Aberto a ${elapsedTime}` : "Fechada"}
                 </span>
               </button>
               <CashRegisterDrawer open={isCashDrawerOpen} onOpenChange={setIsCashDrawerOpen} cashRegister={cashRegister} />

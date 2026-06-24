@@ -3,8 +3,6 @@ import { CashRegisterEntry } from '@/features/pos/types/cash.types'
 
 export function useCashRegister() {
   const [isCashRegisterOpened, setIsCashRegisterOpened] = useState<boolean>(false)
-  const [cashRegisterValue, setCashRegisterValue] = useState<string>("0")
-  const [cashRegisterObservation, setCashRegisterObservation] = useState<string>("")
   const [cashRegisterHistory, setCashRegisterHistory] = useState<CashRegisterEntry[]>([
     {
       id: 1,
@@ -102,39 +100,10 @@ export function useCashRegister() {
     return formattedInteger
   }
 
-  const handleKeypadPress = (key: string) => {
-    if (key === 'clear') {
-      setCashRegisterValue("0")
-    } else if (key === 'backspace') {
-      setCashRegisterValue(prev => {
-        if (prev.length <= 1) return "0"
-        return prev.slice(0, -1)
-      })
-    } else if (key === '.') {
-      setCashRegisterValue(prev => {
-        if (prev.includes('.')) return prev
-        if (prev.length >= 10) return prev
-        return prev + '.'
-      })
-    } else {
-      setCashRegisterValue(prev => {
-        if (prev === "0") return key
-        if (prev.includes('.')) {
-          const parts = prev.split('.')
-          const decimals = parts[1] || ""
-          if (decimals.length >= 2) {
-            return prev
-          }
-        }
-        if (prev.length >= 10) return prev
-        return prev + key
-      })
-    }
-  }
-
-  const handleOpenCashRegister = () => {
-    const val = parseFloat(cashRegisterValue)
+  const handleOpenCashRegister = (valStr: string, observationText: string) => {
+    const val = parseFloat(valStr)
     if (isNaN(val) || val < 0) return
+    const openingObs = observationText.trim()
     const newEntry: CashRegisterEntry = {
       id: Date.now(),
       operatorName: "Operador Rafe",
@@ -146,28 +115,35 @@ export function useCashRegister() {
       initialValue: val,
       finalValue: 0,
       difference: 0,
-      observation: cashRegisterObservation,
+      openingObservation: openingObs,
+      observation: openingObs ? `obs da abertura: "${openingObs}"` : "",
       isClosed: false
     }
     setCashRegisterHistory(prev => [newEntry, ...prev])
     setIsCashRegisterOpened(true)
-    setCashRegisterValue("0")
-    setCashRegisterObservation("")
   }
 
-  const handleCloseCashRegister = () => {
+  const handleCloseCashRegister = (valStr: string, observationText: string) => {
+    const finalVal = parseFloat(valStr) || 0
     setCashRegisterHistory(prev => {
       return prev.map(item => {
         if (!item.isClosed) {
-          const finalVal = item.initialValue + 32500
-          const diff = 0
+          const diff = finalVal - item.initialValue
+          const closingObs = observationText.trim()
+          const combinedObs = [
+            item.openingObservation ? `obs da abertura: "${item.openingObservation}"` : "",
+            closingObs ? `obs do fecho: "${closingObs}"` : ""
+          ].filter(Boolean).join('\n')
+          
           return {
             ...item,
             isClosed: true,
             closingDate: new Date().toLocaleDateString('pt-PT'),
             closingTime: new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
             finalValue: finalVal,
-            difference: diff
+            difference: diff,
+            closingObservation: closingObs,
+            observation: combinedObs
           }
         }
         return item
@@ -179,15 +155,10 @@ export function useCashRegister() {
   return {
     isCashRegisterOpened,
     setIsCashRegisterOpened,
-    cashRegisterValue,
-    setCashRegisterValue,
-    cashRegisterObservation,
-    setCashRegisterObservation,
     cashRegisterHistory,
     setCashRegisterHistory,
     formatCurrency,
     formatDisplayValue,
-    handleKeypadPress,
     handleOpenCashRegister,
     handleCloseCashRegister
   }

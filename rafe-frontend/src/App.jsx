@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { TooltipProvider } from '@/shared/components/ui/tooltip'
 import { DashboardLayout } from '@/shared/components/layout/DashboardLayout/DashboardLayout'
+import { Toaster } from '@/shared/components/ui/sonner'
 
 // Componente mock super premium e minimalista para mostrar a rota actual
 function MockPage({ title }) {
@@ -38,6 +39,7 @@ function MockPage({ title }) {
 export default function App() {
   return (
     <TooltipProvider>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           {/* Redirecionar a raiz para o Dashboard */}

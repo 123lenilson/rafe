@@ -16,11 +16,11 @@ Provide a visually stunning, responsive, and seamless user experience for busine
 
 ### Active
 
-- [ ] **NAV-01**: Implement a minimalist black-and-white Sidebar using shadcn/ui Sidebar primitives in `src/shared/components/layout/Sidebar/Sidebar.jsx`.
-- [ ] **NAV-02**: Establish Sidebar context state in `src/context/SidebarContext.jsx`.
-- [ ] **NAV-03**: Integrate React Router NavLink navigation with active route detection (`isActive` classes).
-- [ ] **NAV-04**: Map out all requested main navigation paths and submenus (Dashboard, Faturação, POS, Produtos, Clientes, Finanças, Utilizadores, Definições).
-- [ ] **NAV-05**: Integrate SidebarProvider around `DashboardLayout.jsx` and render the SidebarTrigger inside the `TopBar`.
+- [x] **NAV-01**: Implement a minimalist black-and-white Sidebar using shadcn/ui Sidebar primitives in `src/shared/components/layout/Sidebar/Sidebar.jsx`.
+- [x] **NAV-02**: Establish Sidebar context state in `src/context/SidebarContext.jsx`.
+- [x] **NAV-03**: Integrate React Router NavLink navigation with active route detection (`isActive` classes).
+- [x] **NAV-04**: Map out all requested main navigation paths and submenus (Dashboard, Faturação, POS, Produtos, Clientes, Finanças, Utilizadores, Definições).
+- [x] **NAV-05**: Integrate SidebarProvider around `DashboardLayout.jsx` and render the SidebarTrigger inside the `TopBar`.
 
 ### Out of Scope
 

@@ -47,8 +47,9 @@ export function MonetaryDisplay({ value }: MonetaryDisplayProps) {
       className="w-full p-4 bg-[#F5F5F5] flex items-center justify-end select-none overflow-hidden h-20"
     >
       <span 
+        key={value}
         ref={textRef}
-        className="text-5xl font-normal tracking-tight text-black font-sans whitespace-nowrap"
+        className="text-5xl font-normal tracking-tight text-black font-sans whitespace-nowrap animate-in zoom-in-95 duration-100 ease-out"
       >
         {value}
       </span>

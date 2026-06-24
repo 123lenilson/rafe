@@ -10,5 +10,7 @@ export interface CashRegisterEntry {
   finalValue: number
   difference: number
   observation: string
+  openingObservation?: string
+  closingObservation?: string
   isClosed: boolean
 }
