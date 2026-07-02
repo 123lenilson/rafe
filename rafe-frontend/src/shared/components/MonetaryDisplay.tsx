@@ -4,6 +4,9 @@ interface MonetaryDisplayProps {
   value: string
 }
 
+const MAX_FONT_SIZE = 48
+const MIN_FONT_SIZE = 14
+
 export function MonetaryDisplay({ value }: MonetaryDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLSpanElement>(null)
@@ -13,43 +16,33 @@ export function MonetaryDisplay({ value }: MonetaryDisplayProps) {
     const text = textRef.current
     if (!container || !text) return
 
-    const adjustFontSize = () => {
-      // Começa com o tamanho máximo de 48px (equivalente a text-5xl)
-      let currentSize = 48
-      text.style.fontSize = `${currentSize}px`
+    const containerStyle = window.getComputedStyle(container)
+    const paddingLeft = parseFloat(containerStyle.paddingLeft) || 16
+    const paddingRight = parseFloat(containerStyle.paddingRight) || 16
+    const maxAllowedWidth = container.clientWidth - paddingLeft - paddingRight - 8
 
-      const containerStyle = window.getComputedStyle(container)
-      const paddingLeft = parseFloat(containerStyle.paddingLeft) || 16
-      const paddingRight = parseFloat(containerStyle.paddingRight) || 16
-      // Calcula a largura interna útil (subtraindo os paddings e margem extra)
-      const maxAllowedWidth = container.clientWidth - paddingLeft - paddingRight - 8
+    if (maxAllowedWidth <= 0) return
 
-      // Reduz o font-size até caber totalmente no espaço
-      while (text.scrollWidth > maxAllowedWidth && currentSize > 14) {
-        currentSize -= 1
-        text.style.fontSize = `${currentSize}px`
-      }
-    }
+    // Recomeça sempre do tamanho máximo, de forma síncrona
+    let size = MAX_FONT_SIZE
+    text.style.fontSize = `${size}px`
 
-    // Executa o ajuste imediatamente no render
-    adjustFontSize()
-
-    // Ajusta também se o ecrã/gaveta for redimensionada
-    window.addEventListener('resize', adjustFontSize)
-    return () => {
-      window.removeEventListener('resize', adjustFontSize)
+    // Desce 1px de cada vez só enquanto ultrapassar o limite
+    while (text.scrollWidth > maxAllowedWidth && size > MIN_FONT_SIZE) {
+      size -= 1
+      text.style.fontSize = `${size}px`
     }
   }, [value])
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="w-full p-4 bg-[#F5F5F5] flex items-center justify-end select-none overflow-hidden h-20"
     >
-      <span 
-        key={value}
+      <span
         ref={textRef}
-        className="text-5xl font-normal tracking-tight text-black font-sans whitespace-nowrap animate-in zoom-in-95 duration-100 ease-out"
+        className="font-normal tracking-tight text-black font-sans whitespace-nowrap"
+        style={{ fontSize: `${MAX_FONT_SIZE}px` }}
       >
         {value}
       </span>
