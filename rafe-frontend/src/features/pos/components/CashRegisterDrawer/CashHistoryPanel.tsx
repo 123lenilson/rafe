@@ -5,6 +5,12 @@ import { HistoryFilterMenu } from './HistoryFilterMenu'
 import { useCashHistoryFilters } from '@/features/pos/hooks/useCashHistoryFilters'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/shared/components/ui/dropdown-menu'
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -475,9 +481,18 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                               )
                             })()}
                             <td className="px-[4px] py-[6px] text-center w-[36px] border-none">
-                              <button className="h-[28px] w-[28px] flex items-center justify-center text-zinc-400 hover:text-black rounded-full hover:bg-zinc-100 transition-colors focus:outline-none cursor-pointer">
-                                <MoreVertical className="h-4 w-4" />
-                              </button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <button className="h-[28px] w-[28px] flex items-center justify-center text-zinc-400 hover:text-black rounded-full hover:bg-zinc-100 transition-colors focus:outline-none cursor-pointer">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 shadow-md rounded-lg p-1">
+                                  <DropdownMenuItem className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none">
+                                    Ver Detalhe
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </td>
                           </tr>
                         </tbody>
@@ -588,9 +603,18 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                   </span>
                                 </td>
                                 <td className="px-[4px] py-[6px] text-center w-[36px] border-none">
-                                  <button className="h-[28px] w-[28px] flex items-center justify-center text-zinc-400 hover:text-black rounded-full hover:bg-zinc-100 transition-colors focus:outline-none cursor-pointer">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </button>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <button className="h-[28px] w-[28px] flex items-center justify-center text-zinc-400 hover:text-black rounded-full hover:bg-zinc-100 transition-colors focus:outline-none cursor-pointer">
+                                        <MoreVertical className="h-4 w-4" />
+                                      </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 shadow-md rounded-lg p-1">
+                                      <DropdownMenuItem className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none">
+                                        Ver Detalhe
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                 </td>
                               </tr>
                             )
