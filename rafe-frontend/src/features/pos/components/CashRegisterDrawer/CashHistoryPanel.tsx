@@ -11,6 +11,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/shared/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from '@/shared/components/ui/alert-dialog'
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -253,6 +262,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
     handleClearAll,
   } = filters
 
+  const [detailOpen, setDetailOpen] = React.useState(false)
+
   return (
     <div className="flex flex-col pt-[28px] pb-[40px] px-[16px] h-full overflow-hidden bg-white max-w-[680px] w-full mx-auto">
       {/* Header da Coluna 2 */}
@@ -487,8 +498,11 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                     <MoreVertical className="h-4 w-4" />
                                   </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 shadow-md rounded-lg p-1">
-                                  <DropdownMenuItem className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none">
+                                <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1 !outline-none !ring-0 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none">
+                                  <DropdownMenuItem
+                                    className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none"
+                                    onClick={() => setDetailOpen(true)}
+                                  >
                                     Ver Detalhe
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -609,8 +623,11 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                         <MoreVertical className="h-4 w-4" />
                                       </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 shadow-md rounded-lg p-1">
-                                      <DropdownMenuItem className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none">
+                                    <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1 !outline-none !ring-0 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none">
+                                      <DropdownMenuItem
+                                        className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none"
+                                        onClick={() => setDetailOpen(true)}
+                                      >
                                         Ver Detalhe
                                       </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -629,6 +646,37 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
           </div>
         </div>
       </div>
+
+      <AlertDialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <AlertDialogContent className="border border-zinc-200 !p-0 !flex !flex-col !gap-0 sm:!w-[35vw] sm:!min-w-[510px] sm:!max-w-[560px]">
+          <AlertDialogHeader className="flex flex-row items-center justify-between border-b border-zinc-200 px-4 pt-3 pb-2 grid-rows-1">
+            <AlertDialogTitle className="text-[0.6875rem] font-normal text-zinc-500">Detalhe do Registo</AlertDialogTitle>
+            <button
+              type="button"
+              onClick={() => setDetailOpen(false)}
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 transition-colors focus:outline-none cursor-pointer"
+              title="Fechar"
+            >
+              <X className="h-[11px] w-[11px]" />
+            </button>
+          </AlertDialogHeader>
+          <div className="px-4 py-3 flex flex-col gap-2">
+            <div className="flex flex-row gap-2">
+              <div className="px-2 flex flex-col gap-1">
+                <span className="text-[0.75rem] text-zinc-500 leading-none">Operador:</span>
+                <span className="text-[0.875rem] text-black leading-none">Lenilson R. Pascoal</span>
+              </div>
+              <div className="px-2">Sessão 2</div>
+              <div className="px-2">Sessão 3</div>
+            </div>
+            <div className="border-t border-b border-zinc-200">Container 2</div>
+            <div className="border-t border-b border-zinc-200">Container 3</div>
+          </div>
+          <AlertDialogFooter className="mx-0 mb-0 rounded-b-xl border-t border-zinc-200 bg-muted/50 px-4 py-3">
+            <AlertDialogCancel>Fechar</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
