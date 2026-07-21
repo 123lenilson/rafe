@@ -1,25 +1,12 @@
-import React from 'react'
-import { History, X, MoreVertical, ArrowUpDown } from 'lucide-react'
+import React, { useState } from 'react'
+import { History, X, ArrowUpDown } from 'lucide-react'
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { HistoryFilterMenu } from './HistoryFilterMenu'
+import { CollapsibleValueCell } from './CollapsibleValueCell'
+import { EntryDetailPanel } from './EntryDetailPanel'
 import { useCashHistoryFilters } from '@/features/pos/hooks/useCashHistoryFilters'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/shared/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-} from '@/shared/components/ui/alert-dialog'
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -262,7 +249,11 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
     handleClearAll,
   } = filters
 
-  const [detailOpen, setDetailOpen] = React.useState(false)
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
+
+  function handleRowClick(entryId: string) {
+    setSelectedEntryId(prev => prev === entryId ? null : entryId)
+  }
 
   return (
     <div className="flex flex-col pt-[28px] pb-[40px] px-[16px] h-full overflow-hidden bg-white max-w-[680px] w-full mx-auto">
@@ -271,18 +262,18 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-2 shrink-0">
             <History className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-            <h3 className="text-xs font-normal text-zinc-600 font-sans">Histórico de Caixa</h3>
+            <h3 className="text-[0.75rem] font-normal text-zinc-600 font-sans">Histórico de Caixa</h3>
           </div>
           {selectedUsers.map((user) => (
             <div
               key={user}
-              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[10px] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
+              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[0.625rem] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
             >
               <span className="text-zinc-400">Usuário: </span>
               <span className="text-black font-semibold">{user}</span>
               <button
                 onClick={() => handleUserToggle(user)}
-                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[10px] leading-none focus:outline-none select-none transition-colors ml-0.5"
+                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[0.625rem] leading-none focus:outline-none select-none transition-colors ml-0.5"
                 title={`Remover ${user}`}
               >
                 x
@@ -292,13 +283,13 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
           {appliedObservations.map((obs) => (
             <div
               key={obs}
-              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[10px] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
+              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[0.625rem] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
             >
               <span className="text-zinc-400">Observação: </span>
               <span className="text-black font-semibold">{obs}</span>
               <button
                 onClick={() => handleObservationRemove(obs)}
-                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[10px] leading-none focus:outline-none select-none transition-colors ml-0.5"
+                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[0.625rem] leading-none focus:outline-none select-none transition-colors ml-0.5"
                 title={`Remover ${obs}`}
               >
                 x
@@ -308,13 +299,13 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
           {appliedValFilters.map((f, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[10px] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
+              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[0.625rem] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
             >
               <span className="text-zinc-400">{f.type}: </span>
               <span className="text-black font-semibold">{f.value}</span>
               <button
                 onClick={() => handleValFilterRemove(f.type, f.value)}
-                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[10px] leading-none focus:outline-none select-none transition-colors ml-0.5"
+                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[0.625rem] leading-none focus:outline-none select-none transition-colors ml-0.5"
                 title={`Remover ${f.type}: ${f.value}`}
               >
                 x
@@ -324,13 +315,13 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
           {appliedDateFilters.map((dateStr) => (
             <div
               key={dateStr}
-              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[10px] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
+              className="flex items-center gap-1 bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-200 text-[0.625rem] px-2 py-0.5 rounded-full transition-colors select-none animate-in fade-in zoom-in-95 duration-100"
             >
               <span className="text-zinc-400">Data: </span>
               <span className="text-black font-semibold">{dateStr}</span>
               <button
                 onClick={() => handleDateFilterRemove(dateStr)}
-                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[10px] leading-none focus:outline-none select-none transition-colors ml-0.5"
+                className="text-zinc-400 hover:text-zinc-600 font-normal border-0 bg-transparent p-0 cursor-pointer text-[0.625rem] leading-none focus:outline-none select-none transition-colors ml-0.5"
                 title={`Remover Data: ${dateStr}`}
               >
                 x
@@ -340,11 +331,11 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
           {(selectedUsers.length > 0 || appliedObservations.length > 0 || appliedValFilters.length > 0 || appliedDateFilters.length > 0) && (
             <button
               onClick={handleClearAll}
-              className="text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100/85 text-[10px] font-normal border-0 bg-transparent px-1.5 py-0.5 rounded cursor-pointer focus:outline-none select-none transition-colors ml-1 animate-in fade-in duration-100 flex items-center gap-0.5"
+              className="text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100/85 text-[0.625rem] font-normal border-0 bg-transparent px-1.5 py-0.5 rounded cursor-pointer focus:outline-none select-none transition-colors ml-1 animate-in fade-in duration-100 flex items-center gap-0.5"
               title="Apagar tudo"
             >
               <span>Apagar tudo</span>
-              <span className="text-[10px] text-zinc-400 font-normal leading-none ml-0.5">x</span>
+              <span className="text-[0.625rem] text-zinc-400 font-normal leading-none ml-0.5">x</span>
             </button>
           )}
         </div>
@@ -364,54 +355,54 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
       </div>
       {/* Main da Coluna 2 */}
       <div className="flex-1 mt-[16px] min-h-0 flex flex-col">
-        <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col">
+        <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col relative">
           <div className="flex-1 overflow-auto">
-            {(() => {
-              const activeSession = cashRegister.cashRegisterHistory.find(h => !h.isClosed)
-              const closedHistory = cashRegister.cashRegisterHistory.filter(h => h.isClosed)
-              const sections = groupHistory(closedHistory)
-              return (
-                <>
-                  {/* Caixa aberto */}
+             {(() => {
+               const activeSession = cashRegister.cashRegisterHistory.find(h => !h.isClosed)
+               const closedHistory = cashRegister.cashRegisterHistory.filter(h => h.isClosed)
+                const sections = groupHistory(closedHistory)
+                return (
+                 <>
+                   {/* Caixa aberto */}
                   {activeSession && (
                     <div className="mb-[20px]">
                       <div className="mb-[2px] px-[6px]">
-                        <span className="text-[12px] font-normal text-black">
+                        <span className="text-[0.75rem] font-normal text-black">
                           Caixa aberto
                         </span>
                       </div>
-                      <table className="w-full text-[12px] font-sans border-collapse select-none border-none">
-                        <thead className="sticky top-0 bg-white z-10 text-[11px] border-b border-zinc-200/60">
+                      <table className="w-full text-[0.75rem] font-sans border-collapse select-none border-none">
+                        <thead className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
                           <tr className="text-black font-semibold h-[28px] border-none">
                             <th className="px-[6px] py-[4px] border-none"></th>
                             <th className="px-[6px] py-[4px] border-none"></th>
                             <th className="px-[6px] py-[4px] border-none"></th>
-                            <th className="text-right px-[6px] py-[4px] font-semibold border-none">
+                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-blue-500" />
                                 V. Inicial
                               </span>
-                            </th>
-                            <th className="text-right px-[6px] py-[4px] font-semibold border-none">
+                            </CollapsibleValueCell>
+                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-orange-500" />
                                 V. Final
                               </span>
-                            </th>
-                            <th className="text-right px-[6px] py-[4px] font-semibold border-none">
+                            </CollapsibleValueCell>
+                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-green-500" />
                                 Diferença
                               </span>
-                            </th>
-                            <th className="w-[36px] px-[4px] py-[4px] border-none"></th>
+                            </CollapsibleValueCell>
                           </tr>
                         </thead>
 
-                        <tbody className="divide-none border-none">
-                          <tr
-                            className="h-[44px] hover:bg-zinc-50/50 transition-colors duration-150 text-black border-none"
-                          >
+                         <tbody className="divide-none border-none">
+                           <tr
+                                 onClick={() => handleRowClick(activeSession.id)}
+                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === activeSession.id ? 'bg-blue-50' : ''}`}
+                           >
                             <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none">
                               {/* Retângulo vertical verde por linha */}
                               <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-green-500 rounded-sm" />
@@ -452,62 +443,45 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                   {activeObsPreview}
                                 </td>
                               )
-                            })()}
-                            <td className="px-[6px] py-[6px] text-right font-sans whitespace-nowrap border-none">
-                              <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                {`${cashRegister.formatCurrency(activeSession.initialValue)}` + 'kz'}
-                              </span>
-                            </td>
-                            {(() => {
-                              const hasTyped = activeValue !== undefined && activeValue !== null && activeValue !== "0"
-                              const typedVal = parseFloat(activeValue || "0") || 0
-                              const finalStr = hasTyped
-                                ? `${cashRegister.formatCurrency(typedVal)}kz`
-                                : '---'
-                              const diff = hasTyped
-                                ? typedVal - activeSession.initialValue
-                                : 0
-                              const diffStr = hasTyped
-                                ? `${cashRegister.formatCurrency(diff)}` + 'kz'
-                                : '---'
-                              return (
-                                <>
-                                  <td className="px-[6px] py-[6px] text-right font-sans whitespace-nowrap border-none">
-                                    <span 
-                                      key={finalStr}
-                                      className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
-                                    >
-                                      {finalStr}
-                                    </span>
-                                  </td>
-                                  <td className="px-[6px] py-[6px] text-right font-sans whitespace-nowrap border-none">
-                                    <span 
-                                      key={diffStr}
-                                      className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
-                                    >
-                                      {diffStr}
-                                    </span>
-                                  </td>
-                                </>
-                              )
-                            })()}
-                            <td className="px-[4px] py-[6px] text-center w-[36px] border-none">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <button className="h-[28px] w-[28px] flex items-center justify-center text-zinc-400 hover:text-black rounded-full hover:bg-zinc-100 transition-colors focus:outline-none cursor-pointer">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1 !outline-none !ring-0 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none">
-                                  <DropdownMenuItem
-                                    className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none"
-                                    onClick={() => setDetailOpen(true)}
-                                  >
-                                    Ver Detalhe
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </td>
+                             })()}
+                             <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                               <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                 {`${cashRegister.formatCurrency(activeSession.initialValue)}` + 'kz'}
+                               </span>
+                             </CollapsibleValueCell>
+                             {(() => {
+                               const hasTyped = activeValue !== undefined && activeValue !== null && activeValue !== "0"
+                               const typedVal = parseFloat(activeValue || "0") || 0
+                               const finalStr = hasTyped
+                                 ? `${cashRegister.formatCurrency(typedVal)}kz`
+                                 : '---'
+                               const diff = hasTyped
+                                 ? typedVal - activeSession.initialValue
+                                 : 0
+                               const diffStr = hasTyped
+                                 ? `${cashRegister.formatCurrency(diff)}` + 'kz'
+                                 : '---'
+                               return (
+                                 <>
+                                   <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                     <span 
+                                       key={finalStr}
+                                       className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
+                                     >
+                                       {finalStr}
+                                     </span>
+                                   </CollapsibleValueCell>
+                                   <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                     <span 
+                                       key={diffStr}
+                                       className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
+                                     >
+                                       {diffStr}
+                                     </span>
+                                   </CollapsibleValueCell>
+                                 </>
+                               )
+                             })()}
                           </tr>
                         </tbody>
                       </table>
@@ -518,35 +492,34 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                   {sections.map((section, sectionIdx) => (
                     <div key={section.title} className={sectionIdx > 0 || activeSession ? 'mt-[20px]' : ''}>
                       <div className="mb-[2px] px-[6px]">
-                        <span className="text-[12px] font-normal text-black">
+                        <span className="text-[0.75rem] font-normal text-black">
                           {section.title}
                         </span>
                       </div>
-                      <table className="w-full text-[12px] font-sans border-collapse select-none border-none">
-                        <thead className="sticky top-0 bg-white z-10 text-[11px] border-b border-zinc-200/60">
+                      <table className="w-full text-[0.75rem] font-sans border-collapse select-none border-none">
+                        <thead className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
                           <tr className="text-black font-semibold h-[28px] border-none">
                             <th className="px-[6px] py-[4px] border-none"></th>
                             <th className="px-[6px] py-[4px] border-none"></th>
                             <th className="px-[6px] py-[4px] border-none"></th>
-                            <th className="text-right px-[6px] py-[4px] font-semibold border-none">
+                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-blue-500" />
                                 V. Inicial
                               </span>
-                            </th>
-                            <th className="text-right px-[6px] py-[4px] font-semibold border-none">
+                            </CollapsibleValueCell>
+                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-orange-500" />
                                 V. Final
                               </span>
-                            </th>
-                            <th className="text-right px-[6px] py-[4px] font-semibold border-none">
+                            </CollapsibleValueCell>
+                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-green-500" />
                                 Diferença
                               </span>
-                            </th>
-                            <th className="w-[36px] px-[4px] py-[4px] border-none"></th>
+                            </CollapsibleValueCell>
                           </tr>
                         </thead>
 
@@ -556,11 +529,12 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                             const finalStr = entry.isClosed ? `${cashRegister.formatCurrency(entry.finalValue)}` + 'kz' : 'Aberto'
                             const diffStr = entry.isClosed ? `${cashRegister.formatCurrency(entry.difference)}` + 'kz' : '---'
 
-                            return (
-                              <tr
-                                key={entry.id}
-                                className="h-[44px] hover:bg-zinc-50/50 transition-colors duration-150 text-black border-none"
-                              >
+                             return (
+                               <tr
+                                 key={entry.id}
+                                 onClick={() => handleRowClick(entry.id)}
+                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === entry.id ? 'bg-blue-50' : ''}`}
+                               >
                                 <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none">
                                   {/* Retângulo vertical azul por linha */}
                                   <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-blue-500 rounded-sm" />
@@ -599,41 +573,24 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                       return `${entry.observation.slice(0, 3)}...`
                                     }
                                     return '---'
-                                  })()}
-                                </td>
-                                <td className="px-[6px] py-[6px] text-right font-sans whitespace-nowrap border-none">
-                                  <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                    {initialStr}
-                                  </span>
-                                </td>
-                                <td className="px-[6px] py-[6px] text-right font-sans whitespace-nowrap border-none">
-                                  <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                    {finalStr}
-                                  </span>
-                                </td>
-                                <td className="px-[6px] py-[6px] text-right font-sans whitespace-nowrap border-none">
-                                  <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                    {diffStr}
-                                  </span>
-                                </td>
-                                <td className="px-[4px] py-[6px] text-center w-[36px] border-none">
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <button className="h-[28px] w-[28px] flex items-center justify-center text-zinc-400 hover:text-black rounded-full hover:bg-zinc-100 transition-colors focus:outline-none cursor-pointer">
-                                        <MoreVertical className="h-4 w-4" />
-                                      </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[120px] bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1 !outline-none !ring-0 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none">
-                                      <DropdownMenuItem
-                                        className="flex items-center px-2 py-1.5 text-xs font-light text-black rounded-md cursor-pointer hover:bg-zinc-100 transition-all duration-150 ease-in-out focus:bg-zinc-100 focus:text-black focus:outline-none"
-                                        onClick={() => setDetailOpen(true)}
-                                      >
-                                        Ver Detalhe
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </td>
-                              </tr>
+                                   })()}
+                                 </td>
+                                 <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                   <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                     {initialStr}
+                                   </span>
+                                 </CollapsibleValueCell>
+                                 <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                   <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                     {finalStr}
+                                   </span>
+                                 </CollapsibleValueCell>
+                                 <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                   <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                     {diffStr}
+                                   </span>
+                                 </CollapsibleValueCell>
+                               </tr>
                             )
                           })}
                         </tbody>
@@ -643,40 +600,25 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                 </>
               )
             })()}
-          </div>
-        </div>
+           </div>
+           {(() => {
+             const selectedEntry = selectedEntryId ? cashRegister.cashRegisterHistory.find(h => String(h.id) === selectedEntryId) ?? null : null
+             return (
+               <div
+                 className="absolute top-0 right-0 bottom-0 bg-white"
+                 style={{
+                   width: selectedEntryId ? '280px' : 0,
+                   overflow: 'hidden',
+                   transition: 'width 400ms cubic-bezier(0.16, 1, 0.3, 1)',
+                 }}
+               >
+                 <EntryDetailPanel entry={selectedEntry} cashRegister={cashRegister} onClose={() => setSelectedEntryId(null)} />
+               </div>
+             )
+           })()}
+         </div>
       </div>
 
-      <AlertDialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <AlertDialogContent className="border border-zinc-200 !p-0 !flex !flex-col !gap-0 sm:!w-[35vw] sm:!min-w-[510px] sm:!max-w-[560px]">
-          <AlertDialogHeader className="flex flex-row items-center justify-between border-b border-zinc-200 px-4 pt-3 pb-2 grid-rows-1">
-            <AlertDialogTitle className="text-[0.6875rem] font-normal text-zinc-500">Detalhe do Registo</AlertDialogTitle>
-            <button
-              type="button"
-              onClick={() => setDetailOpen(false)}
-              className="flex h-[26px] w-[26px] items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 transition-colors focus:outline-none cursor-pointer"
-              title="Fechar"
-            >
-              <X className="h-[11px] w-[11px]" />
-            </button>
-          </AlertDialogHeader>
-          <div className="px-4 py-3 flex flex-col gap-2">
-            <div className="flex flex-row gap-2">
-              <div className="px-2 flex flex-col gap-1">
-                <span className="text-[0.75rem] text-zinc-500 leading-none">Operador:</span>
-                <span className="text-[0.875rem] text-black leading-none">Lenilson R. Pascoal</span>
-              </div>
-              <div className="px-2">Sessão 2</div>
-              <div className="px-2">Sessão 3</div>
-            </div>
-            <div className="border-t border-b border-zinc-200">Container 2</div>
-            <div className="border-t border-b border-zinc-200">Container 3</div>
-          </div>
-          <AlertDialogFooter className="mx-0 mb-0 rounded-b-xl border-t border-zinc-200 bg-muted/50 px-4 py-3">
-            <AlertDialogCancel>Fechar</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
