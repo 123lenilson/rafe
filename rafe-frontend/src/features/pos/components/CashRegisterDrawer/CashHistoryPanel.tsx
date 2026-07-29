@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { History, X, ArrowUpDown } from 'lucide-react'
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { HistoryFilterMenu } from './HistoryFilterMenu'
@@ -7,6 +7,9 @@ import { EntryDetailPanel } from './EntryDetailPanel'
 import { useCashHistoryFilters } from '@/features/pos/hooks/useCashHistoryFilters'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
+
+const PANEL_TRANSITION_DURATION = 650
+const PANEL_TRANSITION_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)'
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -250,6 +253,17 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
   } = filters
 
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
+  const [displayEntry, setDisplayEntry] = useState<CashRegisterEntry | null>(null)
+
+  useEffect(() => {
+    if (selectedEntryId !== null) {
+      const found = cashRegister.cashRegisterHistory.find(h => String(h.id) === selectedEntryId) ?? null
+      setDisplayEntry(found)
+      return
+    }
+    const timeout = setTimeout(() => setDisplayEntry(null), PANEL_TRANSITION_DURATION)
+    return () => clearTimeout(timeout)
+  }, [selectedEntryId, cashRegister.cashRegisterHistory])
 
   function handleRowClick(entryId: string) {
     setSelectedEntryId(prev => prev === entryId ? null : entryId)
@@ -356,7 +370,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
       {/* Main da Coluna 2 */}
       <div className="flex-1 mt-[16px] min-h-0 flex flex-col">
         <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col relative">
-          <div className="flex-1 overflow-auto">
+          <div className="flex flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-w-0 overflow-auto">
              {(() => {
                const activeSession = cashRegister.cashRegisterHistory.find(h => !h.isClosed)
                const closedHistory = cashRegister.cashRegisterHistory.filter(h => h.isClosed)
@@ -400,8 +415,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
 
                          <tbody className="divide-none border-none">
                            <tr
-                                 onClick={() => handleRowClick(activeSession.id)}
-                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === activeSession.id ? 'bg-blue-50' : ''}`}
+                                 onClick={() => handleRowClick(String(activeSession.id))}
+                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === String(activeSession.id) ? 'bg-blue-50' : ''}`}
                            >
                             <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none">
                               {/* Retângulo vertical verde por linha */}
@@ -532,8 +547,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                              return (
                                <tr
                                  key={entry.id}
-                                 onClick={() => handleRowClick(entry.id)}
-                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === entry.id ? 'bg-blue-50' : ''}`}
+                                 onClick={() => handleRowClick(String(entry.id))}
+                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === String(entry.id) ? 'bg-blue-50' : ''}`}
                                >
                                 <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none">
                                   {/* Retângulo vertical azul por linha */}
@@ -600,23 +615,34 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                 </>
               )
             })()}
-           </div>
-           {(() => {
-             const selectedEntry = selectedEntryId ? cashRegister.cashRegisterHistory.find(h => String(h.id) === selectedEntryId) ?? null : null
-             return (
-               <div
-                 className="absolute top-0 right-0 bottom-0 bg-white"
-                 style={{
-                   width: selectedEntryId ? '280px' : 0,
-                   overflow: 'hidden',
-                   transition: 'width 400ms cubic-bezier(0.16, 1, 0.3, 1)',
-                 }}
-               >
-                 <EntryDetailPanel entry={selectedEntry} cashRegister={cashRegister} onClose={() => setSelectedEntryId(null)} />
-               </div>
-             )
-           })()}
-         </div>
+            </div>
+
+            {(() => {
+              const isOpen = selectedEntryId !== null
+              return (
+                <aside
+                  style={{
+                    width: isOpen ? 260 : 0,
+                    overflow: 'hidden',
+                    transition: `width ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}`,
+                    flexShrink: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 260,
+                      transform: isOpen ? 'translateX(0)' : 'translateX(32px)',
+                      opacity: isOpen ? 1 : 0,
+                      transition: `transform ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}, opacity ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}`,
+                    }}
+                  >
+                    <EntryDetailPanel entry={displayEntry} cashRegister={cashRegister} onClose={() => setSelectedEntryId(null)} />
+                  </div>
+                </aside>
+              )
+            })()}
+          </div>
+          </div>
       </div>
 
     </div>

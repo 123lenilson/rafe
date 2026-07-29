@@ -18,7 +18,8 @@ export function CollapsibleValueCell({ collapsed, children, as = 'td', className
         style={{
           width: collapsed ? 0 : 'auto',
           overflow: 'hidden',
-          transition: 'width 400ms cubic-bezier(0.16, 1, 0.3, 1)',
+          whiteSpace: 'nowrap',
+          transition: 'width 650ms cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
         {children}
