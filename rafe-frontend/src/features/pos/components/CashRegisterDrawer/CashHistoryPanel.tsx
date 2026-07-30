@@ -10,6 +10,7 @@ import { CashRegisterEntry } from '@/features/pos/types/cash.types'
 
 const PANEL_TRANSITION_DURATION = 650
 const PANEL_TRANSITION_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)'
+const PANEL_ENABLED = false
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -253,17 +254,28 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
   } = filters
 
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
+  const [columnsCollapsed, setColumnsCollapsed] = useState(false)
+  const [panelOpen, setPanelOpen] = useState(false)
   const [displayEntry, setDisplayEntry] = useState<CashRegisterEntry | null>(null)
 
   useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
     if (selectedEntryId !== null) {
-      const found = cashRegister.cashRegisterHistory.find(h => String(h.id) === selectedEntryId) ?? null
-      setDisplayEntry(found)
-      return
+      const found = cashRegister.cashRegisterHistory.find(h => String(h.id) === selectedEntryId) ?? null;
+      setDisplayEntry(found);
+      setColumnsCollapsed(true);
+      if (PANEL_ENABLED) {
+        timeout = setTimeout(() => setPanelOpen(true), PANEL_TRANSITION_DURATION);
+      }
+    } else {
+      setPanelOpen(false);
+      timeout = setTimeout(() => {
+        setColumnsCollapsed(false);
+        setDisplayEntry(null);
+      }, PANEL_TRANSITION_DURATION);
     }
-    const timeout = setTimeout(() => setDisplayEntry(null), PANEL_TRANSITION_DURATION)
-    return () => clearTimeout(timeout)
-  }, [selectedEntryId, cashRegister.cashRegisterHistory])
+    return () => clearTimeout(timeout);
+  }, [selectedEntryId, cashRegister.cashRegisterHistory]);
 
   function handleRowClick(entryId: string) {
     setSelectedEntryId(prev => prev === entryId ? null : entryId)
@@ -387,24 +399,25 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                         </span>
                       </div>
                       <table className="w-full text-[0.75rem] font-sans border-collapse select-none border-none">
+                        
                         <thead className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
                           <tr className="text-black font-semibold h-[28px] border-none">
-                            <th className="px-[6px] py-[4px] border-none"></th>
-                            <th className="px-[6px] py-[4px] border-none"></th>
-                            <th className="px-[6px] py-[4px] border-none"></th>
-                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
+                            <th className="px-[6px] py-[4px] border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}></th>
+                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
+                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
+                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-blue-500" />
                                 V. Inicial
                               </span>
                             </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
+                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-orange-500" />
                                 V. Final
                               </span>
                             </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
+                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-green-500" />
                                 Diferença
@@ -418,7 +431,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                  onClick={() => handleRowClick(String(activeSession.id))}
                                  className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === String(activeSession.id) ? 'bg-blue-50' : ''}`}
                            >
-                            <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none">
+                            <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}>
                               {/* Retângulo vertical verde por linha */}
                               <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-green-500 rounded-sm" />
 
@@ -437,7 +450,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                 })()}
                               </span>
                             </td>
-                            <td className="px-[6px] py-[6px] text-left max-w-[100px] truncate border-none" title={activeSession.operatorName}>
+                            <td className="px-[6px] py-[6px] text-left truncate border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={activeSession.operatorName}>
                               {activeSession.operatorName}
                             </td>
                             {(() => {
@@ -454,12 +467,12 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                 activeObservation && activeObservation.trim() ? `obs do fecho: "${activeObservation.trim()}"` : ""
                               ].filter(Boolean).join('\n') || activeSession.observation || ''
                               return (
-                                <td className="px-[6px] py-[6px] text-left max-w-[100px] truncate italic border-none" title={activeObsTitle}>
+                                <td className="px-[6px] py-[6px] text-left truncate italic border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={activeObsTitle}>
                                   {activeObsPreview}
                                 </td>
                               )
                              })()}
-                             <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                             <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
                                  {`${cashRegister.formatCurrency(activeSession.initialValue)}` + 'kz'}
                                </span>
@@ -478,7 +491,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                  : '---'
                                return (
                                  <>
-                                   <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                   <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                      <span 
                                        key={finalStr}
                                        className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
@@ -486,7 +499,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                        {finalStr}
                                      </span>
                                    </CollapsibleValueCell>
-                                   <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                   <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                      <span 
                                        key={diffStr}
                                        className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
@@ -514,22 +527,22 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                       <table className="w-full text-[0.75rem] font-sans border-collapse select-none border-none">
                         <thead className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
                           <tr className="text-black font-semibold h-[28px] border-none">
-                            <th className="px-[6px] py-[4px] border-none"></th>
-                            <th className="px-[6px] py-[4px] border-none"></th>
-                            <th className="px-[6px] py-[4px] border-none"></th>
-                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
+                            <th className="px-[6px] py-[4px] border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}></th>
+                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
+                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
+                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-blue-500" />
                                 V. Inicial
                               </span>
                             </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
+                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-orange-500" />
                                 V. Final
                               </span>
                             </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={selectedEntryId !== null} as="th" className="py-[4px] font-semibold">
+                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
                               <span className="inline-flex items-center gap-[4px]">
                                 <ArrowUpDown className="h-3 w-3 text-green-500" />
                                 Diferença
@@ -550,7 +563,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                  onClick={() => handleRowClick(String(entry.id))}
                                  className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === String(entry.id) ? 'bg-blue-50' : ''}`}
                                >
-                                <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none">
+                                <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}>
                                   {/* Retângulo vertical azul por linha */}
                                   <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-blue-500 rounded-sm" />
 
@@ -573,10 +586,10 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                     })()}
                                   </span>
                                 </td>
-                                <td className="px-[6px] py-[6px] text-left max-w-[100px] truncate border-none" title={entry.operatorName}>
+                                <td className="px-[6px] py-[6px] text-left truncate border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={entry.operatorName}>
                                   {entry.operatorName}
                                 </td>
-                                <td className="px-[6px] py-[6px] text-left max-w-[100px] truncate italic border-none" title={entry.observation}>
+                                <td className="px-[6px] py-[6px] text-left truncate italic border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={entry.observation}>
                                   {(() => {
                                     if (entry.closingObservation) {
                                       return `${entry.closingObservation.slice(0, 3)}...`
@@ -590,17 +603,17 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                     return '---'
                                    })()}
                                  </td>
-                                 <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                    <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
                                      {initialStr}
                                    </span>
                                  </CollapsibleValueCell>
-                                 <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                    <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
                                      {finalStr}
                                    </span>
                                  </CollapsibleValueCell>
-                                 <CollapsibleValueCell collapsed={selectedEntryId !== null} className="font-sans whitespace-nowrap">
+                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                    <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
                                      {diffStr}
                                    </span>
@@ -618,24 +631,16 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
             </div>
 
             {(() => {
-              const isOpen = selectedEntryId !== null
               return (
                 <aside
                   style={{
-                    width: isOpen ? 260 : 0,
+                    width: panelOpen ? 260 : 0,
                     overflow: 'hidden',
                     transition: `width ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}`,
                     flexShrink: 0,
                   }}
                 >
-                  <div
-                    style={{
-                      width: 260,
-                      transform: isOpen ? 'translateX(0)' : 'translateX(32px)',
-                      opacity: isOpen ? 1 : 0,
-                      transition: `transform ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}, opacity ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}`,
-                    }}
-                  >
+                  <div style={{ width: 260 }}>
                     <EntryDetailPanel entry={displayEntry} cashRegister={cashRegister} onClose={() => setSelectedEntryId(null)} />
                   </div>
                 </aside>
