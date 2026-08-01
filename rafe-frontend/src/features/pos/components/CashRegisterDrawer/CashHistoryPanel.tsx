@@ -398,121 +398,118 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                           Caixa aberto
                         </span>
                       </div>
-                      <table className="w-full text-[0.75rem] font-sans border-collapse select-none border-none">
-                        
-                        <thead className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
-                          <tr className="text-black font-semibold h-[28px] border-none">
-                            <th className="px-[6px] py-[4px] border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}></th>
-                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
-                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
-                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
-                              <span className="inline-flex items-center gap-[4px]">
-                                <ArrowUpDown className="h-3 w-3 text-blue-500" />
-                                V. Inicial
-                              </span>
-                            </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
-                              <span className="inline-flex items-center gap-[4px]">
-                                <ArrowUpDown className="h-3 w-3 text-orange-500" />
-                                V. Final
-                              </span>
-                            </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
-                              <span className="inline-flex items-center gap-[4px]">
-                                <ArrowUpDown className="h-3 w-3 text-green-500" />
-                                Diferença
-                              </span>
-                            </CollapsibleValueCell>
-                          </tr>
-                        </thead>
+                      <div className="w-full text-[0.75rem] font-sans select-none">
+                      <div className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
+                        <div className="flex text-black font-semibold h-[28px]">
+                          <div className="px-[6px] py-[4px]" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-[6px] py-[4px]" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                            <span className="inline-flex items-center gap-[4px]">
+                              <ArrowUpDown className="h-3 w-3 text-blue-500" />
+                              V. Inicial
+                            </span>
+                          </CollapsibleValueCell>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                            <span className="inline-flex items-center gap-[4px]">
+                              <ArrowUpDown className="h-3 w-3 text-orange-500" />
+                              V. Final
+                            </span>
+                          </CollapsibleValueCell>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                            <span className="inline-flex items-center gap-[4px]">
+                              <ArrowUpDown className="h-3 w-3 text-green-500" />
+                              Diferença
+                            </span>
+                          </CollapsibleValueCell>
+                        </div>
+                      </div>
 
-                         <tbody className="divide-none border-none">
-                           <tr
-                                 onClick={() => handleRowClick(String(activeSession.id))}
-                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === String(activeSession.id) ? 'bg-blue-50' : ''}`}
-                           >
-                            <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}>
-                              {/* Retângulo vertical verde por linha */}
-                              <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-green-500 rounded-sm" />
-
-                              <span className="inline-block border-b border-dotted border-zinc-300 pb-[2px]">
-                                {(() => {
-                                  const { month, day } = getMonthAndDay(activeSession.openingDate)
-                                  return (
-                                    <>
-                                      <span className="text-zinc-400">{month} {day}</span>
-                                      <span className="text-zinc-400 ml-2">ab:</span>{' '}
-                                      <span className="text-black font-semibold">{formatTime(activeSession.openingTime)}</span>
-                                      <span className="text-zinc-400 ml-2">fe:</span>{' '}
-                                      <span className="text-green-600 font-semibold">Aberto</span>
-                                    </>
-                                  )
-                                })()}
-                              </span>
-                            </td>
-                            <td className="px-[6px] py-[6px] text-left truncate border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={activeSession.operatorName}>
-                              {activeSession.operatorName}
-                            </td>
-                            {(() => {
-                              const activeHasTypedObs = activeObservation !== undefined && activeObservation !== null && activeObservation.trim() !== ""
-                              const activeObsPreview = activeHasTypedObs
-                                ? `${activeObservation.trim().slice(0, 3)}...`
-                                : activeSession.openingObservation
-                                ? `${activeSession.openingObservation.slice(0, 3)}...`
-                                : activeSession.observation
-                                ? `${activeSession.observation.slice(0, 3)}...`
-                                : '---'
-                              const activeObsTitle = [
-                                activeSession.openingObservation ? `obs da abertura: "${activeSession.openingObservation}"` : "",
-                                activeObservation && activeObservation.trim() ? `obs do fecho: "${activeObservation.trim()}"` : ""
-                              ].filter(Boolean).join('\n') || activeSession.observation || ''
-                              return (
-                                <td className="px-[6px] py-[6px] text-left truncate italic border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={activeObsTitle}>
-                                  {activeObsPreview}
-                                </td>
-                              )
-                             })()}
-                             <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                               <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                 {`${cashRegister.formatCurrency(activeSession.initialValue)}` + 'kz'}
-                               </span>
-                             </CollapsibleValueCell>
-                             {(() => {
-                               const hasTyped = activeValue !== undefined && activeValue !== null && activeValue !== "0"
-                               const typedVal = parseFloat(activeValue || "0") || 0
-                               const finalStr = hasTyped
-                                 ? `${cashRegister.formatCurrency(typedVal)}kz`
-                                 : '---'
-                               const diff = hasTyped
-                                 ? typedVal - activeSession.initialValue
-                                 : 0
-                               const diffStr = hasTyped
-                                 ? `${cashRegister.formatCurrency(diff)}` + 'kz'
-                                 : '---'
-                               return (
-                                 <>
-                                   <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                     <span 
-                                       key={finalStr}
-                                       className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
-                                     >
-                                       {finalStr}
-                                     </span>
-                                   </CollapsibleValueCell>
-                                   <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                     <span 
-                                       key={diffStr}
-                                       className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
-                                     >
-                                       {diffStr}
-                                     </span>
-                                   </CollapsibleValueCell>
-                                 </>
-                               )
-                             })()}
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div>
+                        <div
+                          onClick={() => handleRowClick(String(activeSession.id))}
+                          className={`flex h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black cursor-pointer ${selectedEntryId === String(activeSession.id) ? 'bg-blue-50' : ''}`}
+                        >
+                          <div className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}>
+                            <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-green-500 rounded-sm" />
+                            <span className="inline-block border-b border-dotted border-zinc-300 pb-[2px]">
+                              {(() => {
+                                const { month, day } = getMonthAndDay(activeSession.openingDate)
+                                return (
+                                  <>
+                                    <span className="text-zinc-400">{month} {day}</span>
+                                    <span className="text-zinc-400 ml-2">ab:</span>{' '}
+                                    <span className="text-black font-semibold">{formatTime(activeSession.openingTime)}</span>
+                                    <span className="text-zinc-400 ml-2">fe:</span>{' '}
+                                    <span className="text-green-600 font-semibold">Aberto</span>
+                                  </>
+                                )
+                              })()}
+                            </span>
+                          </div>
+                          <div className="px-[6px] py-[6px] text-left truncate" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }} title={activeSession.operatorName}>
+                            {activeSession.operatorName}
+                          </div>
+                          {(() => {
+                            const activeHasTypedObs = activeObservation !== undefined && activeObservation !== null && activeObservation.trim() !== ""
+                            const activeObsPreview = activeHasTypedObs
+                              ? `${activeObservation.trim().slice(0, 3)}...`
+                              : activeSession.openingObservation
+                              ? `${activeSession.openingObservation.slice(0, 3)}...`
+                              : activeSession.observation
+                              ? `${activeSession.observation.slice(0, 3)}...`
+                              : '---'
+                            const activeObsTitle = [
+                              activeSession.openingObservation ? `obs da abertura: "${activeSession.openingObservation}"` : "",
+                              activeObservation && activeObservation.trim() ? `obs do fecho: "${activeObservation.trim()}"` : ""
+                            ].filter(Boolean).join('\n') || activeSession.observation || ''
+                            return (
+                              <div className="px-[6px] py-[6px] text-left truncate italic" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }} title={activeObsTitle}>
+                                {activeObsPreview}
+                              </div>
+                            )
+                          })()}
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
+                            <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                              {`${cashRegister.formatCurrency(activeSession.initialValue)}` + 'kz'}
+                            </span>
+                          </CollapsibleValueCell>
+                          {(() => {
+                            const hasTyped = activeValue !== undefined && activeValue !== null && activeValue !== "0"
+                            const typedVal = parseFloat(activeValue || "0") || 0
+                            const finalStr = hasTyped
+                              ? `${cashRegister.formatCurrency(typedVal)}kz`
+                              : '---'
+                            const diff = hasTyped
+                              ? typedVal - activeSession.initialValue
+                              : 0
+                            const diffStr = hasTyped
+                              ? `${cashRegister.formatCurrency(diff)}` + 'kz'
+                              : '---'
+                            return (
+                              <>
+                                <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
+                                  <span
+                                    key={finalStr}
+                                    className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
+                                  >
+                                    {finalStr}
+                                  </span>
+                                </CollapsibleValueCell>
+                                <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
+                                  <span
+                                    key={diffStr}
+                                    className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
+                                  >
+                                    {diffStr}
+                                  </span>
+                                </CollapsibleValueCell>
+                              </>
+                            )
+                          })()}
+                        </div>
+                      </div>
+                    </div>
                     </div>
                   )}
 
@@ -524,105 +521,103 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                           {section.title}
                         </span>
                       </div>
-                      <table className="w-full text-[0.75rem] font-sans border-collapse select-none border-none">
-                        <thead className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
-                          <tr className="text-black font-semibold h-[28px] border-none">
-                            <th className="px-[6px] py-[4px] border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}></th>
-                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
-                            <th className="px-[6px] py-[4px] border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }}></th>
-                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
-                              <span className="inline-flex items-center gap-[4px]">
-                                <ArrowUpDown className="h-3 w-3 text-blue-500" />
-                                V. Inicial
-                              </span>
-                            </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
-                              <span className="inline-flex items-center gap-[4px]">
-                                <ArrowUpDown className="h-3 w-3 text-orange-500" />
-                                V. Final
-                              </span>
-                            </CollapsibleValueCell>
-                            <CollapsibleValueCell collapsed={columnsCollapsed} as="th" className="py-[4px] font-semibold">
-                              <span className="inline-flex items-center gap-[4px]">
-                                <ArrowUpDown className="h-3 w-3 text-green-500" />
-                                Diferença
-                              </span>
-                            </CollapsibleValueCell>
-                          </tr>
-                        </thead>
+                      <div className="w-full text-[0.75rem] font-sans select-none">
+                      <div className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
+                        <div className="flex text-black font-semibold h-[28px]">
+                          <div className="px-[6px] py-[4px]" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-[6px] py-[4px]" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                            <span className="inline-flex items-center gap-[4px]">
+                              <ArrowUpDown className="h-3 w-3 text-blue-500" />
+                              V. Inicial
+                            </span>
+                          </CollapsibleValueCell>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                            <span className="inline-flex items-center gap-[4px]">
+                              <ArrowUpDown className="h-3 w-3 text-orange-500" />
+                              V. Final
+                            </span>
+                          </CollapsibleValueCell>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                            <span className="inline-flex items-center gap-[4px]">
+                              <ArrowUpDown className="h-3 w-3 text-green-500" />
+                              Diferença
+                            </span>
+                          </CollapsibleValueCell>
+                        </div>
+                      </div>
 
-                        <tbody className="divide-none border-none">
-                          {section.entries.map((entry) => {
-                            const initialStr = `${cashRegister.formatCurrency(entry.initialValue)}` + 'kz'
-                            const finalStr = entry.isClosed ? `${cashRegister.formatCurrency(entry.finalValue)}` + 'kz' : 'Aberto'
-                            const diffStr = entry.isClosed ? `${cashRegister.formatCurrency(entry.difference)}` + 'kz' : '---'
+                      <div>
+                        {section.entries.map((entry) => {
+                          const initialStr = `${cashRegister.formatCurrency(entry.initialValue)}` + 'kz'
+                          const finalStr = entry.isClosed ? `${cashRegister.formatCurrency(entry.finalValue)}` + 'kz' : 'Aberto'
+                          const diffStr = entry.isClosed ? `${cashRegister.formatCurrency(entry.difference)}` + 'kz' : '---'
 
-                             return (
-                               <tr
-                                 key={entry.id}
-                                 onClick={() => handleRowClick(String(entry.id))}
-                                 className={`h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black border-none cursor-pointer ${selectedEntryId === String(entry.id) ? 'bg-blue-50' : ''}`}
-                               >
-                                <td className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap border-none" style={{ width: 210, minWidth: 210, maxWidth: 210 }}>
-                                  {/* Retângulo vertical azul por linha */}
-                                  <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-blue-500 rounded-sm" />
-
-                                  <span className="inline-block border-b border-dotted border-zinc-300 pb-[2px]">
-                                    {(() => {
-                                      const { month, day } = getMonthAndDay(entry.openingDate)
-                                      return (
-                                        <>
-                                          <span className="text-zinc-400">{month} {day}</span>
-                                          <span className="text-zinc-400 ml-2">ab:</span>{' '}
-                                          <span className="text-black font-semibold">{formatTime(entry.openingTime)}</span>
-                                          <span className="text-zinc-400 ml-2">fe:</span>{' '}
-                                          {entry.isClosed ? (
-                                            <span className="text-black font-semibold">{formatTime(entry.closingTime)}</span>
-                                          ) : (
-                                            <span className="text-green-600 font-semibold">Aberto</span>
-                                          )}
-                                        </>
-                                      )
-                                    })()}
-                                  </span>
-                                </td>
-                                <td className="px-[6px] py-[6px] text-left truncate border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={entry.operatorName}>
-                                  {entry.operatorName}
-                                </td>
-                                <td className="px-[6px] py-[6px] text-left truncate italic border-none" style={{ width: 100, minWidth: 100, maxWidth: 100 }} title={entry.observation}>
+                          return (
+                            <div
+                              key={entry.id}
+                              onClick={() => handleRowClick(String(entry.id))}
+                              className={`flex h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black cursor-pointer ${selectedEntryId === String(entry.id) ? 'bg-blue-50' : ''}`}
+                            >
+                              <div className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}>
+                                <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-blue-500 rounded-sm" />
+                                <span className="inline-block border-b border-dotted border-zinc-300 pb-[2px]">
                                   {(() => {
-                                    if (entry.closingObservation) {
-                                      return `${entry.closingObservation.slice(0, 3)}...`
-                                    }
-                                    if (entry.openingObservation) {
-                                      return `${entry.openingObservation.slice(0, 3)}...`
-                                    }
-                                    if (entry.observation) {
-                                      return `${entry.observation.slice(0, 3)}...`
-                                    }
-                                    return '---'
-                                   })()}
-                                 </td>
-                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                   <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                     {initialStr}
-                                   </span>
-                                 </CollapsibleValueCell>
-                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                   <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                     {finalStr}
-                                   </span>
-                                 </CollapsibleValueCell>
-                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                   <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
-                                     {diffStr}
-                                   </span>
-                                 </CollapsibleValueCell>
-                               </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
+                                    const { month, day } = getMonthAndDay(entry.openingDate)
+                                    return (
+                                      <>
+                                        <span className="text-zinc-400">{month} {day}</span>
+                                        <span className="text-zinc-400 ml-2">ab:</span>{' '}
+                                        <span className="text-black font-semibold">{formatTime(entry.openingTime)}</span>
+                                        <span className="text-zinc-400 ml-2">fe:</span>{' '}
+                                        {entry.isClosed ? (
+                                          <span className="text-black font-semibold">{formatTime(entry.closingTime)}</span>
+                                        ) : (
+                                          <span className="text-green-600 font-semibold">Aberto</span>
+                                        )}
+                                      </>
+                                    )
+                                  })()}
+                                </span>
+                              </div>
+                              <div className="px-[6px] py-[6px] text-left truncate" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }} title={entry.operatorName}>
+                                {entry.operatorName}
+                              </div>
+                              <div className="px-[6px] py-[6px] text-left truncate italic" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }} title={entry.observation}>
+                                {(() => {
+                                  if (entry.closingObservation) {
+                                    return `${entry.closingObservation.slice(0, 3)}...`
+                                  }
+                                  if (entry.openingObservation) {
+                                    return `${entry.openingObservation.slice(0, 3)}...`
+                                  }
+                                  if (entry.observation) {
+                                    return `${entry.observation.slice(0, 3)}...`
+                                  }
+                                  return '---'
+                                })()}
+                              </div>
+                              <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
+                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                  {initialStr}
+                                </span>
+                              </CollapsibleValueCell>
+                              <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
+                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                  {finalStr}
+                                </span>
+                              </CollapsibleValueCell>
+                              <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
+                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                  {diffStr}
+                                </span>
+                              </CollapsibleValueCell>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
                     </div>
                   ))}
                 </>
