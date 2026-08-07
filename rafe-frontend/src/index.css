@@ -126,6 +126,88 @@
   animation: ripple-hover 250ms ease-out forwards;
 }
 
+/* ============================================================
+   Animação Mercury — CashHistoryPanel
+   Colunas colapsáveis + painel de detalhe deslizante
+   ============================================================ */
+
+/* Coluna colapsável: estado base (visível) */
+.rafe-collapsible-col {
+  --rafe-col-anim-dur: 0.4s;
+  --rafe-col-translate: 140px;
+  will-change: opacity, transform;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+  flex-grow: 0;
+  transform: translateX(0);
+  opacity: 1;
+  transition:
+    opacity var(--rafe-col-anim-dur) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--rafe-col-anim-dur) cubic-bezier(0.16, 1, 0.3, 1);
+  animation: rafe-col-show var(--rafe-col-anim-dur) step-start forwards;
+}
+
+/* Coluna colapsável: estado colapsado (desliza 140px para a direita, desvanece e zera a largura no fim) */
+.rafe-table-condensed .rafe-collapsible-col {
+  pointer-events: none;
+  transform: translateX(var(--rafe-col-translate));
+  opacity: 0;
+  animation: rafe-col-hide var(--rafe-col-anim-dur) step-end forwards;
+}
+
+@keyframes rafe-col-show {
+  0% {
+    display: block;
+    width: 95px;
+    min-width: 95px;
+    max-width: 95px;
+  }
+}
+
+@keyframes rafe-col-hide {
+  to {
+    visibility: hidden;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    display: none !important;
+    overflow: hidden;
+  }
+}
+
+/* Painel de detalhe: estado base (escondido, posicionado a translateX(140px) onde as colunas somem) */
+.rafe-detail-panel-wrapper {
+  --rafe-panel-anim-dur: 0.4s;
+  --rafe-panel-translate: 140px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  z-index: 30; /* z-index alto para ficar por cima do cabeçalho da tabela (z-index: 10) */
+  opacity: 0;
+  transform: translateX(var(--rafe-panel-translate));
+  visibility: hidden;
+  pointer-events: none;
+  will-change: opacity, transform;
+  transition:
+    opacity var(--rafe-panel-anim-dur) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--rafe-panel-anim-dur) cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear var(--rafe-panel-anim-dur);
+}
+
+/* Painel de detalhe: estado visível (desliza de 140px para 0px e surge no lugar das colunas) */
+.rafe-detail-panel-wrapper.rafe-panel-visible {
+  opacity: 1;
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0.05s, 0.05s, 0s;
+}
+
 @theme inline {
   @keyframes rippling {
   0% {

@@ -37,17 +37,17 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
   const closingMonthDay = getMonthAndDay(entry.closingDate)
 
   return (
-    <div className="mt-[16px]">
-      <div className="flex items-center justify-between mb-[8px]">
-        <span className="text-[0.75rem] font-normal text-black">
+    <div className="h-full bg-white border border-zinc-200/90 rounded-lg shadow-xs overflow-auto px-[14px] py-[14px] flex flex-col">
+      <div className="flex items-center justify-between mb-[12px] pb-[8px] border-b border-zinc-100">
+        <span className="text-[0.75rem] font-semibold text-zinc-900">
           Detalhes da entrada
         </span>
         <button
           onClick={onClose}
-          className="text-zinc-500 hover:text-zinc-800 border-0 bg-transparent p-0 cursor-pointer"
+          className="text-zinc-400 hover:text-zinc-700 border-0 bg-transparent p-1 rounded-md hover:bg-zinc-100 cursor-pointer transition-colors"
           title="Fechar"
         >
-          <X className="h-[16px] w-[16px]" />
+          <X className="h-[14px] w-[14px]" />
         </button>
       </div>
       <div className="text-[0.75rem] text-black space-y-[4px]">

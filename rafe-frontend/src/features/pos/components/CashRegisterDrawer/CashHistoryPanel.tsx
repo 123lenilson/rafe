@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { History, X } from 'lucide-react'
-import { ArrowsDownUp } from '@phosphor-icons/react'
+import { History, X, ArrowUpDown } from 'lucide-react'
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { HistoryFilterMenu } from './HistoryFilterMenu'
 import { CollapsibleValueCell } from './CollapsibleValueCell'
@@ -9,9 +8,8 @@ import { useCashHistoryFilters } from '@/features/pos/hooks/useCashHistoryFilter
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
 
-const PANEL_TRANSITION_DURATION = 650
-const PANEL_TRANSITION_EASING = 'cubic-bezier(0.16, 1, 0.3, 1)'
-const PANEL_ENABLED = false
+const PANEL_TRANSITION_DURATION = 500
+const PANEL_ENABLED = true
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -264,11 +262,13 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
     if (selectedEntryId !== null) {
       const found = cashRegister.cashRegisterHistory.find(h => String(h.id) === selectedEntryId) ?? null;
       setDisplayEntry(found);
+      // Colunas e painel animam simultaneamente — igual ao Mercury
       setColumnsCollapsed(true);
       if (PANEL_ENABLED) {
-        timeout = setTimeout(() => setPanelOpen(true), PANEL_TRANSITION_DURATION);
+        setPanelOpen(true);
       }
     } else {
+      // Fechar: primeiro some o painel, depois as colunas reaparecem
       setPanelOpen(false);
       timeout = setTimeout(() => {
         setColumnsCollapsed(false);
@@ -383,8 +383,12 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
       {/* Main da Coluna 2 */}
       <div className="flex-1 mt-[16px] min-h-0 flex flex-col">
         <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col relative">
-          <div className="flex flex-1 min-h-0 overflow-hidden">
-            <div className="flex-1 min-w-0 overflow-auto">
+          <div className="flex flex-1 min-h-0 overflow-hidden relative">
+            <div
+              className={`flex-1 min-w-0 overflow-y-auto transition-[margin-right] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                columnsCollapsed ? 'rafe-table-condensed mr-[280px] overflow-x-hidden' : 'overflow-x-auto'
+              }`}
+            >
              {(() => {
                const activeSession = cashRegister.cashRegisterHistory.find(h => !h.isClosed)
                const closedHistory = cashRegister.cashRegisterHistory.filter(h => h.isClosed)
@@ -407,19 +411,19 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                           <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
+                              <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Inicial
                             </span>
                           </CollapsibleValueCell>
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
+                              <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Final
                             </span>
                           </CollapsibleValueCell>
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
+                              <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               Diferença
                             </span>
                           </CollapsibleValueCell>
@@ -530,19 +534,19 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                           <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
+                              <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Inicial
                             </span>
                           </CollapsibleValueCell>
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
+                              <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Final
                             </span>
                           </CollapsibleValueCell>
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
+                              <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               Diferença
                             </span>
                           </CollapsibleValueCell>
@@ -626,22 +630,12 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
             })()}
             </div>
 
-            {(() => {
-              return (
-                <aside
-                  style={{
-                    width: panelOpen ? 260 : 0,
-                    overflow: 'hidden',
-                    transition: `width ${PANEL_TRANSITION_DURATION}ms ${PANEL_TRANSITION_EASING}`,
-                    flexShrink: 0,
-                  }}
-                >
-                  <div style={{ width: 260 }}>
-                    <EntryDetailPanel entry={displayEntry} cashRegister={cashRegister} onClose={() => setSelectedEntryId(null)} />
-                  </div>
-                </aside>
-              )
-            })()}
+            <aside
+              className={`rafe-detail-panel-wrapper p-2 box-border${panelOpen ? ' rafe-panel-visible' : ''}`}
+              style={{ width: 280 }}
+            >
+              <EntryDetailPanel entry={displayEntry} cashRegister={cashRegister} onClose={() => setSelectedEntryId(null)} />
+            </aside>
           </div>
           </div>
       </div>

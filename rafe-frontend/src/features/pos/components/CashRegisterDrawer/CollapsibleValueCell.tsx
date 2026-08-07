@@ -9,21 +9,14 @@ interface CollapsibleValueCellProps {
   align?: 'right'
 }
 
-export function CollapsibleValueCell({ collapsed, children, className = '', align = 'right' }: CollapsibleValueCellProps) {
-  const alignClass = align === 'right' ? 'text-right' : ''
-  const width = collapsed ? 0 : EXPANDED_WIDTH
-
+export function CollapsibleValueCell({ collapsed: _collapsed, children, className = '' }: CollapsibleValueCellProps) {
+  // A animação é controlada pelo pai via classe CSS rafe-table-condensed.
+  // Esta célula apenas declara a sua classe e largura fixa.
+  // O translateX + opacity é gerido pelo CSS em index.css.
   return (
     <div
-      className={`px-[6px] py-[6px] ${alignClass} overflow-hidden whitespace-nowrap ${className}`}
-      style={{
-        width,
-        minWidth: width,
-        maxWidth: width,
-        flexShrink: 0,
-        flexGrow: 0,
-        transition: 'width 650ms cubic-bezier(0.16, 1, 0.3, 1), min-width 650ms cubic-bezier(0.16, 1, 0.3, 1), max-width 650ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
+      className={`rafe-collapsible-col px-[6px] py-[6px] ${className}`}
+      style={{ width: EXPANDED_WIDTH, minWidth: EXPANDED_WIDTH, maxWidth: EXPANDED_WIDTH }}
     >
       {children}
     </div>

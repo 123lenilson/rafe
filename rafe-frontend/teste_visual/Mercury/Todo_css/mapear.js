@@ -1,5 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Em ES Modules, precisamos recriar o __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 1. A tua lista exata de classes
 const listaDeClasses = [
@@ -57,12 +62,11 @@ const listaDeClasses = [
 ];
 
 // 2. Leitura dos ficheiros da pasta atual
-const diretorio = __dirname;
 const resultados = [];
 
-fs.readdirSync(diretorio).forEach(file => {
+fs.readdirSync(__dirname).forEach(file => {
   if (file.endsWith('.css')) {
-    const caminhoFicheiro = path.join(diretorio, file);
+    const caminhoFicheiro = path.join(__dirname, file);
     const conteudo = fs.readFileSync(caminhoFicheiro, 'utf8');
 
     listaDeClasses.forEach(classe => {
