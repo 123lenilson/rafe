@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { History, X, ArrowUpDown } from 'lucide-react'
+import { History, X } from 'lucide-react'
+import { ArrowsDownUp } from '@phosphor-icons/react'
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { HistoryFilterMenu } from './HistoryFilterMenu'
 import { CollapsibleValueCell } from './CollapsibleValueCell'
@@ -404,21 +405,21 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                           <div className="px-[6px] py-[4px]" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <div className="px-[6px] py-[4px]" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowUpDown className="h-3 w-3 text-blue-500" />
+                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
                               V. Inicial
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowUpDown className="h-3 w-3 text-orange-500" />
+                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
                               V. Final
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowUpDown className="h-3 w-3 text-green-500" />
+                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
                               Diferença
                             </span>
                           </CollapsibleValueCell>
@@ -527,21 +528,21 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                           <div className="px-[6px] py-[4px]" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <div className="px-[6px] py-[4px]" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowUpDown className="h-3 w-3 text-blue-500" />
+                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
                               V. Inicial
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowUpDown className="h-3 w-3 text-orange-500" />
+                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
                               V. Final
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
                             <span className="inline-flex items-center gap-[4px]">
-                              <ArrowUpDown className="h-3 w-3 text-green-500" />
+                              <ArrowsDownUp className="h-3 w-3 text-zinc-500" />
                               Diferença
                             </span>
                           </CollapsibleValueCell>
