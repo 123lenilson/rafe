@@ -385,8 +385,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
         <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col relative">
           <div className="flex flex-1 min-h-0 overflow-hidden relative">
             <div
-              className={`flex-1 min-w-0 overflow-y-auto transition-[margin-right] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                columnsCollapsed ? 'rafe-table-condensed mr-[280px] overflow-x-hidden' : 'overflow-x-auto'
+              className={`flex-1 min-w-0 overflow-y-auto rafe-table-scroll transition-[padding-right] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                columnsCollapsed ? 'rafe-table-condensed pr-[280px] overflow-x-hidden' : 'overflow-x-auto'
               }`}
             >
              {(() => {

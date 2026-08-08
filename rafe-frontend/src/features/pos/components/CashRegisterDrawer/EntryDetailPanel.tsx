@@ -37,7 +37,7 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
   const closingMonthDay = getMonthAndDay(entry.closingDate)
 
   return (
-    <div className="h-full bg-white border border-zinc-200/90 rounded-lg shadow-xs overflow-auto px-[14px] py-[14px] flex flex-col">
+    <div className="h-full bg-white border border-zinc-200/80 rounded-lg overflow-auto px-[14px] py-[14px] flex flex-col" style={{ boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06), 0 1px 4px 0 rgba(0,0,0,0.04)' }}>
       <div className="flex items-center justify-between mb-[12px] pb-[8px] border-b border-zinc-100">
         <span className="text-[0.75rem] font-semibold text-zinc-900">
           Detalhes da entrada

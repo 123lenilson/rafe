@@ -208,6 +208,26 @@
   transition-delay: 0.05s, 0.05s, 0s;
 }
 
+/* Scrollbar elegante e discreto para a tabela (estilo macOS/Mercury) */
+.rafe-table-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.rafe-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.rafe-table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(161, 161, 170, 0.25);
+  border-radius: 9999px;
+}
+.rafe-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(161, 161, 170, 0.5);
+}
+.rafe-table-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(161, 161, 170, 0.25) transparent;
+}
+
 @theme inline {
   @keyframes rippling {
   0% {
