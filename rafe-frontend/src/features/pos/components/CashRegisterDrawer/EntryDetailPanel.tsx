@@ -1,6 +1,8 @@
 import React from 'react'
 import { X } from 'lucide-react'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
+import { ValueTimeline } from '@/shared/components/ui/ValueTimeline'
+import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar'
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -36,11 +38,16 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
   const openingMonthDay = getMonthAndDay(entry.openingDate)
   const closingMonthDay = getMonthAndDay(entry.closingDate)
 
+  const formattedInitial = `${cashRegister.formatCurrency(entry.initialValue)} Kz`
+  const formattedFinal = entry.isClosed ? `${cashRegister.formatCurrency(entry.finalValue)} Kz` : 'Em Aberto'
+  const formattedDiff = entry.isClosed ? `${cashRegister.formatCurrency(entry.difference)} Kz` : '---'
+
   return (
-    <div className="h-full bg-white border border-zinc-200/80 rounded-lg overflow-auto px-[14px] py-[14px] flex flex-col" style={{ boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06), 0 1px 4px 0 rgba(0,0,0,0.04)' }}>
-      <div className="flex items-center justify-between mb-[12px] pb-[8px] border-b border-zinc-100">
-        <span className="text-[0.75rem] font-semibold text-zinc-900">
-          Detalhes da entrada
+    <div className="h-full bg-white border border-zinc-200/80 rounded-lg overflow-auto px-[14px] py-[14px] flex flex-col font-sans font-normal tracking-wide" style={{ boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06), 0 1px 4px 0 rgba(0,0,0,0.04)' }}>
+      {/* Cabeçalho */}
+      <div className="flex items-center justify-between mb-[12px] pb-[8px] border-b border-zinc-100 shrink-0">
+        <span className="text-[0.75rem] font-normal tracking-wide text-zinc-900">
+          {entry.isClosed ? 'Caixa fechado' : 'Caixa Aberto'}
         </span>
         <button
           onClick={onClose}
@@ -50,40 +57,48 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
           <X className="h-[14px] w-[14px]" />
         </button>
       </div>
-      <div className="text-[0.75rem] text-black space-y-[4px]">
-        <div>
-          <span className="text-zinc-500">Abertura: </span>
-          <span className="font-semibold">
+
+      {/* Linha do Tempo Vertical de Valores (ValueTimeline) */}
+      <div className="mb-6 font-normal tracking-wide">
+        <ValueTimeline
+          initialValue={entry.initialValue}
+          finalValue={entry.finalValue}
+          differenceValue={entry.difference}
+          formattedInitialValue={formattedInitial}
+          formattedFinalValue={formattedFinal}
+          formattedDifferenceValue={formattedDiff}
+          isClosed={entry.isClosed}
+        />
+      </div>
+
+      {/* Usuário */}
+      <div className="flex items-center gap-3 text-black mb-4 pb-3 border-b border-zinc-100">
+        <Avatar className="h-8 w-8 select-none shrink-0">
+          <AvatarImage src="" alt={entry.operatorName} />
+          <AvatarFallback className="font-bold text-[10px] text-black bg-zinc-100 border border-zinc-200">OP</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col min-w-0 text-left gap-0.5">
+          <span className="text-sm font-semibold text-black truncate leading-tight">{entry.operatorName}</span>
+        </div>
+      </div>
+
+      {/* Informações Gerais */}
+      <div className="text-[0.75rem] text-black space-y-[0.875rem] mb-4 pb-3 border-b border-zinc-100 font-normal tracking-wide">
+        <div className="flex items-center justify-between">
+          <span className="text-[0.76rem] font-semibold tracking-wide text-zinc-400">Abertura:</span>
+          <span className="text-[0.76rem] font-medium tracking-wide text-right">
             {openingMonthDay.month} {openingMonthDay.day} {formatTime(entry.openingTime)}
           </span>
         </div>
-        <div>
-          <span className="text-zinc-500">Fecho: </span>
-          <span className="font-semibold">
+        <div className="flex items-center justify-between">
+          <span className="text-[0.76rem] font-semibold tracking-wide text-zinc-400">Fecho:</span>
+          <span className="text-[0.76rem] font-medium tracking-wide text-right">
             {closingMonthDay.month} {closingMonthDay.day} {formatTime(entry.closingTime)}
           </span>
         </div>
         <div>
-          <span className="text-zinc-500">Operador: </span>
-          <span className="font-semibold">{entry.operatorName}</span>
-        </div>
-        <div>
-          <span className="text-zinc-500">V. Inicial: </span>
-          <span className="font-semibold">
-            {`${cashRegister.formatCurrency(entry.initialValue)}` + 'kz'}
-          </span>
-        </div>
-        <div>
-          <span className="text-zinc-500">V. Final: </span>
-          <span className="font-semibold">
-            {entry.isClosed ? `${cashRegister.formatCurrency(entry.finalValue)}kz` : 'Aberto'}
-          </span>
-        </div>
-        <div>
-          <span className="text-zinc-500">Diferença: </span>
-          <span className="font-semibold">
-            {entry.isClosed ? `${cashRegister.formatCurrency(entry.difference)}kz` : '---'}
-          </span>
+          <span className="text-zinc-500 font-normal tracking-wide">Operador: </span>
+          <span className="font-normal tracking-wide">{entry.operatorName}</span>
         </div>
       </div>
     </div>
