@@ -1,5 +1,5 @@
 import { SidebarTrigger } from '@/shared/components/ui/sidebar'
-import { Search, BellDot } from 'lucide-react'
+import { MessageCircle, BellDot } from 'lucide-react'
 
 export function TopBar() {
   return (
@@ -12,10 +12,10 @@ export function TopBar() {
       {/* Right side: TopBar visual helper shortcuts */}
       <div className="flex items-center gap-[12px]">
         <button
-          title="Pesquisar"
+          title="Mensagem"
           className="flex h-[36px] w-[36px] items-center justify-center rounded-lg text-zinc-500 hover:text-black hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out cursor-pointer"
         >
-          <Search className="h-[18px] w-[18px] shrink-0" />
+          <MessageCircle className="h-[18px] w-[18px] shrink-0" />
         </button>
 
         <button

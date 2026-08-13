@@ -545,28 +545,14 @@ export function AppSidebar() {
       {/* Rodapé do Sidebar */}
       <SidebarFooter className="py-3 px-3 border-none bg-transparent">
         <div className="flex flex-col gap-1 w-full">
-          {/* Bloco 1: Sidebar Utility Bar (Menu de Ícones) */}
-          {state !== 'collapsed' && (
-            <div className="flex flex-row items-center justify-around w-full py-1">
-              <button
-                title="Notificações"
-                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out cursor-pointer"
-              >
-                <BellDot className="h-4 w-4 shrink-0" />
-              </button>
-
-              <button
-                title="Mensagens"
-                className="flex items-center justify-center p-2 rounded-lg text-zinc-500 hover:text-black hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out cursor-pointer"
-              >
-                <MessageCircle className="h-4 w-4 shrink-0" />
-              </button>
-
+{/* bloco de Abrir_e_Fechar_caixa */}
+      {state !== 'collapsed' && (
+        <div className="flex flex-row items-center justify-around w-full py-1">
               <button
                 onClick={() => setIsCashDrawerOpen(true)}
                 title={isCashRegisterOpened ? `Caixa - Aberto a ${elapsedTime}` : "Caixa - Fechada"}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all duration-300 ease-in-out cursor-pointer border",
+                  "flex items-center justify-center gap-1.5 w-full max-w-full px-2.5 py-3 rounded-md transition-all duration-300 ease-in-out cursor-pointer border",
                   isCashRegisterOpened
                     ? "bg-green-50 text-green-600 border-green-50 hover:bg-green-100/50"
                     : "bg-red-50 text-red-600 border-red-50 hover:bg-red-100/50"

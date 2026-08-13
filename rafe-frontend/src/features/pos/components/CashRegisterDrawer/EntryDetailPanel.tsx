@@ -82,7 +82,7 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
         </div>
       </div>
 
-      {/* Informações Gerais */}
+      {/* sessao_das_datas */}
       <div className="text-[0.75rem] text-black space-y-[0.875rem] mb-4 pb-3 border-b border-zinc-100 font-normal tracking-wide">
         <div className="flex items-center justify-between">
           <span className="text-[0.76rem] font-semibold tracking-wide text-zinc-400">Abertura:</span>
@@ -96,9 +96,17 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
             {closingMonthDay.month} {closingMonthDay.day} {formatTime(entry.closingTime)}
           </span>
         </div>
-        <div>
-          <span className="text-zinc-500 font-normal tracking-wide">Operador: </span>
-          <span className="font-normal tracking-wide">{entry.operatorName}</span>
+      </div>
+
+      {/* sessao_das_obs */}
+      <div className="text-[0.75rem] text-black space-y-[0.875rem] mb-4 pb-3 border-b border-zinc-100 font-normal tracking-wide">
+        <div className="bg-zinc-100 rounded-md px-3 py-2">
+          <span className="block text-[0.625rem] font-semibold tracking-wide uppercase text-zinc-600">OBS na Abertura:</span>
+          <span className="block mt-1 font-normal tracking-wide text-black">{entry.openingObservation?.trim() || 'Sem observações'}</span>
+        </div>
+        <div className="bg-zinc-100 rounded-md px-3 py-2">
+          <span className="block text-[0.625rem] font-semibold tracking-wide uppercase text-zinc-600">OBS no Fecho:</span>
+          <span className="block mt-1 font-normal tracking-wide text-black">{entry.closingObservation?.trim() || 'Sem observações'}</span>
         </div>
       </div>
     </div>
