@@ -3,6 +3,7 @@
 Este ficheiro define apenas **comportamento do agente**. Regras de sistema (arquitectura de código, cores, tipografia, espaçamento, layout) vivem noutros ficheiros, e devem ser consultadas conforme a tarefa:
 - Arquitectura de código, componentes, estado: `skill-arquitetura.md`
 - Identidade visual, cores, tipografia, espaçamento, layout, animações: `skill-identidade-visual.md`
+- Em qualquer tarefa que toque em UI (componentes visuais, espaçamento, tamanhos, cores, layout, Sheet/Drawer/Modal), é obrigatório ler `skill-identidade-visual.md` antes de escrever código. Nunca uses `px` fora da moldura definida nessa skill.
 
 ## Escopo estrito de implementação
 Estas regras são obrigatórias para qualquer tarefa, visual ou não, em qualquer ficheiro do projecto.

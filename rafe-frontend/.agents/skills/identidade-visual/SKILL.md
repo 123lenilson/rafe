@@ -1,6 +1,6 @@
 ---
 name: identidade-visual
-description: Identidade visual do Rafe Frontend — paleta de cores neutra, tipografia (Inter), border-radius, espaçamento, layout estrutural (px/vw), sombras, ícones, botões, inputs, tabelas, estados vazios/carregamento, animações. Usar sempre que a tarefa envolver componentes visuais, cores, Sheet/Drawer/Modal, botões, tabelas, ou qualquer alteração de UI.
+description: Identidade visual do Rafe Frontend — paleta de cores neutra, tipografia (Inter), border-radius, espaçamento, layout (moldura em px, conteúdo em rem), sombras, ícones, botões, inputs, tabelas, estados vazios/carregamento, animações. Usar sempre que a tarefa envolver componentes visuais, cores, Sheet/Drawer/Modal, botões, tabelas, ou qualquer alteração de UI.
 ---
 
 # Skill: Identidade Visual — Rafe Frontend
@@ -85,12 +85,17 @@ Se for necessário um espaço fora desta escala, adiciona-se um novo degrau aqui
 
 **Nota importante — o que continua em `px` e porquê:** as dimensões do "shell" estrutural da aplicação (largura da sidebar `230px`, drawer `780px`, `max-width` do conteúdo principal `1200px`) mantêm-se em `px`, definidas na secção 5. Isto é deliberado, não um esquecimento: são dimensões de layout que já causaram bugs reais de inconsistência entre monitores quando eram fluidas, e o padrão de sidebar/drawer com largura fixa em `px` é o mesmo que se vê no Acctual, Square e Mercury — as tuas três referências. Espaçamento interno e radius escalam com acessibilidade; a moldura da aplicação, não.
 
-## 5. Estrutura e Layout (herdado do AGENTS.md)
+## 5. Estrutura e Layout
 
 ### Unidades
-- Nunca usar `vw`, `vh`, `%` ou valores fraccionários (`fr`) em elementos estruturais: sidebars, drawers, painéis, modais, colunas de grid, containers principais.
-- Usar sempre `px` para larguras, alturas e espaçamentos estruturais.
-- `rem` é exclusivo de tipografia (ver secção 2).
+Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
+
+- **Moldura — `px`.** Apenas os valores listados em "Valores já definidos no projecto" (abaixo), mais as regras de "Contenção" e "Containers de painel". "Estrutural" significa só isto. Nenhum outro valor é estrutural.
+- **Conteúdo — `rem`.** Tudo o que está dentro da moldura usa as escalas fechadas das secções 2, 3, 4, 10, 11, 12 e 13: padding, margin, gap, largura/altura de botões, inputs, linhas de tabela, cards e ícones, border-radius e tipografia.
+- `px` fora da moldura só é permitido em: bordas e outlines finos (`1px`–`2px`), sombras (secção 9) e o radius `full` (`9999px`).
+- Em elementos da moldura (sidebars, drawers, painéis, modais, colunas de grid, containers principais) nunca usar `vh`, `%` ou `fr` para definir dimensões. A única utilização de `vw` permitida é no container externo de Sheet/Drawer/Modal, descrita em "Containers de painel".
+- Quando for pedido "mais" ou "menos" espaço, o agente sobe ou desce um degrau da escala da secção 4. Nunca inventa um valor em `px` nem usa valores arbitrários entre colchetes (ex: `p-[13px]`).
+- Se for necessário um valor que não está nas escalas, o agente pára e pergunta antes de criar qualquer valor novo.
 
 ### Contenção
 - Todo elemento que possa crescer (drawer, painel, área de conteúdo) tem `max-width` definido explicitamente em `px`.
@@ -103,7 +108,7 @@ Se for necessário um espaço fora desta escala, adiciona-se um novo degrau aqui
 - Coluna esquerda do CashRegisterDrawer (teclado numérico): `300px`
 
 ### Containers de painel (Sheet/Drawer/Modal)
-O container externo do painel usa width proporcional ao ecrã em `vw`, com `min-width` e `max-width` em `px` (ex: `sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px]`). O conteúdo interno do painel (grids, colunas, textos) tem `max-width` fixo em `px` e usa `mx-auto` quando necessário, para nunca esticar mesmo que o container externo cresça. Colunas internas de largura fixa (teclados numéricos, listas estreitas) mantêm sempre o seu `px` fixo, independentemente do container externo. Aplica-se a todos os Sheets, Drawers e Modals, actuais e futuros.
+O container externo do painel usa width proporcional ao ecrã em `vw`, com `min-width` e `max-width` em `px` (ex: `sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px]`). O conteúdo interno do painel (grids, colunas, textos) tem `max-width` fixo em `px` e usa `mx-auto` quando necessário, para nunca esticar mesmo que o container externo cresça. Colunas internas de largura fixa (teclados numéricos, listas estreitas) mantêm sempre o seu `px` fixo, independentemente do container externo. Abaixo do breakpoint `sm`, o painel ocupa a largura total do ecrã, sem `min-width` — os valores em `px` do exemplo acima aplicam-se apenas a partir de `sm:`. Aplica-se a todos os Sheets, Drawers e Modals, actuais e futuros.
 
 ### Divisão estrutural da aplicação (inspirado no Acctual)
 - Sidebar fixa à esquerda com navegação por módulos, sempre visível em desktop.
