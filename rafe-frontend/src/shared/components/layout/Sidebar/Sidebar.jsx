@@ -90,7 +90,7 @@ export function CompanySelector({
             <span className="text-sm font-bold text-black leading-tight truncate">
               {companyName}
             </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 leading-tight truncate">
+            <span className="text-xs uppercase font-bold tracking-widest text-zinc-400 leading-tight truncate">
               {plan}
             </span>
           </div>
@@ -192,15 +192,15 @@ export function AppSidebar() {
   }
 
   // Estilos de link activo e inactivo para botões principais (preto bold, fonte maior, padding vertical aumentado, transição super suave, cor #f0f0f0 e gap-4 para ícones)
-  const activeClass = "h-auto py-[10px] px-[18px] bg-[#e4e4e7] text-black font-bold text-[14px] hover:bg-[#e4e4e7] transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
-  const inactiveClass = "h-auto py-[10px] px-[18px] text-zinc-800 font-bold text-[14px] hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out gap-[10px] rounded-lg"
+  const activeClass = "h-auto py-3 px-4 bg-[#e4e4e7] text-black font-bold text-sm hover:bg-[#e4e4e7] transition-all duration-300 ease-in-out gap-3 rounded-lg"
+  const inactiveClass = "h-auto py-3 px-4 text-zinc-800 font-bold text-sm hover:bg-[#e4e4e7]/60 transition-all duration-300 ease-in-out gap-3 rounded-lg"
 
   // Estilo para botões de categoria pai (com submenu) para manter a seta justificada à direita e habilitar animações group-hover/trigger isoladas
   const triggerClass = cn(inactiveClass, "w-full flex items-center justify-between group/trigger")
 
   // Estilo comum para submenus (preto bold, padding vertical maior, fonte próxima do link principal, transição super suave idêntica e cor #f0f0f0)
   const getSubmenuClass = ({ isActive }) => cn(
-    "w-full h-auto px-[18px] py-[8px] text-[13px] font-bold transition-all duration-300 ease-in-out block rounded-lg",
+    "w-full h-auto px-4 py-2 text-[0.8125rem] font-bold transition-all duration-300 ease-in-out block rounded-lg",
     isActive
       ? "bg-[#e4e4e7] text-black hover:bg-[#e4e4e7]"
       : "text-zinc-600 hover:text-black hover:bg-[#e4e4e7]/40"
@@ -297,7 +297,7 @@ export function AppSidebar() {
                 <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    "size-[1.125rem] text-zinc-400 transition-all duration-300 transform",
                     openMenu === 'faturacao' && "rotate-90"
                   )}
                 />
@@ -364,7 +364,7 @@ export function AppSidebar() {
                 <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    "size-[1.125rem] text-zinc-400 transition-all duration-300 transform",
                     openMenu === 'produtos' && "rotate-90"
                   )}
                 />
@@ -415,7 +415,7 @@ export function AppSidebar() {
                 <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    "size-[1.125rem] text-zinc-400 transition-all duration-300 transform",
                     openMenu === 'financas' && "rotate-90"
                   )}
                 />
@@ -510,7 +510,7 @@ export function AppSidebar() {
                 <ChevronRight
                   strokeWidth={2.5}
                   className={cn(
-                    "h-[18px] w-[18px] text-zinc-400 transition-all duration-300 transform",
+                    "size-[1.125rem] text-zinc-400 transition-all duration-300 transform",
                     openMenu === 'definicoes' && "rotate-90"
                   )}
                 />
@@ -579,13 +579,13 @@ export function AppSidebar() {
                 >
                   <Avatar className="h-8 w-8 select-none shrink-0">
                     <AvatarImage src="" alt="Operador Rafe" />
-                    <AvatarFallback className="font-bold text-[10px] text-black bg-zinc-100 border border-zinc-200">OP</AvatarFallback>
+                    <AvatarFallback className="font-bold text-xs text-black bg-zinc-100 border border-zinc-200">OP</AvatarFallback>
                   </Avatar>
                   {state !== 'collapsed' && (
                     <>
                       <div className="flex flex-col min-w-0 flex-1 text-left gap-0.5">
                         <span className="text-sm font-semibold text-black truncate leading-tight">Operador Rafe</span>
-                        <span className="text-[10px] text-zinc-400 truncate leading-tight">operator@rafe.com</span>
+                        <span className="text-xs text-zinc-400 truncate leading-tight">operator@rafe.com</span>
                       </div>
                       <ChevronsUpDown className="w-4 h-4 text-zinc-400 shrink-0" />
                     </>

@@ -32,7 +32,7 @@ export function NumericKeypad({ onKeyPress }: NumericKeypadProps) {
           onClick={() => onKeyPress(key.value)}
           rippleColor="#a1a1aa"
           className={`
-            py-3 text-[18px] border-[0.5px] border-zinc-200 rounded-[8px] bg-white 
+            py-3 text-[1.0625rem] border-[0.5px] border-zinc-200 rounded-lg bg-white
             hover:bg-zinc-50/50 transition-colors font-semibold text-black 
             select-none cursor-pointer focus:outline-none ${key.className || ''}
           `}

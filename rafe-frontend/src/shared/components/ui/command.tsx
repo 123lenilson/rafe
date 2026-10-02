@@ -53,7 +53,7 @@ function CommandDialog({
         )}
         showCloseButton={showCloseButton}
       >
-        <Command className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:pt-4.5 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-extrabold [&_[cmdk-group-heading]]:text-zinc-400 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest">
+        <Command className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:pt-4.5 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-extrabold [&_[cmdk-group-heading]]:text-zinc-400 [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest">
           {children}
         </Command>
       </DialogContent>
@@ -71,7 +71,7 @@ function CommandInput({
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          "flex h-10 w-full bg-transparent text-[15px] text-black placeholder:text-zinc-400 outline-none disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-10 w-full bg-transparent text-sm text-black placeholder:text-zinc-400 outline-none disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         {...props}
@@ -103,7 +103,7 @@ function CommandEmpty({
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn("py-8 text-center text-[15px] text-zinc-400 font-semibold", className)}
+      className={cn("py-8 text-center text-sm text-zinc-400 font-semibold", className)}
       {...props}
     />
   )
@@ -146,7 +146,7 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-3.5 rounded-lg px-4 py-3 text-[15px] text-zinc-700 outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-zinc-100/70 data-[selected=true]:text-black data-[selected]:bg-zinc-100/70 data-[selected]:text-black [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 hover:bg-zinc-50 transition-colors duration-150 font-semibold",
+        "relative flex cursor-pointer select-none items-center gap-3.5 rounded-lg px-4 py-3 text-sm text-zinc-700 outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-zinc-100/70 data-[selected=true]:text-black data-[selected]:bg-zinc-100/70 data-[selected]:text-black [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 hover:bg-zinc-50 transition-colors duration-150 font-semibold",
         className
       )}
       {...props}

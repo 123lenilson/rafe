@@ -58,10 +58,10 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
         <RippleButton
           rippleColor="#a1a1aa"
           rippleOnHover={true}
-          className="w-[32px] h-[32px] rounded-full bg-white hover:bg-zinc-50/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none cursor-pointer"
+          className="w-8 h-8 rounded-full bg-white hover:bg-zinc-50/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none cursor-pointer"
           title="Filtrar"
         >
-          <Filter className="h-[16px] w-[16px]" />
+          <Filter className="size-4" />
         </RippleButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -117,7 +117,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                         e.stopPropagation()
                         handleUserToggle(u.name)
                       }}
-                      className="flex items-center gap-[6px] px-2 py-[5px] text-xs text-zinc-500 font-normal rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out select-none"
+                      className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-zinc-500 font-normal rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out select-none"
                     >
                       {/* Checkbox minimalista */}
                       <div 
@@ -149,7 +149,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                 { name: "João Oliveira", initials: "JO" },
                 { name: "Operador Rafe", initials: "OP" }
               ].filter(u => u.name.toLowerCase().includes(userSearchTerm.toLowerCase())).length === 0 && (
-                <span className="text-[10px] text-zinc-400 text-center py-2 font-medium">Nenhum resultado</span>
+                <span className="text-xs text-zinc-400 text-center py-2 font-medium">Nenhum resultado</span>
               )}
             </div>
           </DropdownMenuSubContent>
@@ -187,7 +187,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
             >
               <button
                 onClick={() => setObsSearchTerm("")}
-                className="text-[10px] text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/80 font-medium px-2 py-1 rounded bg-transparent border-0 cursor-pointer focus:outline-none select-none transition-colors"
+                className="text-xs text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/80 font-medium px-2 py-1 rounded bg-transparent border-0 cursor-pointer focus:outline-none select-none transition-colors"
               >
                 Apagar
               </button>
@@ -200,7 +200,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                     setObsSearchTerm("")
                   }
                 }}
-                className="text-[10px] text-white bg-black hover:bg-black/90 font-medium px-2.5 py-1 rounded border-0 cursor-pointer focus:outline-none select-none transition-all"
+                className="text-xs text-white bg-black hover:bg-black/90 font-medium px-2.5 py-1 rounded border-0 cursor-pointer focus:outline-none select-none transition-all"
               >
                 Aplicar
               </button>
@@ -270,7 +270,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
             >
               <button
                 onClick={() => setValFilterValue("")}
-                className="text-[10px] text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/80 font-medium px-2 py-1 rounded bg-transparent border-0 cursor-pointer focus:outline-none select-none transition-colors"
+                className="text-xs text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/80 font-medium px-2 py-1 rounded bg-transparent border-0 cursor-pointer focus:outline-none select-none transition-colors"
               >
                 Apagar
               </button>
@@ -289,7 +289,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                     setValFilterValue("")
                   }
                 }}
-                className="text-[10px] text-white bg-black hover:bg-black/90 font-medium px-2.5 py-1 rounded border-0 cursor-pointer focus:outline-none select-none transition-all"
+                className="text-xs text-white bg-black hover:bg-black/90 font-medium px-2.5 py-1 rounded border-0 cursor-pointer focus:outline-none select-none transition-all"
               >
                 Aplicar
               </button>
@@ -334,7 +334,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                     className="flex flex-wrap items-baseline justify-between px-2 py-1.5 text-xs rounded-md cursor-pointer hover:bg-[#f0f0f0] transition-all duration-150 ease-in-out select-none"
                   >
                     <span className="text-black font-semibold">{opt.label}</span>
-                    <span className="text-zinc-400 font-normal text-[10px] ml-1.5">{opt.detail}</span>
+                    <span className="text-zinc-400 font-normal text-xs ml-1.5">{opt.detail}</span>
                   </div>
                 ))
               })()}
@@ -345,12 +345,12 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                 className="p-2 border-t border-zinc-100 flex flex-col gap-2 bg-white"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
                   Customizar Período
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="flex-1 flex flex-col gap-0.5">
-                    <label className="text-[9px] text-zinc-400 font-medium">De</label>
+                    <label className="text-xs text-zinc-400 font-medium">De</label>
                     <input
                       type="date"
                       value={customStartDate}
@@ -360,7 +360,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                     />
                   </div>
                   <div className="flex-1 flex flex-col gap-0.5">
-                    <label className="text-[9px] text-zinc-400 font-medium">Até</label>
+                    <label className="text-xs text-zinc-400 font-medium">Até</label>
                     <input
                       type="date"
                       value={customEndDate}
@@ -377,7 +377,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                       setCustomEndDate("")
                       setShowCustomDate(false)
                     }}
-                    className="text-[10px] text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/80 font-medium px-2 py-1 rounded bg-transparent border-0 cursor-pointer focus:outline-none select-none transition-colors"
+                    className="text-xs text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/80 font-medium px-2 py-1 rounded bg-transparent border-0 cursor-pointer focus:outline-none select-none transition-colors"
                   >
                     Cancelar
                   </button>
@@ -400,7 +400,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                         setShowCustomDate(false)
                       }
                     }}
-                    className="text-[10px] text-white bg-black hover:bg-black/90 font-medium px-2.5 py-1 rounded border-0 cursor-pointer focus:outline-none select-none transition-all"
+                    className="text-xs text-white bg-black hover:bg-black/90 font-medium px-2.5 py-1 rounded border-0 cursor-pointer focus:outline-none select-none transition-all"
                   >
                     Aplicar
                   </button>
@@ -417,7 +417,7 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
                   className="w-full flex items-center justify-between px-2 py-1.5 text-xs text-black font-semibold hover:bg-zinc-100/80 rounded transition-colors text-left border-0 bg-transparent cursor-pointer outline-none focus:outline-none"
                 >
                   <span>Customizar Data</span>
-                  <span className="text-[10px] text-zinc-400 font-normal">→</span>
+                  <span className="text-xs text-zinc-400 font-normal">→</span>
                 </button>
               </div>
             )}

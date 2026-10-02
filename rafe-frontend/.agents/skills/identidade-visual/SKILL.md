@@ -75,7 +75,9 @@ Em `rem`, não `px` — escala fechada, e a razão de ser `rem` (e não `px`) é
 | Nome | Valor (`rem`) | Equivalente visual a 16px base | Quando usar |
 |---|---|---|---|
 | `xs` | `0.25rem` | `4px` | Entre ícone e texto, elementos deliberadamente colados (ex: label + valor no mesmo grupo) |
+| `xs-sm` | `0.375rem` | `6px` (Tailwind `1.5`) | Espaçamento intermédio entre `xs` e `sm` |
 | `sm` | `0.5rem` | `8px` | Entre elementos relacionados dentro do mesmo componente (botões de um grupo, lista compacta) |
+| `sm-md` | `0.75rem` | `12px` (Tailwind `3`) | Espaçamento intermédio entre `sm` e `md` |
 | `md` | `1rem` | `16px` | Espaçamento padrão entre componentes distintos |
 | `lg` | `1.5rem` | `24px` | Padding interno de cards/painéis, separação de blocos numa secção |
 | `xl` | `2rem` | `32px` | Separação entre secções distintas de uma página |
@@ -106,6 +108,10 @@ Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
 - Drawer (Sheet): `780px`
 - Conteúdo principal (dentro do `<main>` do DashboardLayout): `max-w-[1200px]`
 - Coluna esquerda do CashRegisterDrawer (teclado numérico): `300px`
+- Painel de filtros do histórico de caixa: `280px`
+- Menu de filtros do histórico de caixa: `290px`
+- Célula de valor expansível do histórico de caixa: `95px`
+- Aba de documento Factura/Recibo no POSLayout: `220px`
 
 ### Containers de painel (Sheet/Drawer/Modal)
 O container externo do painel usa width proporcional ao ecrã em `vw`, com `min-width` e `max-width` em `px` (ex: `sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px]`). O conteúdo interno do painel (grids, colunas, textos) tem `max-width` fixo em `px` e usa `mx-auto` quando necessário, para nunca esticar mesmo que o container externo cresça. Colunas internas de largura fixa (teclados numéricos, listas estreitas) mantêm sempre o seu `px` fixo, independentemente do container externo. Abaixo do breakpoint `sm`, o painel ocupa a largura total do ecrã, sem `min-width` — os valores em `px` do exemplo acima aplicam-se apenas a partir de `sm:`. Aplica-se a todos os Sheets, Drawers e Modals, actuais e futuros.

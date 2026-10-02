@@ -223,9 +223,9 @@ export function OpenCashPanel({
   }, [open, cashRegisterValue, draftObservation, observationsList, cashRegister.isCashRegisterOpened])
 
   return (
-    <div className="flex flex-col pt-[20px] pb-[20px] px-[20px] bg-[#F5F5F5] h-full border-r border-zinc-200 shrink-0 overflow-hidden">
+    <div className="flex flex-col pt-6 pb-6 px-6 bg-[#F5F5F5] h-full border-r border-zinc-200 shrink-0 overflow-hidden">
       {/* Header Fixo */}
-      <div className="py-0 shrink-0 flex items-center justify-between mb-[12px] min-h-[32px]">
+      <div className="py-0 shrink-0 flex items-center justify-between mb-3 min-h-8">
         <div className="flex items-center gap-2">
           <FontAwesomeIcon icon={faCashRegister} className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
           <h3 className="text-xs font-normal text-zinc-600 font-sans">
@@ -236,9 +236,9 @@ export function OpenCashPanel({
           onClick={() => onOpenChange(false)}
           rippleColor="#a1a1aa"
           rippleOnHover={true}
-          className="w-[32px] h-[32px] rounded-full bg-[#F5F5F5] hover:bg-zinc-200/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none"
+          className="w-8 h-8 rounded-full bg-[#F5F5F5] hover:bg-zinc-200/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none"
         >
-          <X className="h-[16px] w-[16px]" />
+          <X className="size-4" />
         </RippleButton>
       </div>
 

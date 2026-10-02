@@ -15,7 +15,7 @@ export function CollapsibleValueCell({ collapsed: _collapsed, children, classNam
   // O translateX + opacity é gerido pelo CSS em index.css.
   return (
     <div
-      className={`rafe-collapsible-col px-[6px] py-[6px] ${className}`}
+      className={`rafe-collapsible-col px-1.5 py-1.5 ${className}`}
       style={{ width: EXPANDED_WIDTH, minWidth: EXPANDED_WIDTH, maxWidth: EXPANDED_WIDTH }}
     >
       {children}

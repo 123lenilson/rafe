@@ -25,7 +25,7 @@ export function DashboardLayout() {
             <TopBar />
             
             {/* Área de conteúdo rolável */}
-            <div className="flex-1 p-[24px] overflow-y-auto">
+            <div className="flex-1 p-6 overflow-y-auto">
               <div className="w-full max-w-[1200px] mx-auto">
                 {/* Outlet renderiza os subcomponentes de rota */}
                 <Outlet />

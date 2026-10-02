@@ -283,9 +283,9 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
   }
 
   return (
-    <div className="flex flex-col pt-[28px] pb-[40px] px-[16px] h-full overflow-hidden bg-white max-w-[680px] w-full mx-auto">
+    <div className="flex flex-col pt-8 pb-12 px-4 h-full overflow-hidden bg-white max-w-[680px] w-full mx-auto">
       {/* Header da Coluna 2 */}
-      <div className="py-0 shrink-0 flex items-center justify-between mb-[8px] min-h-[32px] gap-2">
+      <div className="py-0 shrink-0 flex items-center justify-between mb-2 min-h-8 gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-2 shrink-0">
             <History className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
@@ -366,22 +366,22 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
             </button>
           )}
         </div>
-        <div className="flex items-center gap-[4px]">
+        <div className="flex items-center gap-1">
           <HistoryFilterMenu filters={filters} />
 
           <RippleButton
             onClick={() => onOpenChange(false)}
             rippleColor="#a1a1aa"
             rippleOnHover={true}
-            className="w-[32px] h-[32px] rounded-full bg-white hover:bg-zinc-50/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white hover:bg-zinc-50/50 border-0 p-0 flex items-center justify-center transition-colors text-zinc-500 hover:text-zinc-800 focus:outline-none cursor-pointer"
             title="Fechar"
           >
-            <X className="h-[16px] w-[16px]" />
+            <X className="size-4" />
           </RippleButton>
         </div>
       </div>
       {/* Main da Coluna 2 */}
-      <div className="flex-1 mt-[16px] min-h-0 flex flex-col">
+      <div className="flex-1 mt-4 min-h-0 flex flex-col">
         <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col relative">
           <div className="flex flex-1 min-h-0 overflow-hidden relative">
             <div
@@ -397,8 +397,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                  <>
                    {/* Caixa aberto */}
                   {activeSession && (
-                    <div className="mb-[20px]">
-                      <div className="mb-[2px] px-[6px]">
+                    <div className="mb-6">
+                      <div className="mb-[2px] px-1.5">
                         <span className="text-[0.75rem] font-normal text-black">
                           Caixa aberto
                         </span>
@@ -406,23 +406,23 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                       <div className="w-full text-[0.75rem] font-sans select-none">
                       <div className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
                         <div className="flex text-black font-semibold h-[28px]">
-                          <div className="px-[6px] py-[4px]" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <div className="px-[6px] py-[4px]" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
-                            <span className="inline-flex items-center gap-[4px]">
+                          <div className="px-1.5 py-1" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-1.5 py-1" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-1.5 py-1" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-1 font-semibold text-zinc-500">
+                            <span className="inline-flex items-center gap-1">
                               <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Inicial
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
-                            <span className="inline-flex items-center gap-[4px]">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-1 font-semibold text-zinc-500">
+                            <span className="inline-flex items-center gap-1">
                               <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Final
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
-                            <span className="inline-flex items-center gap-[4px]">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-1 font-semibold text-zinc-500">
+                            <span className="inline-flex items-center gap-1">
                               <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               Diferença
                             </span>
@@ -433,10 +433,10 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                       <div>
                         <div
                           onClick={() => handleRowClick(String(activeSession.id))}
-                          className={`flex h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black cursor-pointer ${selectedEntryId === String(activeSession.id) ? 'bg-blue-50' : ''}`}
+                          className={`flex h-11 hover:bg-zinc-100 transition-colors duration-150 text-black cursor-pointer ${selectedEntryId === String(activeSession.id) ? 'bg-blue-50' : ''}`}
                         >
-                          <div className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}>
-                            <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-green-500 rounded-sm" />
+                          <div className="relative pl-4 pr-1.5 py-1.5 text-left whitespace-nowrap" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}>
+                            <div className="absolute left-0 top-3 bottom-3 w-[3px] bg-green-500 rounded-sm" />
                             <span className="inline-block border-b border-dotted border-zinc-300 pb-[2px]">
                               {(() => {
                                 const { month, day } = getMonthAndDay(activeSession.openingDate)
@@ -452,7 +452,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                               })()}
                             </span>
                           </div>
-                          <div className="px-[6px] py-[6px] text-left truncate" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }} title={activeSession.operatorName}>
+                          <div className="px-1.5 py-1.5 text-left truncate" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }} title={activeSession.operatorName}>
                             {activeSession.operatorName}
                           </div>
                           {(() => {
@@ -469,13 +469,13 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                               activeObservation && activeObservation.trim() ? `obs do fecho: "${activeObservation.trim()}"` : ""
                             ].filter(Boolean).join('\n') || activeSession.observation || ''
                             return (
-                              <div className="px-[6px] py-[6px] text-left truncate italic" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }} title={activeObsTitle}>
+                              <div className="px-1.5 py-1.5 text-left truncate italic" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }} title={activeObsTitle}>
                                 {activeObsPreview}
                               </div>
                             )
                           })()}
                           <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                            <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                            <span className="inline-block px-1.5 py-[1px] bg-zinc-50 border border-zinc-200 rounded-sm font-semibold">
                               {`${cashRegister.formatCurrency(activeSession.initialValue)}` + 'kz'}
                             </span>
                           </CollapsibleValueCell>
@@ -496,7 +496,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                   <span
                                     key={finalStr}
-                                    className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
+                                    className={`inline-block px-1.5 py-[1px] bg-zinc-50 border border-zinc-200 rounded-sm font-semibold animate-in zoom-in-95 duration-100 ${hasTyped ? 'text-black' : 'text-zinc-400'}`}
                                   >
                                     {finalStr}
                                   </span>
@@ -504,7 +504,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                 <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
                                   <span
                                     key={diffStr}
-                                    className={`inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
+                                    className={`inline-block px-1.5 py-[1px] bg-zinc-50 border border-zinc-200 rounded-sm font-semibold animate-in zoom-in-95 duration-100 ${hasTyped && diff < 0 ? 'text-red-600' : hasTyped ? 'text-black' : 'text-zinc-400'}`}
                                   >
                                     {diffStr}
                                   </span>
@@ -520,8 +520,8 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
 
                   {/* Histórico fechado */}
                   {sections.map((section, sectionIdx) => (
-                    <div key={section.title} className={sectionIdx > 0 || activeSession ? 'mt-[20px]' : ''}>
-                      <div className="mb-[2px] px-[6px]">
+                    <div key={section.title} className={sectionIdx > 0 || activeSession ? 'mt-6' : ''}>
+                      <div className="mb-[2px] px-1.5">
                         <span className="text-[0.75rem] font-normal text-black">
                           {section.title}
                         </span>
@@ -529,23 +529,23 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                       <div className="w-full text-[0.75rem] font-sans select-none">
                       <div className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
                         <div className="flex text-black font-semibold h-[28px]">
-                          <div className="px-[6px] py-[4px]" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <div className="px-[6px] py-[4px]" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <div className="px-[6px] py-[4px]" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
-                            <span className="inline-flex items-center gap-[4px]">
+                          <div className="px-1.5 py-1" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-1.5 py-1" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <div className="px-1.5 py-1" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }}></div>
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-1 font-semibold text-zinc-500">
+                            <span className="inline-flex items-center gap-1">
                               <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Inicial
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
-                            <span className="inline-flex items-center gap-[4px]">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-1 font-semibold text-zinc-500">
+                            <span className="inline-flex items-center gap-1">
                               <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               V. Final
                             </span>
                           </CollapsibleValueCell>
-                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-[4px] font-semibold text-zinc-500">
-                            <span className="inline-flex items-center gap-[4px]">
+                          <CollapsibleValueCell collapsed={columnsCollapsed} className="py-1 font-semibold text-zinc-500">
+                            <span className="inline-flex items-center gap-1">
                               <ArrowUpDown className="h-3 w-3 text-zinc-500" />
                               Diferença
                             </span>
@@ -563,10 +563,10 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                             <div
                               key={entry.id}
                               onClick={() => handleRowClick(String(entry.id))}
-                              className={`flex h-[44px] hover:bg-zinc-100 transition-colors duration-150 text-black cursor-pointer ${selectedEntryId === String(entry.id) ? 'bg-blue-50' : ''}`}
+                              className={`flex h-11 hover:bg-zinc-100 transition-colors duration-150 text-black cursor-pointer ${selectedEntryId === String(entry.id) ? 'bg-blue-50' : ''}`}
                             >
-                              <div className="relative pl-[14px] pr-[6px] py-[6px] text-left whitespace-nowrap" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}>
-                                <div className="absolute left-0 top-[10px] bottom-[10px] w-[3px] bg-blue-500 rounded-sm" />
+                              <div className="relative pl-4 pr-1.5 py-1.5 text-left whitespace-nowrap" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}>
+                                <div className="absolute left-0 top-3 bottom-3 w-[3px] bg-blue-500 rounded-sm" />
                                 <span className="inline-block border-b border-dotted border-zinc-300 pb-[2px]">
                                   {(() => {
                                     const { month, day } = getMonthAndDay(entry.openingDate)
@@ -586,10 +586,10 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                   })()}
                                 </span>
                               </div>
-                              <div className="px-[6px] py-[6px] text-left truncate" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }} title={entry.operatorName}>
+                              <div className="px-1.5 py-1.5 text-left truncate" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }} title={entry.operatorName}>
                                 {entry.operatorName}
                               </div>
-                              <div className="px-[6px] py-[6px] text-left truncate italic" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }} title={entry.observation}>
+                              <div className="px-1.5 py-1.5 text-left truncate italic" style={{ width: '3.75rem', minWidth: '3.75rem', maxWidth: '3.75rem', flexShrink: 0, flexGrow: 0 }} title={entry.observation}>
                                 {(() => {
                                   if (entry.closingObservation) {
                                     return `${entry.closingObservation.slice(0, 3)}...`
@@ -604,17 +604,17 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                                 })()}
                               </div>
                               <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                <span className="inline-block px-1.5 py-[1px] bg-zinc-50 border border-zinc-200 rounded-sm font-semibold">
                                   {initialStr}
                                 </span>
                               </CollapsibleValueCell>
                               <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                <span className="inline-block px-1.5 py-[1px] bg-zinc-50 border border-zinc-200 rounded-sm font-semibold">
                                   {finalStr}
                                 </span>
                               </CollapsibleValueCell>
                               <CollapsibleValueCell collapsed={columnsCollapsed} className="font-sans whitespace-nowrap">
-                                <span className="inline-block px-[6px] py-[1px] bg-zinc-50 border border-zinc-200 rounded-[4px] font-semibold">
+                                <span className="inline-block px-1.5 py-[1px] bg-zinc-50 border border-zinc-200 rounded-sm font-semibold">
                                   {diffStr}
                                 </span>
                               </CollapsibleValueCell>

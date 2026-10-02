@@ -45,7 +45,7 @@ export function POSLayout() {
       onValueChange={(value) => setActiveTabId(Number(value))}
       value={activeTabId === null ? '' : String(activeTabId)}
     >
-      <div className="flex h-[44px] shrink-0 items-end gap-1 border-b border-border bg-muted px-0">
+      <div className="flex h-11 shrink-0 items-end gap-1 border-b border-border bg-muted px-0">
         <TabsList
           aria-label="Abas do POS"
           className="flex h-full min-w-0 flex-1 items-end justify-start gap-1 overflow-x-auto rounded-none border-0 bg-muted p-0"
@@ -63,7 +63,7 @@ export function POSLayout() {
                 role="presentation"
               >
                 <TabsTrigger
-                  className={`h-[44px] w-full justify-start rounded-t-md rounded-b-none border border-b-0 px-3 pr-12 text-left text-foreground shadow-none transition-none after:hidden focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 focus-visible:ring-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:bg-muted ${
+                  className={`h-11 w-full justify-start rounded-t-md rounded-b-none border border-b-0 px-3 pr-12 text-left text-foreground shadow-none transition-none after:hidden focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 focus-visible:ring-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:bg-muted ${
                     isActive ? 'border-border' : 'border-transparent'
                   }`}
                   value={String(tab.id)}

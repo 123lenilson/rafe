@@ -20,15 +20,15 @@ export function MockPage({ title }: MockPageProps) {
       {/* Elementos visuais premium de simulação de dados */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-zinc-100 pt-6">
         <div className="p-4 rounded-lg bg-zinc-50 border border-zinc-100">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Path da Rota</span>
+          <span className="text-xs uppercase font-bold tracking-wider text-zinc-400">Path da Rota</span>
           <p className="text-xs font-bold text-zinc-700 mt-1 font-mono truncate">{location.pathname}</p>
         </div>
         <div className="p-4 rounded-lg bg-zinc-50 border border-zinc-100">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Componente Sidebar</span>
+          <span className="text-xs uppercase font-bold tracking-wider text-zinc-400">Componente Sidebar</span>
           <p className="text-xs font-bold text-zinc-700 mt-1">Minimalista Preto & Branco</p>
         </div>
         <div className="p-4 rounded-lg bg-zinc-50 border border-zinc-100">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400">shadcn/ui</span>
+          <span className="text-xs uppercase font-bold tracking-wider text-zinc-400">shadcn/ui</span>
           <p className="text-xs font-bold text-zinc-700 mt-1">Primitivos Carregados</p>
         </div>
       </div>
