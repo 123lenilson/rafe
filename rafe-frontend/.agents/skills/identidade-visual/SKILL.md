@@ -111,7 +111,6 @@ Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
 - Painel de filtros do histórico de caixa: `280px`
 - Menu de filtros do histórico de caixa: `290px`
 - Célula de valor expansível do histórico de caixa: `95px`
-- Aba de documento Factura/Recibo no POSLayout: `220px`
 
 ### Containers de painel (Sheet/Drawer/Modal)
 O container externo do painel usa width proporcional ao ecrã em `vw`, com `min-width` e `max-width` em `px` (ex: `sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px]`). O conteúdo interno do painel (grids, colunas, textos) tem `max-width` fixo em `px` e usa `mx-auto` quando necessário, para nunca esticar mesmo que o container externo cresça. Colunas internas de largura fixa (teclados numéricos, listas estreitas) mantêm sempre o seu `px` fixo, independentemente do container externo. Abaixo do breakpoint `sm`, o painel ocupa a largura total do ecrã, sem `min-width` — os valores em `px` do exemplo acima aplicam-se apenas a partir de `sm:`. Aplica-se a todos os Sheets, Drawers e Modals, actuais e futuros.
