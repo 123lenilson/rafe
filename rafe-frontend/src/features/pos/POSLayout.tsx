@@ -1,12 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, X } from 'lucide-react'
+import { ArrowRight, Plus, Search, X } from 'lucide-react'
 import { toast } from 'sonner'
+import ClickSpark from '@/shared/components/ClickSpark'
+import { RippleButton } from '@/shared/components/ui/ripple-button'
+import { CashRegisterDrawer } from '@/features/pos/components/CashRegisterDrawer'
+import { POSProductCategories } from '@/features/pos/components/POSProductCategories'
+import { POSProductGrid } from '@/features/pos/components/POSProductGrid'
+import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
+import {
+  POSSummaryNavigation,
+  type POSSummaryLink,
+} from '@/features/pos/components/POSSummaryNavigation'
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/shared/components/ui/tabs'
+import {
+  InputGroup,
+  InputGroupInput,
+} from '@/shared/components/ui/input-group'
 
 interface POSTab {
   id: number
@@ -20,6 +34,10 @@ export function POSLayout() {
     { id: 1, title: 'Factura-Recibo #1' },
   ])
   const [activeTabId, setActiveTabId] = useState<number | null>(1)
+  const [selectedSummaryLink, setSelectedSummaryLink] =
+    useState<POSSummaryLink | null>(null)
+  const [isCashRegisterDrawerOpen, setIsCashRegisterDrawerOpen] = useState(false)
+  const cashRegister = useCashRegister()
   const tabsListElement = useRef<HTMLDivElement | null>(null)
   const tabElements = useRef(new Map<number, HTMLDivElement>())
   const titleElements = useRef(new Map<number, HTMLSpanElement>())
@@ -148,11 +166,17 @@ export function POSLayout() {
   }
 
   return (
-    <Tabs
-      className="fixed inset-0 flex flex-col gap-0 overflow-hidden bg-background"
-      onValueChange={(value) => setActiveTabId(Number(value))}
-      value={activeTabId === null ? '' : String(activeTabId)}
-    >
+    <ClickSpark>
+      <CashRegisterDrawer
+        cashRegister={cashRegister}
+        onOpenChange={setIsCashRegisterDrawerOpen}
+        open={isCashRegisterDrawerOpen}
+      />
+      <Tabs
+        className="fixed inset-0 flex flex-col gap-0 overflow-hidden bg-background"
+        onValueChange={(value) => setActiveTabId(Number(value))}
+        value={activeTabId === null ? '' : String(activeTabId)}
+      >
       <div className="flex h-8 shrink-0 items-end gap-1 border-b border-background bg-muted px-0">
         <TabsList
           aria-label="Abas do POS"
@@ -235,37 +259,70 @@ export function POSLayout() {
       {tabs.map((tab) => (
         <TabsContent
           key={tab.id}
-          className="min-h-0 flex-1 rounded-b-md border-x border-b border-background bg-background"
+          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-b-md border-x border-b border-background bg-background"
+          onClick={() => setSelectedSummaryLink(null)}
           value={String(tab.id)}
         >
-          <div className="mx-auto w-full max-w-[1200px] p-6">
-            <h1 className="text-2xl font-semibold leading-8 text-foreground">
-              {tab.title}
-            </h1>
-            <p
-              className="mt-2 text-secondary-foreground"
-              style={{ fontSize: '0.8125rem', lineHeight: '1.125rem' }}
-            >
-              Conteúdo simulado desta operação POS.
-            </p>
-
-            <div className="mt-6 border-t border-border pt-6">
-              <p
-                className="font-medium text-foreground"
-                style={{ fontSize: '0.8125rem', lineHeight: '1.125rem' }}
+          <div className="w-full shrink-0">
+            <POSSummaryNavigation
+              onOpenCashRegister={() => setIsCashRegisterDrawerOpen(true)}
+              onSelectLink={setSelectedSummaryLink}
+              selectedLink={selectedSummaryLink}
+            />
+          </div>
+          <div
+            aria-label="Conteúdo principal do POS"
+            className="grid min-h-0 w-full flex-1 grid-cols-[57fr_43fr] rounded-t-2xl bg-muted p-2"
+          >
+            <div className="flex min-h-0 min-w-0 flex-col gap-2 rounded-t-2xl bg-background p-2">
+              <div className="w-full shrink-0">
+                <InputGroup className="h-9 rounded-full border-border bg-background">
+                  <InputGroupInput
+                    aria-label="Pesquisar produto"
+                    className="h-full text-xs placeholder:text-muted-foreground"
+                    id="pos-product-search"
+                    placeholder="Pesquisa Produto"
+                    type="search"
+                  />
+                  <RippleButton
+                    aria-label="Pesquisar produto"
+                    className="inline-flex h-full shrink-0 cursor-pointer items-center justify-center rounded-r-full border-0 bg-muted pl-4 pr-3 text-secondary-foreground focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 active:outline-2 active:outline-secondary-foreground active:shadow-sm"
+                    duration="250ms"
+                    rippleColor="#575757"
+                    type="button"
+                  >
+                    <Search aria-hidden="true" size="1rem" strokeWidth={1.75} />
+                  </RippleButton>
+                </InputGroup>
+                <POSProductCategories />
+              </div>
+              <POSProductGrid />
+            </div>
+            <div className="flex min-h-0 min-w-0 flex-col gap-2 bg-muted px-2 pb-2 pt-0">
+              <div
+                className="grid min-h-0 min-w-0 flex-1 gap-2"
+                style={{ gridTemplateColumns: '54fr 46fr' }}
               >
-                Produto de demonstração #{tab.id}
-              </p>
-              <p
-                className="mt-2 text-secondary-foreground"
-                style={{ fontSize: '0.8125rem', lineHeight: '1.125rem' }}
-              >
-                Esta aba mantém o seu próprio conteúdo de demonstração.
-              </p>
+                <div className="min-h-0 min-w-0 rounded-t-2xl bg-border" />
+                <div className="min-h-0 min-w-0 rounded-t-2xl bg-border" />
+              </div>
+              <div className="w-full">
+                <button
+                  className="flex h-11 w-full items-center justify-between rounded-sm bg-primary px-4 text-sm font-medium text-primary-foreground focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
+                  type="button"
+                >
+                  <span>Total a pagar: 0,00kz</span>
+                  <span className="flex items-center gap-1">
+                    Pagar
+                    <ArrowRight aria-hidden="true" size="1.125rem" strokeWidth={1.75} />
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </TabsContent>
       ))}
-    </Tabs>
+      </Tabs>
+    </ClickSpark>
   )
 }

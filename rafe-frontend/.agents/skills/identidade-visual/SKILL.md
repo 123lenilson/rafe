@@ -32,13 +32,14 @@ Paleta 100% neutra — sem azul, sem laranja. Preto como única cor de acção.
 
 Semânticas (funcionais, fora da identidade):
 - Erro: `#EF4444`
+- Aviso: `#F97316`
 - Sucesso: `#22C543`
 
 **Regra mandatória:** é proibido usar classes de cor soltas do Tailwind (`gray-500`, `slate-400`, `zinc-300`, etc.) directamente em componentes. Usar sempre o token semântico definido acima (ex: `bg-background`, `text-muted-foreground`, `border-border`). Se faltar um tom, adiciona-se um token novo aqui, uma vez — nunca se usa um valor da paleta genérica do Tailwind directamente.
 
 **Foco/acessibilidade:** como não há cor de destaque viva, o estado de foco usa contorno preto — `outline: 2px solid #101010` com `outline-offset: 2px` — nunca anel colorido.
 
-**Limite de cores no ecrã:** nenhum ecrã deve introduzir mais do que os tokens definidos acima mais uma cor semântica (erro ou sucesso) ao mesmo tempo. Nunca misturar erro e sucesso decorativamente no mesmo componente sem função clara.
+**Limite de cores no ecrã:** nenhum ecrã deve introduzir mais do que os tokens definidos acima mais uma cor semântica (erro, aviso ou sucesso) ao mesmo tempo. Excepção funcional: indicadores de stock do POS podem combinar erro, aviso e sucesso para distinguir os intervalos de quantidade; não usar essas cores como decoração.
 
 ## 2. Tipografia
 
@@ -52,6 +53,9 @@ Fonte: **Inter**, com fallback `-apple-system, BlinkMacSystemFont, "Segoe UI", R
 | Corpo | `0.8125rem` | `400` | `1.125rem` | Texto corrente, parágrafos |
 | Corpo (ênfase) | `0.8125rem` | `500` | `1.125rem` | Texto corrente destacado |
 | Legenda / Caption | `0.75rem` | `400` | `1rem` | Texto de apoio, timestamps, metadados |
+| Legenda compacta | `0.6875rem` | `400` | `0.875rem` | Metadados em áreas compactas |
+| Legenda compacta densa | `0.6875rem` | `500` | `0.75rem` | Títulos de metadados empilhados em áreas compactas |
+| Legenda micro | `0.625rem` | `400` | `0.75rem` | Texto secundário em áreas muito compactas |
 
 **Regra mandatória:** tipografia é sempre em `rem`, nunca `px`. Proibido `text-[13px]` ou qualquer valor de fonte entre colchetes fora desta tabela.
 
@@ -64,6 +68,8 @@ Em `rem`, não `px` — escala com as preferências de tamanho de letra/zoom do 
 | `sm` | `0.25rem` | Badges pequenos, checkboxes |
 | `md` | `0.375rem` | Inputs, cards, containers |
 | `lg` | `0.5rem` | Painéis maiores, imagens |
+| `xl` | `0.75rem` | Painéis que ocupam grande parte ou toda a largura da área de conteúdo |
+| `2xl` | `1rem` | Cantos de painéis de conteúdo que ocupam toda a largura da área de trabalho |
 | `full` | `9999px` (pill) | Botões, avatares — excepção: pill não precisa de escalar, é sempre "totalmente arredondado" independentemente do tamanho |
 
 Regra transversal de identidade: **nada no sistema fica com esquinas 100% rectas.** Todo elemento visível — botão, card, input, ícone com fundo, avatar — usa um dos valores acima. É proibido `rounded-none` em componentes de UI, salvo excepção justificada e documentada aqui.
@@ -95,7 +101,7 @@ Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
 - **Moldura — `px`.** Apenas os valores listados em "Valores já definidos no projecto" (abaixo), mais as regras de "Contenção" e "Containers de painel". "Estrutural" significa só isto. Nenhum outro valor é estrutural.
 - **Conteúdo — `rem`.** Tudo o que está dentro da moldura usa as escalas fechadas das secções 2, 3, 4, 10, 11, 12 e 13: padding, margin, gap, largura/altura de botões, inputs, linhas de tabela, cards e ícones, border-radius e tipografia.
 - `px` fora da moldura só é permitido em: bordas e outlines finos (`1px`–`2px`), sombras (secção 9) e o radius `full` (`9999px`).
-- Em elementos da moldura (sidebars, drawers, painéis, modais, colunas de grid, containers principais) nunca usar `vh`, `%` ou `fr` para definir dimensões. A única utilização de `vw` permitida é no container externo de Sheet/Drawer/Modal, descrita em "Containers de painel".
+- Em elementos da moldura (sidebars, drawers, painéis, modais, colunas de grid, containers principais) nunca usar `vh`, `%` ou `fr` para definir dimensões, excepto a divisão POS 57/43 registada abaixo. A única utilização de `vw` permitida além dessa excepção é no container externo de Sheet/Drawer/Modal, descrita em "Containers de painel".
 - Quando for pedido "mais" ou "menos" espaço, o agente sobe ou desce um degrau da escala da secção 4. Nunca inventa um valor em `px` nem usa valores arbitrários entre colchetes (ex: `p-[13px]`).
 - Se for necessário um valor que não está nas escalas, o agente pára e pergunta antes de criar qualquer valor novo.
 
@@ -111,6 +117,8 @@ Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
 - Painel de filtros do histórico de caixa: `280px`
 - Menu de filtros do histórico de caixa: `290px`
 - Célula de valor expansível do histórico de caixa: `95px`
+- Largura mínima dos cards de produtos do POS: `8rem`
+- Área principal do POS: divisão 57/43 entre o contentor de produtos e o contentor vizinho (`57fr`/`43fr`)
 
 ### Containers de painel (Sheet/Drawer/Modal)
 O container externo do painel usa width proporcional ao ecrã em `vw`, com `min-width` e `max-width` em `px` (ex: `sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px]`). O conteúdo interno do painel (grids, colunas, textos) tem `max-width` fixo em `px` e usa `mx-auto` quando necessário, para nunca esticar mesmo que o container externo cresça. Colunas internas de largura fixa (teclados numéricos, listas estreitas) mantêm sempre o seu `px` fixo, independentemente do container externo. Abaixo do breakpoint `sm`, o painel ocupa a largura total do ecrã, sem `min-width` — os valores em `px` do exemplo acima aplicam-se apenas a partir de `sm:`. Aplica-se a todos os Sheets, Drawers e Modals, actuais e futuros.
