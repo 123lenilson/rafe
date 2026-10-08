@@ -56,6 +56,12 @@ Fonte: **Inter**, com fallback `-apple-system, BlinkMacSystemFont, "Segoe UI", R
 | Legenda compacta | `0.6875rem` | `400` | `0.875rem` | Metadados em áreas compactas |
 | Legenda compacta densa | `0.6875rem` | `500` | `0.75rem` | Títulos de metadados empilhados em áreas compactas |
 | Legenda micro | `0.625rem` | `400` | `0.75rem` | Texto secundário em áreas muito compactas |
+| Legenda nano | `0.5625rem` | `400` | `0.6875rem` | Rótulos e valores em inputs compactos do POS |
+| Legenda mini | `0.5rem` | `400` | `0.625rem` | Rótulos e valores nos inputs compactos do carrinho POS |
+| Legenda extra-mini | `0.4375rem` | `400` | `0.5625rem` | Valores numéricos nos inputs compactos do carrinho POS |
+| Legenda ultra-mini | `0.375rem` | `400` | `0.5rem` | Valores numéricos reduzidos nos inputs compactos do carrinho POS |
+| Legenda nano reduzida | `0.3125rem` | `400` | `0.4375rem` | Valores numéricos nos inputs compactos do carrinho POS quando há rótulo interno |
+| Legenda mínima | `0.25rem` | `400` | `0.375rem` | Valores numéricos nos inputs compactos do carrinho POS |
 
 **Regra mandatória:** tipografia é sempre em `rem`, nunca `px`. Proibido `text-[13px]` ou qualquer valor de fonte entre colchetes fora desta tabela.
 
@@ -66,6 +72,7 @@ Em `rem`, não `px` — escala com as preferências de tamanho de letra/zoom do 
 | Nome | Valor | Uso |
 |---|---|---|
 | `sm` | `0.25rem` | Badges pequenos, checkboxes |
+| `xs` | `0.1875rem` | Inputs compactos nos cards de produtos do POS |
 | `md` | `0.375rem` | Inputs, cards, containers |
 | `lg` | `0.5rem` | Painéis maiores, imagens |
 | `xl` | `0.75rem` | Painéis que ocupam grande parte ou toda a largura da área de conteúdo |
@@ -101,7 +108,7 @@ Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
 - **Moldura — `px`.** Apenas os valores listados em "Valores já definidos no projecto" (abaixo), mais as regras de "Contenção" e "Containers de painel". "Estrutural" significa só isto. Nenhum outro valor é estrutural.
 - **Conteúdo — `rem`.** Tudo o que está dentro da moldura usa as escalas fechadas das secções 2, 3, 4, 10, 11, 12 e 13: padding, margin, gap, largura/altura de botões, inputs, linhas de tabela, cards e ícones, border-radius e tipografia.
 - `px` fora da moldura só é permitido em: bordas e outlines finos (`1px`–`2px`), sombras (secção 9) e o radius `full` (`9999px`).
-- Em elementos da moldura (sidebars, drawers, painéis, modais, colunas de grid, containers principais) nunca usar `vh`, `%` ou `fr` para definir dimensões, excepto a divisão POS 57/43 registada abaixo. A única utilização de `vw` permitida além dessa excepção é no container externo de Sheet/Drawer/Modal, descrita em "Containers de painel".
+- Em elementos da moldura (sidebars, drawers, painéis, modais, colunas de grid, containers principais) nunca usar `vh`, `%` ou `fr` para definir dimensões, excepto as divisões POS registadas abaixo. A única utilização de `vw` permitida além dessas excepções é no container externo de Sheet/Drawer/Modal, descrita em "Containers de painel".
 - Quando for pedido "mais" ou "menos" espaço, o agente sobe ou desce um degrau da escala da secção 4. Nunca inventa um valor em `px` nem usa valores arbitrários entre colchetes (ex: `p-[13px]`).
 - Se for necessário um valor que não está nas escalas, o agente pára e pergunta antes de criar qualquer valor novo.
 
@@ -118,7 +125,9 @@ Regra de decisão: o valor pertence à **moldura** (shell) ou ao **conteúdo**?
 - Menu de filtros do histórico de caixa: `290px`
 - Célula de valor expansível do histórico de caixa: `95px`
 - Largura mínima dos cards de produtos do POS: `8rem`
-- Área principal do POS: divisão 57/43 entre o contentor de produtos e o contentor vizinho (`57fr`/`43fr`)
+- Área principal do POS: divisão 53/47 entre o contentor de produtos e o contentor de pagamento (`53fr`/`47fr`)
+- Contentor de pagamento do POS: divisão 60/40 entre o contentor de carrinho e o contentor de valores (`60fr`/`40fr`)
+- Contentor de carrinho do POS: divisão vertical 80/20 entre a área do carrinho e o Order Summary (`80fr`/`20fr`)
 
 ### Containers de painel (Sheet/Drawer/Modal)
 O container externo do painel usa width proporcional ao ecrã em `vw`, com `min-width` e `max-width` em `px` (ex: `sm:!w-[45vw] sm:!min-w-[780px] sm:!max-w-[960px]`). O conteúdo interno do painel (grids, colunas, textos) tem `max-width` fixo em `px` e usa `mx-auto` quando necessário, para nunca esticar mesmo que o container externo cresça. Colunas internas de largura fixa (teclados numéricos, listas estreitas) mantêm sempre o seu `px` fixo, independentemente do container externo. Abaixo do breakpoint `sm`, o painel ocupa a largura total do ecrã, sem `min-width` — os valores em `px` do exemplo acima aplicam-se apenas a partir de `sm:`. Aplica-se a todos os Sheets, Drawers e Modals, actuais e futuros.
@@ -169,6 +178,7 @@ Escala fechada — nunca inventar sombra fora daqui, e nunca empilhar mais do qu
 - Biblioteca: `lucide-react` (já disponível no stack do projecto).
 - Espessura de traço (`stroke-width`): `1.75` para ícones normais, `2` para ícones dentro de botões pequenos (onde precisam de mais presença visual em tamanho reduzido).
 - Tamanhos permitidos (`rem`): `1rem` (~16px, inline com texto pequeno/legenda), `1.125rem` (~18px, padrão em botões e itens de menu), `1.25rem` (~20px, destaque em cabeçalhos de secção). Nenhum outro tamanho.
+- Excepção: ícone X do botão de remoção nos cards do carrinho POS usa `0.75rem` dentro de um círculo de `1.5rem`; a área clicável do botão mantém `2rem`.
 - Cor do ícone segue sempre o texto que o acompanha (`currentColor`) — nunca uma cor fixa independente do contexto, salvo ícones de estado semântico (erro/sucesso), que usam a cor semântica correspondente.
 - Ícone sozinho sem texto (ex: botão de ícone) precisa sempre de área de toque mínima de `2rem` × `2rem` (~32px), mesmo que o ícone visualmente seja menor — para acessibilidade em ecrãs tácteis.
 
@@ -194,6 +204,7 @@ Todos os botões seguem o border-radius `full` (pill) definido na secção 3, e 
 ## 12. Inputs e Formulários
 
 - Altura padrão: `2.25rem` (~36px, alinhada com o botão `md`, para nunca desalinhar visualmente numa mesma linha de formulário).
+- Dimensões dos inputs nos cards do carrinho POS: quantidade `1.75rem × 4rem`; preço `1.75rem × 6rem`.
 - Border-radius: `md` (`0.375rem`) — inputs não seguem o `full` dos botões, mantêm-se mais contidos visualmente.
 - Borda em repouso: `--border`. Borda em foco: `--primary`, com o outline da secção 1 por cima.
 - Label sempre acima do input (nunca só placeholder a fazer de label — placeholder é sempre um exemplo de valor, nunca a única identificação do campo).

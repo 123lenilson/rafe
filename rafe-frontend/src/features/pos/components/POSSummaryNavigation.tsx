@@ -31,7 +31,7 @@ interface POSSummaryNavigationProps {
 }
 
 const buttonClassName =
-  'min-w-0 cursor-pointer rounded-md p-2 text-left focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2'
+  'min-w-0 cursor-pointer rounded-md px-2 py-1 text-left focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2'
 const posNavigationItems = [
   { label: 'Home', icon: Home },
   { label: 'POS', icon: ShoppingCart, isActive: true },

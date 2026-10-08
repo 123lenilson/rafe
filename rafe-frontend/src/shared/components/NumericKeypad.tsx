@@ -4,9 +4,15 @@ import { Delete } from 'lucide-react'
 
 interface NumericKeypadProps {
   onKeyPress: (key: string) => void
+  clearKeyLabel?: string
+  onClearKeyPress?: () => void
 }
 
-export function NumericKeypad({ onKeyPress }: NumericKeypadProps) {
+export function NumericKeypad({
+  onKeyPress,
+  clearKeyLabel = 'C',
+  onClearKeyPress,
+}: NumericKeypadProps) {
   // Teclas: 1 a 9, ponto, zero, C e Apagar (vertical)
   const keys = [
     { label: '1', value: '1' },
@@ -21,7 +27,7 @@ export function NumericKeypad({ onKeyPress }: NumericKeypadProps) {
     { label: '9', value: '9' },
     { label: '.', value: '.' },
     { label: '0', value: '0' },
-    { label: 'C', value: 'clear' }
+    { label: clearKeyLabel, value: 'clear' }
   ]
 
   return (
@@ -29,7 +35,14 @@ export function NumericKeypad({ onKeyPress }: NumericKeypadProps) {
       {keys.map((key) => (
         <RippleButton
           key={key.value}
-          onClick={() => onKeyPress(key.value)}
+          onClick={() => {
+            if (key.value === 'clear' && onClearKeyPress) {
+              onClearKeyPress()
+              return
+            }
+
+            onKeyPress(key.value)
+          }}
           rippleColor="#a1a1aa"
           className={`
             py-3 text-[1.0625rem] border-[0.5px] border-zinc-200 rounded-lg bg-white

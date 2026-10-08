@@ -69,51 +69,57 @@ function StockIndicator({ quantity }: { quantity: number }) {
   )
 }
 
+export function POSProductIllustration({
+  className = 'h-3/4 w-auto text-secondary-foreground',
+}: {
+  className?: string
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      viewBox="0 0 128 128"
+    >
+      <path
+        d="M49 15h30v15H49z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="3"
+      />
+      <path
+        d="M43 30h42l9 13v68H34V43l9-13Z"
+        fill="var(--background)"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="3"
+      />
+      <path d="M35 48h58" stroke="currentColor" strokeWidth="3" />
+      <rect
+        fill="var(--muted)"
+        height="27"
+        rx="4"
+        stroke="currentColor"
+        strokeWidth="2"
+        width="42"
+        x="43"
+        y="64"
+      />
+      <path
+        d="M53 73h22m-22 8h14"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="3"
+      />
+    </svg>
+  )
+}
+
 function ProductImagePlaceholder() {
   return (
     <div className="-mx-2 -mt-2 flex h-24 shrink-0 aspect-auto items-center justify-center rounded-t-sm bg-muted">
-      <svg
-        aria-hidden="true"
-        className="h-3/4 w-auto text-secondary-foreground"
-        fill="none"
-        viewBox="0 0 128 128"
-      >
-        <path
-          d="M49 15h30v15H49z"
-          fill="currentColor"
-          stroke="currentColor"
-          strokeLinejoin="round"
-          strokeWidth="3"
-        />
-        <path
-          d="M43 30h42l9 13v68H34V43l9-13Z"
-          fill="var(--background)"
-          stroke="currentColor"
-          strokeLinejoin="round"
-          strokeWidth="3"
-        />
-        <path
-          d="M35 48h58"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <rect
-          fill="var(--muted)"
-          height="27"
-          rx="4"
-          stroke="currentColor"
-          strokeWidth="2"
-          width="42"
-          x="43"
-          y="64"
-        />
-        <path
-          d="M53 73h22m-22 8h14"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeWidth="3"
-        />
-      </svg>
+      <POSProductIllustration />
     </div>
   )
 }

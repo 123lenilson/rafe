@@ -4,8 +4,10 @@ import { toast } from 'sonner'
 import ClickSpark from '@/shared/components/ClickSpark'
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { CashRegisterDrawer } from '@/features/pos/components/CashRegisterDrawer'
+import { POSCheckoutCart } from '@/features/pos/components/POSCheckoutCart'
 import { POSProductCategories } from '@/features/pos/components/POSProductCategories'
 import { POSProductGrid } from '@/features/pos/components/POSProductGrid'
+import { POSPaymentMethods } from '@/features/pos/components/POSPaymentMethods'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import {
   POSSummaryNavigation,
@@ -177,7 +179,7 @@ export function POSLayout() {
         onValueChange={(value) => setActiveTabId(Number(value))}
         value={activeTabId === null ? '' : String(activeTabId)}
       >
-      <div className="flex h-8 shrink-0 items-end gap-1 border-b border-background bg-muted px-0">
+      <div className="flex h-7 shrink-0 items-end gap-1 border-b border-background bg-muted px-0">
         <TabsList
           aria-label="Abas do POS"
           ref={(element) => {
@@ -207,7 +209,7 @@ export function POSLayout() {
               >
                 <TabsTrigger
                   aria-label={tab.title}
-                  className={`h-8 min-w-0 w-full justify-start gap-1 rounded-t-md rounded-b-none border border-b-0 px-2 text-left text-foreground shadow-none after:hidden focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 focus-visible:ring-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:bg-muted ${
+                  className={`h-7 min-w-0 w-full justify-start gap-1 rounded-t-md rounded-b-none border border-b-0 px-2 text-left text-foreground shadow-none after:hidden focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 focus-visible:ring-0 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:bg-muted ${
                     isActive
                       ? 'gap-0 rounded-t-lg border-background pl-1 pr-8 transition-none'
                       : 'border-transparent transition-colors duration-200 data-[state=inactive]:hover:bg-border'
@@ -272,7 +274,7 @@ export function POSLayout() {
           </div>
           <div
             aria-label="Conteúdo principal do POS"
-            className="grid min-h-0 w-full flex-1 grid-cols-[57fr_43fr] rounded-t-2xl bg-muted p-2"
+            className="grid min-h-0 w-full flex-1 grid-cols-[53fr_47fr] rounded-t-2xl bg-muted p-2"
           >
             <div className="flex min-h-0 min-w-0 flex-col gap-2 rounded-t-2xl bg-background p-2">
               <div className="w-full shrink-0">
@@ -298,13 +300,19 @@ export function POSLayout() {
               </div>
               <POSProductGrid />
             </div>
-            <div className="flex min-h-0 min-w-0 flex-col gap-2 bg-muted px-2 pb-2 pt-0">
+            <div className="flex min-h-0 min-w-0 flex-col gap-2 bg-muted px-2 pt-0">
               <div
                 className="grid min-h-0 min-w-0 flex-1 gap-2"
-                style={{ gridTemplateColumns: '54fr 46fr' }}
+                style={{ gridTemplateColumns: '60fr 40fr' }}
               >
-                <div className="min-h-0 min-w-0 rounded-t-2xl bg-border" />
-                <div className="min-h-0 min-w-0 rounded-t-2xl bg-border" />
+                <div className="min-h-0 min-w-0 rounded-t-2xl bg-border px-2 pt-1">
+                  <POSCheckoutCart />
+                </div>
+                <div className="min-h-0 min-w-0 rounded-t-2xl bg-border px-2 pt-1">
+                  <POSPaymentMethods
+                    formatDisplayValue={cashRegister.formatDisplayValue}
+                  />
+                </div>
               </div>
               <div className="w-full">
                 <button
