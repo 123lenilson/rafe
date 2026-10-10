@@ -37,6 +37,16 @@ Todas as regras aqui são **mandatórias**, não sugestões. Se uma tarefa pedid
 - Nunca duplicar a mesma fonte de verdade em dois `useState` separados em componentes diferentes. Se dois componentes precisam do mesmo dado, ele sobe para Zustand ou vem do TanStack Query.
 - Formatadores e mappers (ex: moeda em Kwanza, datas) são sempre funções puras, isoladas em ficheiros próprios (ex: `cashHistoryFormatters.ts`), nunca misturadas na camada de UI.
 
+### Regras de uso do Zustand
+
+- Uma store por feature/módulo (ex: `useCashStore` em `pos`), dentro de `stores/`. Proibida uma store global única.
+- Sempre consumir com selector: `useXStore((s) => s.campo)`. Proibido `useXStore()` sem selector.
+- Para vários campos de uma vez, usar `useShallow`.
+- Acções ficam dentro da store, junto ao estado. Componentes só as chamam.
+- Nunca guardar respostas de API na store (isso é TanStack Query).
+- `persist` só quando o estado precisa sobreviver ao refresh; indicar o motivo.
+- Antes de criar uma store nova, verificar se já existe uma no módulo que sirva.
+
 ## 4. Padronização Técnica
 
 - Todo o código novo em TypeScript (`.tsx`/`.ts`). Proibido criar novo ficheiro `.jsx`.

@@ -9,6 +9,8 @@ import { POSProductCategories } from '@/features/pos/components/POSProductCatego
 import { POSProductGrid } from '@/features/pos/components/POSProductGrid'
 import { POSPaymentMethods } from '@/features/pos/components/POSPaymentMethods'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
+import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
+import { calculateCartSummary } from '@/features/pos/utils/posCartFormatters'
 import {
   POSSummaryNavigation,
   type POSSummaryLink,
@@ -32,6 +34,8 @@ interface POSTab {
 const MAX_POS_TABS = 15
 
 export function POSLayout() {
+  const cartItems = usePOSCartStore((state) => state.items)
+  const cartSummary = calculateCartSummary(cartItems)
   const [tabs, setTabs] = useState<POSTab[]>([
     { id: 1, title: 'Factura-Recibo #1' },
   ])
@@ -316,14 +320,17 @@ export function POSLayout() {
               </div>
               <div className="w-full">
                 <button
-                  className="flex h-11 w-full items-center justify-between rounded-sm bg-primary px-4 text-sm font-medium text-primary-foreground focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
+                  className="grid h-11 w-full grid-cols-[60fr_40fr] items-center rounded-sm bg-primary text-sm font-medium text-primary-foreground focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
                   type="button"
                 >
-                  <span>Total a pagar: 0,00kz</span>
-                  <span className="flex items-center gap-1">
-                    Pagar
+                  <div className="flex items-center justify-between px-4">
+                    <span className="text-xs font-normal text-primary-foreground/70">Total a pagar:</span>
+                    <span className="font-semibold">{cartSummary.totalAPagarFormatted}</span>
+                  </div>
+                  <div className="flex items-center justify-end gap-1 px-4">
+                    <span>Pagar</span>
                     <ArrowRight aria-hidden="true" size="1.125rem" strokeWidth={1.75} />
-                  </span>
+                  </div>
                 </button>
               </div>
             </div>

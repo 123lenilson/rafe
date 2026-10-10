@@ -4,6 +4,11 @@ Este ficheiro define apenas **comportamento do agente**. Regras de sistema (arqu
 - Arquitectura de código, componentes, estado: `skill-arquitetura.md`
 - Identidade visual, cores, tipografia, espaçamento, layout, animações: `skill-identidade-visual.md`
 - Em qualquer tarefa que toque em UI (componentes visuais, espaçamento, tamanhos, cores, layout, Sheet/Drawer/Modal), é obrigatório ler `skill-identidade-visual.md` antes de escrever código. Nunca uses `px` fora da moldura definida nessa skill.
+## Regras que valem para TODA a tarefa
+- Antes de qualquer tarefa, ler `.agents/skills/fluxo-de-trabalho/SKILL.md`.
+  Resumo: nunca rodar dev/build nem verificar a interface por browser ou
+  screenshots; o utilizador valida no navegador. Só `tsc --noEmit`, lint e
+  releitura do código são permitidos.
 
 ## Escopo estrito de implementação
 Estas regras são obrigatórias para qualquer tarefa, visual ou não, em qualquer ficheiro do projecto.

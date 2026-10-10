@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { MonetaryDisplay } from '@/shared/components/MonetaryDisplay'
 import { NumericKeypad } from '@/shared/components/NumericKeypad'
+import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
 
 const paymentMethods = [
   'Dinheiro',
@@ -19,10 +20,17 @@ interface POSPaymentMethodsProps {
 export function POSPaymentMethods({
   formatDisplayValue,
 }: POSPaymentMethodsProps) {
-  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>(
-    [],
+  const activeEditableField = usePOSCartStore(
+    (state) => state.activeEditableField,
   )
-  const [amount, setAmount] = useState('0')
+  const applyCartKeypadInput = usePOSCartStore(
+    (state) => state.applyKeypadInput,
+  )
+  const setActiveEditableField = usePOSCartStore(
+    (state) => state.setActiveEditableField,
+  )
+  const [activePaymentMethod, setActivePaymentMethod] = useState<string | null>(null)
+  const [methodAmounts, setMethodAmounts] = useState<Record<string, string>>({})
   const [arePaymentMethodsExpanded, setArePaymentMethodsExpanded] =
     useState(false)
   const [visiblePaymentMethodCount, setVisiblePaymentMethodCount] = useState(
@@ -30,29 +38,52 @@ export function POSPaymentMethods({
   )
   const [hasMorePaymentMethods, setHasMorePaymentMethods] = useState(false)
   const paymentMethodButtonRefs = useRef(new Map<string, HTMLButtonElement>())
+  const componentRootRef = useRef<HTMLDivElement>(null)
   const paymentMethodsContainerRef = useRef<HTMLDivElement>(null)
   const morePaymentMethodsButtonRef = useRef<HTMLButtonElement>(null)
   const expandedPaymentMethodsRef = useRef<HTMLDivElement>(null)
   const previousPaymentMethodPositions = useRef(
     new Map<string, DOMRect>(),
   )
+
+  const selectedPaymentMethods = Array.from(
+    new Set([
+      ...Object.keys(methodAmounts).filter(
+        (m) => methodAmounts[m] && methodAmounts[m] !== '0',
+      ),
+      ...(activePaymentMethod ? [activePaymentMethod] : []),
+    ]),
+  )
+
   const orderedPaymentMethods = [
     ...selectedPaymentMethods,
     ...paymentMethods.filter((method) => !selectedPaymentMethods.includes(method)),
   ]
 
+  const currentAmount = activePaymentMethod ? (methodAmounts[activePaymentMethod] || '0') : '0'
+
   function handlePaymentMethodSelect(method: string) {
+    setActiveEditableField(null)
     previousPaymentMethodPositions.current = new Map(
       Array.from(paymentMethodButtonRefs.current, ([currentMethod, button]) => [
         currentMethod,
         button.getBoundingClientRect(),
       ]),
     )
-    setSelectedPaymentMethods((currentMethods) =>
-      currentMethods.includes(method)
-        ? currentMethods.filter((currentMethod) => currentMethod !== method)
-        : [...currentMethods, method],
-    )
+
+    if (
+      activePaymentMethod &&
+      activePaymentMethod !== method &&
+      (!methodAmounts[activePaymentMethod] || methodAmounts[activePaymentMethod] === '0')
+    ) {
+      setMethodAmounts((prev) => {
+        const next = { ...prev }
+        delete next[activePaymentMethod]
+        return next
+      })
+    }
+
+    setActivePaymentMethod(method)
   }
 
   useLayoutEffect(() => {
@@ -146,50 +177,88 @@ export function POSPaymentMethods({
   }, [arePaymentMethodsExpanded])
 
   useEffect(() => {
-    if (!arePaymentMethodsExpanded) return
-
     function handlePointerDown(event: PointerEvent) {
+      const container = paymentMethodsContainerRef.current
       const expandedArea = expandedPaymentMethodsRef.current
-      if (expandedArea && !expandedArea.contains(event.target as Node)) {
+      const root = componentRootRef.current
+      const target = event.target as Node
+
+      if (expandedArea && !expandedArea.contains(target)) {
         setArePaymentMethodsExpanded(false)
+      }
+
+      if (
+        container?.contains(target) ||
+        expandedArea?.contains(target) ||
+        root?.contains(target)
+      ) {
+        return
+      }
+
+      if (activePaymentMethod) {
+        const activeAmount = methodAmounts[activePaymentMethod]
+        if (!activeAmount || activeAmount === '0') {
+          setMethodAmounts((prev) => {
+            const next = { ...prev }
+            delete next[activePaymentMethod]
+            return next
+          })
+        }
+        setActivePaymentMethod(null)
       }
     }
 
     document.addEventListener('pointerdown', handlePointerDown)
     return () => document.removeEventListener('pointerdown', handlePointerDown)
-  }, [arePaymentMethodsExpanded])
+  }, [activePaymentMethod, methodAmounts])
 
   function handleKeypadPress(key: string) {
-    if (key === 'clear') {
-      setAmount('0')
-    } else if (key === 'backspace') {
-      setAmount((current) =>
-        current.length <= 1 ? '0' : current.slice(0, -1),
-      )
-    } else if (key === '.') {
-      setAmount((current) =>
-        current.includes('.') ? current : `${current}.`,
-      )
-    } else {
-      setAmount((current) => {
+    if (activeEditableField) {
+      applyCartKeypadInput(key)
+      return
+    }
+
+    if (!activePaymentMethod) return
+
+    setMethodAmounts((prevAmounts) => {
+      const current = prevAmounts[activePaymentMethod] || '0'
+      let nextValue = current
+
+      if (key === 'clear') {
+        nextValue = '0'
+      } else if (key === 'backspace') {
+        nextValue = current.length <= 1 ? '0' : current.slice(0, -1)
+      } else if (key === '.') {
+        nextValue = current.includes('.') ? current : `${current}.`
+      } else {
         if (current.includes('.')) {
           const decimals = current.split('.')[1] || ''
-          if (decimals.length >= 2) return current
+          if (decimals.length >= 2) return prevAmounts
         }
 
-        const nextValue = current === '0' ? key : `${current}${key}`
-        const numericValue = Number.parseFloat(nextValue)
+        const nextCandidate = current === '0' ? key : `${current}${key}`
+        const numericValue = Number.parseFloat(nextCandidate)
         if (!Number.isFinite(numericValue) || numericValue > 999999999.99) {
-          return current
+          return prevAmounts
         }
+        nextValue = nextCandidate
+      }
 
-        return nextValue
-      })
-    }
+      return {
+        ...prevAmounts,
+        [activePaymentMethod]: nextValue,
+      }
+    })
+  }
+
+  function handleKeypadClear() {
+    if (activeEditableField) applyCartKeypadInput('clear')
   }
 
   useEffect(() => {
     const handlePhysicalKeyDown = (event: KeyboardEvent) => {
+      if (!activePaymentMethod) return
+
       const target = event.target as HTMLElement
       const isInput =
         target.tagName === 'INPUT' ||
@@ -219,25 +288,30 @@ export function POSPaymentMethods({
 
     window.addEventListener('keydown', handlePhysicalKeyDown)
     return () => window.removeEventListener('keydown', handlePhysicalKeyDown)
-  }, [amount])
+  }, [activeEditableField, activePaymentMethod, methodAmounts])
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col">
+    <div className="relative flex h-full min-h-0 flex-col" ref={componentRootRef}>
       <div
-        className={`relative z-20 flex min-h-0 flex-1 flex-wrap content-start items-start gap-2 ${arePaymentMethodsExpanded ? 'overflow-visible' : 'overflow-hidden'}`}
+        className={`relative z-20 flex min-h-0 flex-1 flex-wrap content-start items-start gap-2 ${arePaymentMethodsExpanded ? 'overflow-visible' : 'overflow-x-hidden overflow-y-visible'}`}
         ref={paymentMethodsContainerRef}
       >
         {orderedPaymentMethods.slice(0, visiblePaymentMethodCount).map((method) => {
-          const isSelected = selectedPaymentMethods.includes(method)
+          const hasValue = Boolean(methodAmounts[method] && methodAmounts[method] !== '0')
+          const isActive = activePaymentMethod === method
+          const isSelected = hasValue || isActive
+          const methodAmount = methodAmounts[method]
 
           return (
             <button
               aria-pressed={isSelected}
               data-payment-method-card
-              className={`inline-flex w-fit shrink-0 items-center rounded-sm px-3 py-1 text-[0.5625rem] focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 ${
-                isSelected
-                  ? 'bg-primary text-background'
-                  : 'bg-muted text-foreground'
+              className={`inline-flex w-fit shrink-0 flex-col items-center justify-center rounded-sm px-3 py-1 text-center text-[0.6875rem] transition-colors focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 ${
+                isActive
+                  ? 'bg-primary text-background ring-1 ring-foreground'
+                  : isSelected
+                    ? 'bg-primary text-background'
+                    : 'bg-muted text-foreground'
               }`}
               key={method}
               onClick={() => handlePaymentMethodSelect(method)}
@@ -247,7 +321,12 @@ export function POSPaymentMethods({
               }}
               type="button"
             >
-              {method}
+              <span className="font-medium leading-none">{method}</span>
+              {methodAmount && methodAmount !== '0' && (
+                <span className="mt-1 text-xs font-semibold leading-none opacity-95">
+                  {formatDisplayValue(methodAmount)}
+                </span>
+              )}
             </button>
           )
         })}
@@ -269,16 +348,21 @@ export function POSPaymentMethods({
           >
             <div className="flex flex-wrap gap-2">
               {orderedPaymentMethods.map((method) => {
-                const isSelected = selectedPaymentMethods.includes(method)
+                const hasValue = Boolean(methodAmounts[method] && methodAmounts[method] !== '0')
+                const isActive = activePaymentMethod === method
+                const isSelected = hasValue || isActive
+                const methodAmount = methodAmounts[method]
 
                 return (
                   <button
                     aria-pressed={isSelected}
                     data-payment-method-card
-                    className={`inline-flex w-fit shrink-0 items-center rounded-sm px-3 py-1 text-[0.5625rem] focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 ${
-                      isSelected
-                        ? 'bg-primary text-background'
-                        : 'bg-muted text-foreground'
+                    className={`inline-flex w-fit shrink-0 flex-col items-center justify-center rounded-sm px-3 py-1 text-center text-[0.6875rem] transition-colors focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 ${
+                      isActive
+                        ? 'bg-primary text-background ring-1 ring-foreground'
+                        : isSelected
+                          ? 'bg-primary text-background'
+                          : 'bg-muted text-foreground'
                     }`}
                     key={method}
                     onClick={() => handlePaymentMethodSelect(method)}
@@ -288,7 +372,12 @@ export function POSPaymentMethods({
                     }}
                     type="button"
                   >
-                    {method}
+                    <span className="font-medium leading-none">{method}</span>
+                    {methodAmount && methodAmount !== '0' && (
+                      <span className="mt-1 text-xs font-semibold leading-none opacity-95">
+                        {formatDisplayValue(methodAmount)}
+                      </span>
+                    )}
                   </button>
                 )
               })}
@@ -305,8 +394,12 @@ export function POSPaymentMethods({
         )}
       </div>
       <div className="mt-2 flex shrink-0 flex-col gap-2">
-        <div className="[&>div]:bg-border">
-          <MonetaryDisplay value={formatDisplayValue(amount)} />
+        <div
+          className={`[&>div]:bg-border transition-opacity duration-150 ${
+            activePaymentMethod === null ? 'pointer-events-none opacity-40' : 'opacity-100'
+          }`}
+        >
+          <MonetaryDisplay value={activePaymentMethod ? formatDisplayValue(currentAmount) : '0,00 Kz'} />
         </div>
         <div
           aria-label="Troco"
@@ -324,7 +417,7 @@ export function POSPaymentMethods({
         </div>
         <NumericKeypad
           clearKeyLabel="Ex"
-          onClearKeyPress={() => {}}
+          onClearKeyPress={handleKeypadClear}
           onKeyPress={handleKeypadPress}
         />
       </div>

@@ -1,19 +1,19 @@
-import { useState } from 'react'
+import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
 
 const products = [
   { name: 'Água Mineral', price: 'Kz 500', quantity: 0 },
-  { name: 'Sumo de Laranja', price: 'Kz 1.200', quantity: 6 },
-  { name: 'Pão de Forma', price: 'Kz 2.500', quantity: 12 },
-  { name: 'Arroz 1 kg', price: 'Kz 1.800', quantity: 3 },
-  { name: 'Leite 1 L', price: 'Kz 1.300', quantity: 5 },
-  { name: 'Açúcar 1 kg', price: 'Kz 1.500', quantity: 9 },
+  { name: 'Sumo de Laranja', price: 'Kz 1 200', quantity: 6 },
+  { name: 'Pão de Forma', price: 'Kz 2 500', quantity: 12 },
+  { name: 'Arroz 1 kg', price: 'Kz 1 800', quantity: 3 },
+  { name: 'Leite 1 L', price: 'Kz 1 300', quantity: 5 },
+  { name: 'Açúcar 1 kg', price: 'Kz 1 500', quantity: 9 },
   { name: 'Sabão', price: 'Kz 900', quantity: 1 },
-  { name: 'Café 250 g', price: 'Kz 3.500', quantity: 8 },
-  { name: 'Óleo 1 L', price: 'Kz 2.800', quantity: 11 },
+  { name: 'Café 250 g', price: 'Kz 3 500', quantity: 8 },
+  { name: 'Óleo 1 L', price: 'Kz 2 800', quantity: 11 },
   { name: 'Bolachas', price: 'Kz 750', quantity: 4 },
-  { name: 'Massa 500 g', price: 'Kz 1.000', quantity: 10 },
+  { name: 'Massa 500 g', price: 'Kz 1 000', quantity: 10 },
   { name: 'Água 1,5 L', price: 'Kz 700', quantity: 15 },
-  { name: 'Serviço de Entrega', price: 'Kz 1.500', type: 'service' },
+  { name: 'Serviço de Entrega', price: 'Kz 1 500', type: 'service' },
 ]
 
 function getStockStatus(quantity: number) {
@@ -146,9 +146,8 @@ function ServiceImagePlaceholder() {
 }
 
 export function POSProductGrid() {
-  const [selectedProductNames, setSelectedProductNames] = useState<Set<string>>(
-    () => new Set(),
-  )
+  const cartItems = usePOSCartStore((state) => state.items)
+  const addProduct = usePOSCartStore((state) => state.addProduct)
 
   return (
     <div
@@ -160,7 +159,7 @@ export function POSProductGrid() {
       }}
     >
       {products.map((product) => {
-        const isSelected = selectedProductNames.has(product.name)
+        const isSelected = cartItems.some((item) => item.id === product.name)
 
         return (
           <button
@@ -172,11 +171,7 @@ export function POSProductGrid() {
             }`}
             key={product.name}
             onClick={() =>
-              setSelectedProductNames((currentNames) => {
-                const nextNames = new Set(currentNames)
-                nextNames.add(product.name)
-                return nextNames
-              })
+              addProduct({ id: product.name, name: product.name, price: product.price })
             }
             role="listitem"
             type="button"
