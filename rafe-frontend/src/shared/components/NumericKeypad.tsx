@@ -6,14 +6,17 @@ interface NumericKeypadProps {
   onKeyPress: (key: string) => void
   clearKeyLabel?: string
   onClearKeyPress?: () => void
+  clearKeyDisabled?: boolean
+  showMathOperators?: boolean
 }
 
 export function NumericKeypad({
   onKeyPress,
   clearKeyLabel = 'C',
   onClearKeyPress,
+  clearKeyDisabled = false,
+  showMathOperators = false,
 }: NumericKeypadProps) {
-  // Teclas: 1 a 9, ponto, zero, C e Apagar (vertical)
   const keys = [
     { label: '1', value: '1' },
     { label: '2', value: '2' },
@@ -25,7 +28,7 @@ export function NumericKeypad({
     { label: '7', value: '7' },
     { label: '8', value: '8' },
     { label: '9', value: '9' },
-    { label: '.', value: '.' },
+    ...(showMathOperators ? [{ label: '+', value: '+' }, { label: '-', value: '-' }] : [{ label: '.', value: '.' }]),
     { label: '0', value: '0' },
     { label: clearKeyLabel, value: 'clear' }
   ]
@@ -35,6 +38,7 @@ export function NumericKeypad({
       {keys.map((key) => (
         <RippleButton
           key={key.value}
+          disabled={key.value === 'clear' && clearKeyDisabled}
           onClick={() => {
             if (key.value === 'clear' && onClearKeyPress) {
               onClearKeyPress()
@@ -48,6 +52,7 @@ export function NumericKeypad({
             py-3 text-[1.0625rem] border-[0.5px] border-zinc-200 rounded-lg bg-white
             hover:bg-zinc-50/50 transition-colors font-semibold text-black 
             select-none cursor-pointer focus:outline-none ${key.className || ''}
+            ${key.value === 'clear' && clearKeyDisabled ? 'disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground' : ''}
           `}
         >
           {key.isBackspace ? (

@@ -15,6 +15,7 @@ export interface POSCartEditableField {
 
 interface POSCartStore {
   items: POSCartItem[]
+  paymentAmounts: Record<string, string>
   lastAddedId: string | null
   lastAddedAt: number | null
   activeEditableField: POSCartEditableField | null
@@ -22,6 +23,8 @@ interface POSCartStore {
   addProduct: (product: { id: string; name: string; price: string }) => void
   setActiveEditableField: (field: POSCartEditableField | null) => void
   applyKeypadInput: (key: string) => void
+  setPaymentAmount: (method: string, amount: string) => void
+  removePaymentAmount: (method: string) => void
   updateQuantity: (id: string, quantity: string) => void
   updateUnitPrice: (id: string, unitPrice: string) => void
   removeProduct: (id: string) => void
@@ -34,6 +37,7 @@ function formatQuantity(quantity: number) {
 
 export const usePOSCartStore = create<POSCartStore>((set) => ({
   items: [],
+  paymentAmounts: {},
   lastAddedId: null,
   lastAddedAt: null,
   activeEditableField: null,
@@ -82,6 +86,16 @@ export const usePOSCartStore = create<POSCartStore>((set) => ({
     }),
   setActiveEditableField: (activeEditableField) =>
     set({ activeEditableField, keypadEntryStarted: false }),
+  setPaymentAmount: (method, amount) =>
+    set((state) => ({
+      paymentAmounts: { ...state.paymentAmounts, [method]: amount },
+    })),
+  removePaymentAmount: (method) =>
+    set((state) => {
+      const paymentAmounts = { ...state.paymentAmounts }
+      delete paymentAmounts[method]
+      return { paymentAmounts }
+    }),
   applyKeypadInput: (key) =>
     set((state) => {
       const activeField = state.activeEditableField
@@ -141,6 +155,7 @@ export const usePOSCartStore = create<POSCartStore>((set) => ({
   clearCart: () =>
     set({
       items: [],
+      paymentAmounts: {},
       lastAddedId: null,
       lastAddedAt: null,
       activeEditableField: null,

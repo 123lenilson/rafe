@@ -10,7 +10,10 @@ import { POSProductGrid } from '@/features/pos/components/POSProductGrid'
 import { POSPaymentMethods } from '@/features/pos/components/POSPaymentMethods'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
-import { calculateCartSummary } from '@/features/pos/utils/posCartFormatters'
+import {
+  calculateCartSummary,
+  calculatePaymentTotalInCents,
+} from '@/features/pos/utils/posCartFormatters'
 import {
   POSSummaryNavigation,
   type POSSummaryLink,
@@ -35,7 +38,12 @@ const MAX_POS_TABS = 15
 
 export function POSLayout() {
   const cartItems = usePOSCartStore((state) => state.items)
+  const paymentAmounts = usePOSCartStore((state) => state.paymentAmounts)
   const cartSummary = calculateCartSummary(cartItems)
+  const totalPaidInCents = calculatePaymentTotalInCents(paymentAmounts)
+  const canPay =
+    cartSummary.totalAPagarInCents > 0 &&
+    totalPaidInCents >= cartSummary.totalAPagarInCents
   const [tabs, setTabs] = useState<POSTab[]>([
     { id: 1, title: 'Factura-Recibo #1' },
   ])
@@ -315,21 +323,23 @@ export function POSLayout() {
                 <div className="min-h-0 min-w-0 rounded-t-2xl bg-border px-2 pt-1">
                   <POSPaymentMethods
                     formatDisplayValue={cashRegister.formatDisplayValue}
+                    totalAPagarInCents={cartSummary.totalAPagarInCents}
                   />
                 </div>
               </div>
               <div className="w-full">
                 <button
-                  className="grid h-11 w-full grid-cols-[60fr_40fr] items-center rounded-sm bg-primary text-sm font-medium text-primary-foreground focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
+                  className="group grid h-11 w-full grid-cols-[60fr_40fr] items-center rounded-sm bg-primary text-sm font-medium text-primary-foreground focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:bg-primary/80"
+                  disabled={!canPay}
                   type="button"
                 >
                   <div className="flex items-center justify-between px-4">
-                    <span className="text-xs font-normal text-primary-foreground/70">Total a pagar:</span>
-                    <span className="font-semibold">{cartSummary.totalAPagarFormatted}</span>
+                    <span className="text-[0.8125rem] font-normal leading-[1.125rem] text-primary-foreground/70">Total a pagar:</span>
+                    <span className="text-[1.0625rem] font-semibold leading-6">{cartSummary.totalAPagarFormatted}</span>
                   </div>
                   <div className="flex items-center justify-end gap-1 px-4">
-                    <span>Pagar</span>
-                    <ArrowRight aria-hidden="true" size="1.125rem" strokeWidth={1.75} />
+                    <span className="group-disabled:text-muted-foreground">Pagar</span>
+                    <ArrowRight aria-hidden="true" className="group-disabled:text-muted-foreground" size="1.125rem" strokeWidth={1.75} />
                   </div>
                 </button>
               </div>

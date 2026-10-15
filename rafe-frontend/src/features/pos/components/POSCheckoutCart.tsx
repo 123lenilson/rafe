@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from 'react'
+import { useEffect, useLayoutEffect, useState, type ChangeEvent } from 'react'
 import { ShoppingCart, X } from 'lucide-react'
 import { POSProductIllustration } from '@/features/pos/components/POSProductGrid'
 import { usePOSCartStore, type POSCartItem } from '@/features/pos/stores/usePOSCartStore'
@@ -21,6 +21,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog'
+
+const CART_INPUT_FONT_SIZES = [
+  '0.75rem',
+  '0.6875rem',
+  '0.625rem',
+  '0.5625rem',
+  '0.5rem',
+  '0.4375rem',
+  '0.375rem',
+  '0.3125rem',
+  '0.25rem',
+]
 
 function handleCartInputChange(
   event: ChangeEvent<HTMLInputElement>,
@@ -69,6 +81,63 @@ export function POSCheckoutCart() {
   const clearCart = usePOSCartStore((state) => state.clearCart)
   const [itemPendingRemoval, setItemPendingRemoval] = useState<POSCartItem | null>(null)
   const [isClearCartModalOpen, setIsClearCartModalOpen] = useState(false)
+
+  useLayoutEffect(() => {
+    const inputs = document.querySelectorAll<HTMLInputElement>(
+      '[data-cart-input]',
+    )
+    const textMeasure = document.createElement('span')
+    textMeasure.style.position = 'fixed'
+    textMeasure.style.left = '-10000px'
+    textMeasure.style.top = '0'
+    textMeasure.style.display = 'inline-block'
+    textMeasure.style.width = 'max-content'
+    textMeasure.style.padding = '0'
+    textMeasure.style.border = '0'
+    textMeasure.style.margin = '0'
+    textMeasure.style.whiteSpace = 'pre'
+    textMeasure.style.visibility = 'hidden'
+    document.body.append(textMeasure)
+
+    function fitInputText(input: HTMLInputElement) {
+      input.style.fontSize = CART_INPUT_FONT_SIZES[0]
+      const inputStyle = window.getComputedStyle(input)
+      const availableWidth =
+        input.clientWidth -
+        (Number.parseFloat(inputStyle.paddingLeft) || 0) -
+        (Number.parseFloat(inputStyle.paddingRight) || 0)
+      textMeasure.textContent = input.value
+
+      for (const fontSize of CART_INPUT_FONT_SIZES) {
+        input.style.fontSize = fontSize
+        const computedStyle = window.getComputedStyle(input)
+        textMeasure.style.fontFamily = computedStyle.fontFamily
+        textMeasure.style.fontSize = computedStyle.fontSize
+        textMeasure.style.fontWeight = computedStyle.fontWeight
+        textMeasure.style.fontStyle = computedStyle.fontStyle
+        textMeasure.style.fontVariant = computedStyle.fontVariant
+        textMeasure.style.letterSpacing = computedStyle.letterSpacing
+        textMeasure.style.textTransform = computedStyle.textTransform
+        textMeasure.style.wordSpacing = computedStyle.wordSpacing
+
+        if (textMeasure.getBoundingClientRect().width <= availableWidth) return
+      }
+    }
+
+    function fitAllInputText() {
+      inputs.forEach(fitInputText)
+    }
+
+    fitAllInputText()
+
+    const resizeObserver = new ResizeObserver(fitAllInputText)
+    inputs.forEach((input) => resizeObserver.observe(input))
+
+    return () => {
+      resizeObserver.disconnect()
+      textMeasure.remove()
+    }
+  }, [cartItems])
 
   function handleEditableFieldSelection(
     input: HTMLInputElement,
@@ -201,6 +270,7 @@ export function POSCheckoutCart() {
                         <InputGroupInput
                           aria-label={`Quantidade de ${item.name}`}
                           className="absolute inset-0 h-full w-full appearance-none p-0 text-center text-[0.5rem] leading-[1.75rem] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          data-cart-input
                           onFocus={(event) =>
                             handleEditableFieldSelection(
                               event.currentTarget,
@@ -235,6 +305,7 @@ export function POSCheckoutCart() {
                         <InputGroupInput
                           aria-label={`Preço de ${item.name}`}
                           className="absolute inset-0 h-full w-full appearance-none p-0 text-center text-[0.5rem] leading-[1.75rem] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          data-cart-input
                           id={`cart-price-${item.id}`}
                           inputMode="decimal"
                           onFocus={(event) =>
@@ -281,7 +352,7 @@ export function POSCheckoutCart() {
           aria-label="Order Summary"
           className="min-h-0 rounded-md"
         >
-          <div className="flex h-full flex-col justify-end gap-1 px-2 pt-2 text-xs text-foreground">
+          <div className="flex h-full flex-col justify-end gap-1 px-2 pt-2 text-[0.8125rem] leading-[1.125rem] text-foreground">
             <div className="flex items-center justify-between">
               <span>Total Íliquido</span>
               <span>{summary.iliquidoFormatted}</span>

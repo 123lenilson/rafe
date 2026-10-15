@@ -41,6 +41,47 @@ export function parseCartItemPriceInCents(unitPrice: string): number {
   return Number(`${integerPart}${decimalPart.padEnd(2, '0').slice(0, 2)}`) || 0
 }
 
+function parsePaymentAmountInCents(amount: string): number {
+  const [integerPart = '0', decimalPart = ''] = amount.replace(/[^\d.]/g, '').split('.')
+  const wholeAmount = Number.parseInt(integerPart || '0', 10)
+  const fractionalAmount = Number.parseInt(decimalPart.padEnd(2, '0').slice(0, 2), 10) || 0
+
+  return Number.isFinite(wholeAmount) ? wholeAmount * 100 + fractionalAmount : 0
+}
+
+export function calculatePaymentTotalInCents(
+  paymentAmounts: Record<string, string>,
+) {
+  return Object.values(paymentAmounts).reduce(
+    (total, amount) => total + parsePaymentAmountInCents(amount),
+    0,
+  )
+}
+
+export function calculateRemainingPaymentInCents(
+  totalDueInCents: number,
+  paymentAmounts: Record<string, string>,
+  excludedMethod?: string,
+) {
+  const otherPaymentsInCents = Object.entries(paymentAmounts).reduce(
+    (total, [method, amount]) =>
+      method === excludedMethod ? total : total + parsePaymentAmountInCents(amount),
+    0,
+  )
+
+  return Math.max(0, totalDueInCents - otherPaymentsInCents)
+}
+
+export function formatPaymentAmountFromCents(cents: number) {
+  const wholeAmount = Math.floor(cents / 100)
+  const fractionalAmount = cents % 100
+
+  if (fractionalAmount === 0) return String(wholeAmount)
+
+  const decimalPart = String(fractionalAmount).padStart(2, '0').replace(/0$/, '')
+  return `${wholeAmount}.${decimalPart}`
+}
+
 export function calculateCartSummary(items: { unitPrice: string; quantity: string }[]) {
   const totalGrossInCents = items.reduce((acc, item) => {
     const unitPriceInCents = parseCartItemPriceInCents(item.unitPrice)
@@ -55,6 +96,7 @@ export function calculateCartSummary(items: { unitPrice: string; quantity: strin
       retencaoFormatted: '0,00 Kz',
       totalAPagarFormatted: '0,00 Kz',
       totalGrossInCents: 0,
+      totalAPagarInCents: 0,
     }
   }
 
@@ -69,6 +111,6 @@ export function calculateCartSummary(items: { unitPrice: string; quantity: strin
     retencaoFormatted: formatKwanza(retencaoInCents),
     totalAPagarFormatted: formatKwanza(totalAPagarInCents),
     totalGrossInCents,
+    totalAPagarInCents,
   }
 }
-
