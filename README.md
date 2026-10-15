@@ -4,7 +4,7 @@ Plataforma SaaS de facturação para PMEs angolanas. Permite vender no ponto de 
 
 > **Estado do projecto:** em desenvolvimento activo. Veja a secção [Estado actual](#estado-actual) para saber o que já funciona.
 
-![Ecrã de Faturação](docs/faturacao.png) 
+![Ecrã de Faturação](docs/facturacao.png) 
 
 ## Porquê o Rafe
 
