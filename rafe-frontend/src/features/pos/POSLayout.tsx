@@ -8,6 +8,10 @@ import { POSCheckoutCart } from '@/features/pos/components/POSCheckoutCart'
 import { POSProductCategories } from '@/features/pos/components/POSProductCategories'
 import { POSProductGrid } from '@/features/pos/components/POSProductGrid'
 import { POSPaymentMethods } from '@/features/pos/components/POSPaymentMethods'
+import {
+  defaultPOSCustomer,
+  type POSCustomer,
+} from '@/features/pos/components/POSCustomerSelector'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
 import {
@@ -28,6 +32,7 @@ import {
   InputGroup,
   InputGroupInput,
 } from '@/shared/components/ui/input-group'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 interface POSTab {
   id: number
@@ -39,7 +44,8 @@ const MAX_POS_TABS = 15
 export function POSLayout() {
   const cartItems = usePOSCartStore((state) => state.items)
   const paymentAmounts = usePOSCartStore((state) => state.paymentAmounts)
-  const cartSummary = calculateCartSummary(cartItems)
+  const discount = usePOSCartStore((state) => state.discount)
+  const cartSummary = calculateCartSummary(cartItems, discount)
   const totalPaidInCents = calculatePaymentTotalInCents(paymentAmounts)
   const canPay =
     cartSummary.totalAPagarInCents > 0 &&
@@ -50,7 +56,12 @@ export function POSLayout() {
   const [activeTabId, setActiveTabId] = useState<number | null>(1)
   const [selectedSummaryLink, setSelectedSummaryLink] =
     useState<POSSummaryLink | null>(null)
+  const [discountEditRequest, setDiscountEditRequest] = useState(0)
   const [isCashRegisterDrawerOpen, setIsCashRegisterDrawerOpen] = useState(false)
+  const [productSearchTerm, setProductSearchTerm] = useState('')
+  const [selectedProductCategory, setSelectedProductCategory] = useState('Todos')
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<POSCustomer>(defaultPOSCustomer)
   const cashRegister = useCashRegister()
   const tabsListElement = useRef<HTMLDivElement | null>(null)
   const tabElements = useRef(new Map<number, HTMLDivElement>())
@@ -192,16 +203,18 @@ export function POSLayout() {
         value={activeTabId === null ? '' : String(activeTabId)}
       >
       <div className="flex h-7 shrink-0 items-end gap-1 border-b border-background bg-muted px-0">
-        <TabsList
-          aria-label="Abas do POS"
-          ref={(element) => {
-            tabsListElement.current = element
-          }}
-          className="flex h-full group-data-horizontal/tabs:h-full min-w-0 w-fit shrink items-end justify-start gap-1 overflow-x-auto overflow-y-hidden rounded-none border-0 bg-muted p-0"
-          style={{ scrollbarWidth: 'none' }}
-          variant="line"
+        <ScrollArea
+          className="h-full min-w-0 flex-1"
+          orientation="horizontal"
+          viewportClassName="h-full"
+          viewportRef={tabsListElement}
         >
-          {tabs.map((tab) => {
+          <TabsList
+            aria-label="Abas do POS"
+            className="flex h-full w-max min-w-full shrink-0 items-end justify-start gap-1 rounded-none border-0 bg-muted p-0"
+            variant="line"
+          >
+            {tabs.map((tab) => {
             const isActive = tab.id === activeTabId
             const tabLabel = tab.title.replace(/ #\d+$/, '')
 
@@ -257,8 +270,9 @@ export function POSLayout() {
                 )}
               </div>
             )
-          })}
-        </TabsList>
+            })}
+          </TabsList>
+        </ScrollArea>
 
         <button
           aria-label="Criar nova aba POS"
@@ -274,14 +288,17 @@ export function POSLayout() {
         <TabsContent
           key={tab.id}
           className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-b-md border-x border-b border-background bg-background"
-          onClick={() => setSelectedSummaryLink(null)}
           value={String(tab.id)}
         >
           <div className="w-full shrink-0">
             <POSSummaryNavigation
+              onSelectCustomer={setSelectedCustomer}
               onOpenCashRegister={() => setIsCashRegisterDrawerOpen(true)}
               onSelectLink={setSelectedSummaryLink}
+              selectedCustomer={selectedCustomer}
               selectedLink={selectedSummaryLink}
+              discountEditRequest={discountEditRequest}
+              totalIliquidoInCents={cartSummary.iliquidoBeforeDiscountInCents}
             />
           </div>
           <div
@@ -295,8 +312,10 @@ export function POSLayout() {
                     aria-label="Pesquisar produto"
                     className="h-full text-xs placeholder:text-muted-foreground"
                     id="pos-product-search"
+                    onChange={(event) => setProductSearchTerm(event.target.value)}
                     placeholder="Pesquisa Produto"
                     type="search"
+                    value={productSearchTerm}
                   />
                   <RippleButton
                     aria-label="Pesquisar produto"
@@ -308,9 +327,15 @@ export function POSLayout() {
                     <Search aria-hidden="true" size="1rem" strokeWidth={1.75} />
                   </RippleButton>
                 </InputGroup>
-                <POSProductCategories />
+                <POSProductCategories
+                  onSelectCategory={setSelectedProductCategory}
+                  selectedCategory={selectedProductCategory}
+                />
               </div>
-              <POSProductGrid />
+              <POSProductGrid
+                searchTerm={productSearchTerm}
+                selectedCategory={selectedProductCategory}
+              />
             </div>
             <div className="flex min-h-0 min-w-0 flex-col gap-2 bg-muted px-2 pt-0">
               <div
@@ -318,7 +343,13 @@ export function POSLayout() {
                 style={{ gridTemplateColumns: '60fr 40fr' }}
               >
                 <div className="min-h-0 min-w-0 rounded-t-2xl bg-border px-2 pt-1">
-                  <POSCheckoutCart />
+                  <POSCheckoutCart
+                    onEditDiscount={() => {
+                      setDiscountEditRequest((request) => request + 1)
+                      setSelectedSummaryLink('discount')
+                    }}
+                    selectedCustomer={selectedCustomer}
+                  />
                 </div>
                 <div className="min-h-0 min-w-0 rounded-t-2xl bg-border px-2 pt-1">
                   <POSPaymentMethods

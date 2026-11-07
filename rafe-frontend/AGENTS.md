@@ -2,8 +2,8 @@
 
 Este ficheiro define apenas **comportamento do agente**. Regras de sistema (arquitectura de código, cores, tipografia, espaçamento, layout) vivem noutros ficheiros, e devem ser consultadas conforme a tarefa:
 - Arquitectura de código, componentes, estado: `skill-arquitetura.md`
-- Identidade visual, cores, tipografia, espaçamento, layout, animações: `skill-identidade-visual.md`
-- Em qualquer tarefa que toque em UI (componentes visuais, espaçamento, tamanhos, cores, layout, Sheet/Drawer/Modal), é obrigatório ler `skill-identidade-visual.md` antes de escrever código. Nunca uses `px` fora da moldura definida nessa skill.
+- Identidade visual, cores, tipografia, espaçamento, layout, animações: `.agents/skills/arquitetura/SKILL.md`
+- Em qualquer tarefa que toque em UI (componentes visuais, espaçamento, tamanhos, cores, layout, Sheet/Drawer/Modal), é obrigatório ler `.agents/skills/identidade-visual/SKILL.md` antes de escrever código. Nunca uses `px` fora da moldura definida nessa skill.
 ## Regras que valem para TODA a tarefa
 - Antes de qualquer tarefa, ler `.agents/skills/fluxo-de-trabalho/SKILL.md`.
   Resumo: nunca rodar dev/build nem verificar a interface por browser ou
@@ -18,7 +18,17 @@ Estas regras são obrigatórias para qualquer tarefa, visual ou não, em qualque
 - Se identificares uma funcionalidade em falta, uma inconsistência, ou uma melhoria que consideres relevante mas que não foi pedida, não implementes por conta própria: reporta a sugestão em texto no final da resposta e aguarda confirmação antes de tocar em código.
 - Em caso de dúvida entre fazer menos ou fazer mais do que o prompt pede, escolhe sempre fazer menos.
 
-## Uso de modos (Kilo CLI)
-- Para qualquer tarefa que envolva decisão de arquitectura ou múltiplos ficheiros: usar modo `Plan` primeiro, apresentar o plano, aguardar aprovação antes de mudar para `Code`.
-- Para dúvidas sobre código existente sem intenção de alterar: usar modo `Ask`.
-- Após qualquer alteração: correr modo `Review` antes de considerar a tarefa concluída, reportando apenas o que foi encontrado — não corrigir automaticamente sem confirmação.
+## Plano e aprovação antes de codificar
+Para as tarefas abaixo, apresenta primeiro um plano e espera a minha aprovação explícita antes de alterar qualquer código. É obrigatório se a tarefa:
+- Altera 3 ou mais ficheiros, ou cria ficheiros, pastas, componentes, hooks ou stores novos.
+- Altera a estrutura de estado (stores Zustand, query keys do TanStack Query) ou tipos partilhados.
+- Apaga, move ou renomeia ficheiros.
+- Toca em lógica fiscal ou de faturação (totais, impostos, emissão e anulação de documentos).
+- Adiciona dependências.
+- Tem mais de uma abordagem razoável e a escolha caberia a ti.
+
+Não precisas de plano para: ajustes visuais num só ficheiro com valores já indicados no prompt, alterações de texto, correcção de erros de `tsc`/lint com solução óbvia, e tarefas que o prompt já descreve passo a passo.
+
+Em caso de dúvida sobre se a tarefa precisa de plano, apresenta o plano.
+
+O plano deve ser curto: ficheiros que vais tocar, abordagem em poucas linhas, o que NÃO vais tocar, e dúvidas se existirem. Se durante a implementação perceberes que o plano aprovado precisa de mudar de forma relevante, para e reporta antes de continuar.

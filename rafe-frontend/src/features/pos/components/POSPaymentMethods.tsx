@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
 import {
   calculatePaymentTotalInCents,
@@ -35,6 +36,7 @@ export function POSPaymentMethods({
   const activeEditableField = usePOSCartStore(
     (state) => state.activeEditableField,
   )
+  const cartItems = usePOSCartStore((state) => state.items)
   const applyCartKeypadInput = usePOSCartStore(
     (state) => state.applyKeypadInput,
   )
@@ -42,6 +44,8 @@ export function POSPaymentMethods({
     (state) => state.setActiveEditableField,
   )
   const [activePaymentMethod, setActivePaymentMethod] = useState<string | null>(null)
+  const [paymentExpression, setPaymentExpression] = useState<string | null>(null)
+  const paymentExpressionRef = useRef<string | null>(null)
   const [arePaymentMethodsExpanded, setArePaymentMethodsExpanded] =
     useState(false)
   const [visiblePaymentMethodCount, setVisiblePaymentMethodCount] = useState(
@@ -72,6 +76,7 @@ export function POSPaymentMethods({
   ]
 
   const currentAmount = activePaymentMethod ? (paymentAmounts[activePaymentMethod] || '0') : '0'
+  const paymentDisplayValue = paymentExpression ?? formatDisplayValue(currentAmount)
   const totalPaidInCents = calculatePaymentTotalInCents(paymentAmounts)
   const changeInCents = Math.max(0, totalPaidInCents - totalAPagarInCents)
   const outstandingInCents = calculateRemainingPaymentInCents(
@@ -84,7 +89,14 @@ export function POSPaymentMethods({
       : formatKwanza(0)
     : null
 
+  useEffect(() => {
+    setVisiblePaymentMethodCount(paymentMethods.length)
+    setHasMorePaymentMethods(false)
+  }, [outstandingFormatted])
+
   function handlePaymentMethodSelect(method: string) {
+    paymentExpressionRef.current = null
+    setPaymentExpression(null)
     setActiveEditableField(null)
     previousPaymentMethodPositions.current = new Map(
       Array.from(paymentMethodButtonRefs.current, ([currentMethod, button]) => [
@@ -102,6 +114,16 @@ export function POSPaymentMethods({
     }
 
     setActivePaymentMethod(method)
+  }
+
+  useEffect(() => {
+    paymentExpressionRef.current = null
+    setPaymentExpression(null)
+  }, [activePaymentMethod])
+
+  function updatePaymentExpression(expression: string | null) {
+    paymentExpressionRef.current = expression
+    setPaymentExpression(expression)
   }
 
   useLayoutEffect(() => {
@@ -189,75 +211,119 @@ export function POSPaymentMethods({
 
   function handleKeypadPress(key: string) {
     if (activeEditableField) {
-      applyCartKeypadInput(key)
+      const quantityError = applyCartKeypadInput(key)
+      if (quantityError === 'zero') {
+        toast.warning('Quantidade inválida', {
+          description: 'A quantidade mínima permitida é 1.',
+        })
+      } else if (quantityError === 'exceeds-stock') {
+        const activeItem = cartItems.find(
+          (item) => item.id === activeEditableField.itemId,
+        )
+        const availableQuantity = activeItem?.availableQuantity
+        toast.warning('Limite de stock', {
+          description: `Stock disponível: ${availableQuantity ?? 0} ${availableQuantity === 1 ? 'unidade' : 'unidades'}. A quantidade foi reposta para 1.`,
+        })
+      }
       return
     }
 
     if (!activePaymentMethod) return
 
     const current = paymentAmounts[activePaymentMethod] || '0'
-    const normalizedCurrent = current.replace(/\s+/g, '')
+    const expression = paymentExpressionRef.current
     let nextValue = current
 
     if (key === 'clear') {
-      nextValue = '0'
+      updatePaymentExpression(null)
+      setPaymentAmount(activePaymentMethod, '0')
+      return
     } else if (key === 'backspace') {
+      if (expression !== null) {
+        const trimmedExpression = expression.trimEnd()
+        if (/[+-]$/.test(trimmedExpression)) {
+          updatePaymentExpression(null)
+        } else {
+          const updatedExpression = trimmedExpression.slice(0, -1)
+          updatePaymentExpression(/[+-]/.test(updatedExpression) ? updatedExpression : null)
+        }
+        return
+      }
       nextValue = current.length <= 1 ? '0' : current.slice(0, -1)
     } else if (key === '+' || key === '-') {
-      if (/[+-]/.test(normalizedCurrent)) {
+      if (expression === null) {
+        updatePaymentExpression(`${current.replace(/\s+/g, '')} ${key} `)
         return
       }
-      nextValue = `${normalizedCurrent} ${key} `
+
+      const pendingOperatorMatch = expression.match(/^(\d+(?:\.\d{0,2})?)\s*[+-]\s*$/)
+      if (pendingOperatorMatch) {
+        updatePaymentExpression(`${pendingOperatorMatch[1]} ${key} `)
+      }
+      return
     } else if (key === 'enter') {
-      if (!/[+-]/.test(normalizedCurrent)) {
-        setPaymentAmount(activePaymentMethod, normalizedCurrent)
+      if (expression === null) {
         return
       }
 
-      const [leftValue = '0', operator, rightValue = '0'] = normalizedCurrent.split(/([+-])/)
-      const leftNumber = Number.parseFloat(leftValue)
-      const rightNumber = Number.parseFloat(rightValue)
-
-      if (!Number.isFinite(leftNumber) || !Number.isFinite(rightNumber) || !operator) {
+      const match = expression.match(/^(\d+(?:\.\d{0,2})?)\s*([+-])\s*(\d+(?:\.\d{0,2})?)$/)
+      if (!match) {
         return
       }
 
-      const result = operator === '+' ? leftNumber + rightNumber : leftNumber - rightNumber
-      if (!Number.isFinite(result) || result < 0) {
+      const [, leftValue, operator, rightValue] = match
+      const leftInCents = Math.round(Number(leftValue) * 100)
+      const rightInCents = Math.round(Number(rightValue) * 100)
+      const resultInCents = operator === '+'
+        ? leftInCents + rightInCents
+        : leftInCents - rightInCents
+
+      if (
+        !Number.isFinite(resultInCents) ||
+        resultInCents < 0 ||
+        resultInCents > 99999999999
+      ) {
         return
       }
 
-      setPaymentAmount(activePaymentMethod, String(result))
+      setPaymentAmount(activePaymentMethod, formatPaymentAmountFromCents(resultInCents))
+      updatePaymentExpression(null)
       return
     } else if (key === '.') {
-      if (/[+-]/.test(normalizedCurrent)) {
-        const [leftValue = '0', operator, rightValue = ''] = normalizedCurrent.split(/([+-])/)
-        if (!operator || rightValue.includes('.')) {
+      if (expression !== null) {
+        const match = expression.match(/^(\d+(?:\.\d{0,2})?)\s*([+-])\s*(.*)$/)
+        if (!match) {
           return
         }
-        nextValue = `${leftValue} ${operator} ${rightValue || '0'}.`
+        const [, leftValue, operator, rightValue] = match
+        if (rightValue.includes('.')) return
+        updatePaymentExpression(`${leftValue} ${operator} ${rightValue || '0'}.`)
+        return
       } else {
-        nextValue = normalizedCurrent.includes('.') ? normalizedCurrent : `${normalizedCurrent}.`
+        nextValue = current.includes('.') ? current : `${current}.`
       }
     } else {
-      if (/[+-]/.test(normalizedCurrent)) {
-        const [leftValue = '0', operator, rightValue = ''] = normalizedCurrent.split(/([+-])/)
+      if (!/^\d$/.test(key)) return
+
+      if (expression !== null) {
+        const match = expression.match(/^(\d+(?:\.\d{0,2})?)\s*([+-])\s*(.*)$/)
+        if (!match) {
+          return
+        }
+        const [, leftValue, operator, rightValue] = match
+        const decimals = rightValue.split('.')[1] || ''
+        if (decimals.length >= 2) return
         const rightCandidate = rightValue === '0' ? key : `${rightValue}${key}`
-        const numericValue = Number.parseFloat(rightCandidate)
-
-        if (!Number.isFinite(numericValue) || numericValue > 999999999.99) {
-          return
-        }
-
-        nextValue = `${leftValue} ${operator} ${rightCandidate}`
+        const numericValue = Number(rightCandidate)
+        if (!Number.isFinite(numericValue) || numericValue > 999999999.99) return
+        updatePaymentExpression(`${leftValue} ${operator} ${rightCandidate}`)
+        return
       } else {
-        const nextCandidate = normalizedCurrent === '0' ? key : `${normalizedCurrent}${key}`
+        const decimals = current.split('.')[1] || ''
+        if (decimals.length >= 2) return
+        const nextCandidate = current === '0' ? key : `${current}${key}`
         const numericValue = Number.parseFloat(nextCandidate)
-
-        if (!Number.isFinite(numericValue) || numericValue > 999999999.99) {
-          return
-        }
-
+        if (!Number.isFinite(numericValue) || numericValue > 999999999.99) return
         nextValue = nextCandidate
       }
     }
@@ -267,6 +333,7 @@ export function POSPaymentMethods({
 
   function handleExactPayment() {
     if (!activePaymentMethod || activeEditableField) return
+    updatePaymentExpression(null)
 
     const exactAmountInCents = calculateRemainingPaymentInCents(
       totalAPagarInCents,
@@ -320,8 +387,7 @@ export function POSPaymentMethods({
       <POSPaymentEntry
         activePaymentMethod={activePaymentMethod}
         changeInCents={changeInCents}
-        currentAmount={currentAmount}
-        formatDisplayValue={formatDisplayValue}
+        displayValue={paymentDisplayValue}
         isExactDisabled={activePaymentMethod === null || activeEditableField !== null}
         onExactPayment={handleExactPayment}
         onKeypadPress={handleKeypadPress}

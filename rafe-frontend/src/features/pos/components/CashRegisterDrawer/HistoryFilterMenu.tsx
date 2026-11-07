@@ -18,6 +18,7 @@ import {
 import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { cn } from '@/lib/utils'
 import { useCashHistoryFilters } from '@/features/pos/hooks/useCashHistoryFilters'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 interface HistoryFilterMenuProps {
   filters: ReturnType<typeof useCashHistoryFilters>
@@ -100,7 +101,8 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
               />
             </div>
             {/* Resultados dos Usuários */}
-            <div className="flex flex-col p-1 gap-[3px] max-h-40 overflow-y-auto">
+            <ScrollArea className="max-h-40" viewportClassName="max-h-40">
+              <div className="flex flex-col gap-[3px] p-1">
               {[
                 { name: "Ana Nogueira", initials: "AN" },
                 { name: "João Oliveira", initials: "JO" },
@@ -151,7 +153,8 @@ export function HistoryFilterMenu({ filters }: HistoryFilterMenuProps) {
               ].filter(u => u.name.toLowerCase().includes(userSearchTerm.toLowerCase())).length === 0 && (
                 <span className="text-xs text-zinc-400 text-center py-2 font-medium">Nenhum resultado</span>
               )}
-            </div>
+              </div>
+            </ScrollArea>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 

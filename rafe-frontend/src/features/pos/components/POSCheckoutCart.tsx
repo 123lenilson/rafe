@@ -1,11 +1,17 @@
 import { useEffect, useLayoutEffect, useState, type ChangeEvent } from 'react'
 import { ShoppingCart, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { POSProductIllustration } from '@/features/pos/components/POSProductGrid'
 import { usePOSCartStore, type POSCartItem } from '@/features/pos/stores/usePOSCartStore'
+import type { POSCustomer } from '@/features/pos/components/POSCustomerSelector'
+import { POSDiscountSummaryRow } from '@/features/pos/components/POSDiscountSummaryRow'
+import { POSProductActionsPopover } from '@/features/pos/components/POSProductActionsPopover'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 import {
   calculateCartSummary,
   formatCartInputValue,
   formatCartLineTotal,
+  validatePOSCartQuantity,
 } from '@/features/pos/utils/posCartFormatters'
 import {
   InputGroup,
@@ -38,6 +44,7 @@ function handleCartInputChange(
   event: ChangeEvent<HTMLInputElement>,
   setValue: (value: string) => void,
   allowDecimals: boolean,
+  availableQuantity?: number | null,
 ) {
   const input = event.currentTarget
   const cursorPosition = input.selectionStart ?? input.value.length
@@ -45,20 +52,39 @@ function handleCartInputChange(
   const digitsBeforeCursor = valueBeforeCursor.replace(/\D/g, '').length
   const decimalSeparatorBeforeCursor = allowDecimals && /[.,]/.test(valueBeforeCursor)
   const formattedValue = formatCartInputValue(input.value, allowDecimals)
+  const quantityError = availableQuantity === undefined
+    ? null
+    : validatePOSCartQuantity(formattedValue, availableQuantity)
+  const safeValue = quantityError ? '1' : formattedValue
 
-  setValue(formattedValue)
+  setValue(safeValue)
+
+  if (quantityError === 'zero') {
+    toast.warning('Quantidade inválida', {
+      description: 'A quantidade mínima permitida é 1.',
+    })
+  } else if (quantityError === 'exceeds-stock') {
+    toast.warning('Limite de stock', {
+      description: `Stock disponível: ${availableQuantity} ${availableQuantity === 1 ? 'unidade' : 'unidades'}. A quantidade foi reposta para 1.`,
+    })
+  }
 
   requestAnimationFrame(() => {
+    if (quantityError === 'exceeds-stock') {
+      input.select()
+      return
+    }
+
     let nextCursorPosition = 0
     let digitsAtCursor = 0
     let decimalSeparatorAtCursor = false
 
     while (
-      nextCursorPosition < formattedValue.length &&
+      nextCursorPosition < safeValue.length &&
       (digitsAtCursor < digitsBeforeCursor ||
         (decimalSeparatorBeforeCursor && !decimalSeparatorAtCursor))
     ) {
-      const character = formattedValue[nextCursorPosition]
+      const character = safeValue[nextCursorPosition]
       if (/\d/.test(character)) digitsAtCursor += 1
       if (character === ',') decimalSeparatorAtCursor = true
       nextCursorPosition += 1
@@ -68,8 +94,17 @@ function handleCartInputChange(
   })
 }
 
-export function POSCheckoutCart() {
+interface POSCheckoutCartProps {
+  selectedCustomer: POSCustomer
+  onEditDiscount: () => void
+}
+
+export function POSCheckoutCart({
+  selectedCustomer,
+  onEditDiscount,
+}: POSCheckoutCartProps) {
   const cartItems = usePOSCartStore((state) => state.items)
+  const discount = usePOSCartStore((state) => state.discount)
   const lastAddedId = usePOSCartStore((state) => state.lastAddedId)
   const lastAddedAt = usePOSCartStore((state) => state.lastAddedAt)
   const setActiveEditableField = usePOSCartStore(
@@ -78,6 +113,7 @@ export function POSCheckoutCart() {
   const updateQuantity = usePOSCartStore((state) => state.updateQuantity)
   const updateUnitPrice = usePOSCartStore((state) => state.updateUnitPrice)
   const removeProduct = usePOSCartStore((state) => state.removeProduct)
+  const setDiscount = usePOSCartStore((state) => state.setDiscount)
   const clearCart = usePOSCartStore((state) => state.clearCart)
   const [itemPendingRemoval, setItemPendingRemoval] = useState<POSCartItem | null>(null)
   const [isClearCartModalOpen, setIsClearCartModalOpen] = useState(false)
@@ -160,7 +196,13 @@ export function POSCheckoutCart() {
     setIsClearCartModalOpen(false)
   }
 
-  const summary = calculateCartSummary(cartItems)
+  const summary = calculateCartSummary(cartItems, discount)
+  const customerInitials = selectedCustomer.name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
 
   useEffect(() => {
     if (!lastAddedId || !lastAddedAt) return
@@ -187,20 +229,16 @@ export function POSCheckoutCart() {
       >
         <div className="flex min-w-0 items-start gap-2">
           <span className="flex shrink-0 self-stretch items-center rounded-sm bg-border px-2 py-1 text-[0.625rem] font-semibold leading-3 tracking-wider text-foreground">
-            LP
+            {customerInitials}
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium leading-4 text-foreground">
-              Lenilson Pascoal
+              {selectedCustomer.name}
             </p>
             <div className="mt-1 flex items-center gap-2 whitespace-nowrap text-[0.625rem] leading-3 text-secondary-foreground">
               <span className="flex min-w-0 items-center gap-1">
-                <span>Tel:</span>
-                <span>9252157</span>
-              </span>
-              <span className="flex min-w-0 items-center gap-1">
                 <span>NIF:</span>
-                <span>007121388LA042</span>
+                <span>{selectedCustomer.nif}</span>
               </span>
             </div>
           </div>
@@ -232,8 +270,9 @@ export function POSCheckoutCart() {
                   Limpar Carrinho
                 </button>
               </div>
-              <div className="rafe-table-scroll flex min-h-0 w-full flex-col gap-1 self-stretch overflow-y-auto bg-border">
-                {cartItems.map((item) => (
+              <ScrollArea className="min-h-0 w-full flex-1 self-stretch bg-border">
+                <div className="flex min-h-full w-full flex-col gap-1">
+                  {cartItems.map((item) => (
                 <article
                   className="flex min-w-0 items-start gap-2 rounded-md bg-muted p-1"
                   key={item.id}
@@ -247,7 +286,11 @@ export function POSCheckoutCart() {
                         {item.name} × {item.quantity || '0'}
                       </span>
                       <span className="shrink-0 text-[0.6875rem] font-medium leading-[0.875rem] text-foreground">
-                        {formatCartLineTotal(item.unitPrice, item.quantity)}
+                        {formatCartLineTotal(
+                          item.unitPrice,
+                          item.quantity,
+                          item.discount,
+                        )}
                       </span>
                       <button
                         aria-label={`Remover ${item.name} do carrinho`}
@@ -292,6 +335,7 @@ export function POSCheckoutCart() {
                               event,
                               (value) => updateQuantity(item.id, value),
                               false,
+                              item.availableQuantity,
                             )
                           }
                           type="text"
@@ -333,18 +377,13 @@ export function POSCheckoutCart() {
                           value={item.unitPrice}
                         />
                       </InputGroup>
-                      <button
-                        aria-label={`Mais opções para ${item.name}`}
-                        className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-sm leading-none text-foreground hover:bg-border"
-                        type="button"
-                      >
-                        +
-                      </button>
+                      <POSProductActionsPopover item={item} />
                     </div>
                   </div>
                 </article>
-              ))}
-            </div>
+                  ))}
+                </div>
+              </ScrollArea>
           </div>
         )}
       </section>
@@ -354,9 +393,21 @@ export function POSCheckoutCart() {
         >
           <div className="flex h-full flex-col justify-end gap-1 px-2 pt-2 text-[0.8125rem] leading-[1.125rem] text-foreground">
             <div className="flex items-center justify-between">
-              <span>Total Íliquido</span>
+              <span>Total Ilíquido</span>
               <span>{summary.iliquidoFormatted}</span>
             </div>
+            {summary.discountInCents > 0 && (
+              <POSDiscountSummaryRow
+                formattedValue={summary.discountFormatted}
+                label={
+                  summary.discountType === 'percentage'
+                    ? `Desconto (${summary.discountValue}%)`
+                    : 'Desconto (valor fixo)'
+                }
+                onEdit={onEditDiscount}
+                onRemove={() => setDiscount(null)}
+              />
+            )}
             <div className="flex items-center justify-between">
               <span>Total de Imposto</span>
               <span>{summary.impostoFormatted}</span>

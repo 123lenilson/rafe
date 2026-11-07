@@ -7,6 +7,7 @@ import { EntryDetailPanel } from './EntryDetailPanel'
 import { useCashHistoryFilters } from '@/features/pos/hooks/useCashHistoryFilters'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 const PANEL_TRANSITION_DURATION = 500
 const PANEL_ENABLED = true
@@ -384,9 +385,11 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
       <div className="flex-1 mt-4 min-h-0 flex flex-col">
         <div className="max-w-[640px] w-full mx-auto bg-white rounded-xl flex-1 overflow-hidden flex flex-col relative">
           <div className="flex flex-1 min-h-0 overflow-hidden relative">
-            <div
-              className={`flex-1 min-w-0 overflow-y-auto rafe-table-scroll transition-[padding-right] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                columnsCollapsed ? 'rafe-table-condensed pr-[280px] overflow-x-hidden' : 'overflow-x-auto'
+            <ScrollArea
+              className="flex-1 min-w-0 min-h-0 transition-[padding-right] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              orientation="vertical"
+              viewportClassName={`rafe-table-scroll ${
+                columnsCollapsed ? 'rafe-table-condensed pr-[280px]' : ''
               }`}
             >
              {(() => {
@@ -404,7 +407,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                         </span>
                       </div>
                       <div className="w-full text-[0.75rem] font-sans select-none">
-                      <div className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
+                      <div className="bg-white text-[0.6875rem] border-b border-zinc-200/60">
                         <div className="flex text-black font-semibold h-[28px]">
                           <div className="px-1.5 py-1" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <div className="px-1.5 py-1" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
@@ -527,7 +530,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                         </span>
                       </div>
                       <div className="w-full text-[0.75rem] font-sans select-none">
-                      <div className="sticky top-0 bg-white z-10 text-[0.6875rem] border-b border-zinc-200/60">
+                      <div className="bg-white text-[0.6875rem] border-b border-zinc-200/60">
                         <div className="flex text-black font-semibold h-[28px]">
                           <div className="px-1.5 py-1" style={{ width: '10.625rem', minWidth: '10.625rem', maxWidth: '10.625rem', flexShrink: 0, flexGrow: 0 }}></div>
                           <div className="px-1.5 py-1" style={{ width: '5.625rem', minWidth: '5.625rem', maxWidth: '5.625rem', flexShrink: 0, flexGrow: 0 }}></div>
@@ -628,7 +631,7 @@ export function CashHistoryPanel({ filters, onOpenChange, cashRegister, activeVa
                 </>
               )
             })()}
-            </div>
+            </ScrollArea>
 
             <aside
               className={`rafe-detail-panel-wrapper p-2 box-border${panelOpen ? ' rafe-panel-visible' : ''}`}

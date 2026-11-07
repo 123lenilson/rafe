@@ -123,7 +123,7 @@ export function POSCustomerSelector({
 
   return (
     <div
-      className="absolute left-0 top-full z-20 mt-1 w-[18.75rem] rounded-md border border-border bg-background p-4 shadow-sm"
+      className="w-full p-4"
       onClick={(event) => event.stopPropagation()}
     >
       <div className="flex flex-col gap-3">

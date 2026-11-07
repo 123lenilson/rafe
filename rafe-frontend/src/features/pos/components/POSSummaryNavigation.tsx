@@ -9,19 +9,30 @@ import {
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
-import { useLayoutEffect, useRef, useState, type ChangeEvent } from 'react'
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/shared/components/ui/input-group'
-import { Button } from '@/shared/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs'
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react'
+import { toast } from 'sonner'
 import {
-  defaultPOSCustomer,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/shared/components/ui/popover'
+import {
   POSCustomerSelector,
   type POSCustomer,
 } from '@/features/pos/components/POSCustomerSelector'
+import { POSDiscountEditor } from '@/features/pos/components/POSDiscountEditor'
+import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
+import {
+  calculateMaximumDiscountInCents,
+  formatKwanza,
+  parseCartItemPriceInCents,
+} from '@/features/pos/utils/posCartFormatters'
 
 export type POSSummaryLink =
   | 'pos'
@@ -32,8 +43,12 @@ export type POSSummaryLink =
 
 interface POSSummaryNavigationProps {
   selectedLink: POSSummaryLink | null
-  onSelectLink: (link: POSSummaryLink | null) => void
+  selectedCustomer: POSCustomer
+  onSelectCustomer: (customer: POSCustomer) => void
+  onSelectLink: Dispatch<SetStateAction<POSSummaryLink | null>>
   onOpenCashRegister: () => void
+  totalIliquidoInCents: number
+  discountEditRequest: number
 }
 
 const buttonClassName =
@@ -56,89 +71,74 @@ const invoiceFormats = [
   { value: '58mm-right', label: '58mm Direito', kind: 'roll' },
 ] as const
 
-function formatDiscountInputValue(value: string, allowDecimals: boolean) {
-  const normalizedValue = value
-    .replace(/[^\d.,]/g, '')
-    .replace(/\./g, ',')
-  if (!allowDecimals) {
-    return normalizedValue.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-  }
-
-  const decimalSeparatorIndex = normalizedValue.indexOf(',')
-  const integerPart = (decimalSeparatorIndex === -1
-    ? normalizedValue
-    : normalizedValue.slice(0, decimalSeparatorIndex)
-  ).replace(/,/g, '')
-  const decimalPart = decimalSeparatorIndex === -1
-    ? ''
-    : normalizedValue.slice(decimalSeparatorIndex + 1).replace(/\D/g, '').slice(0, 2)
-  const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-
-  return `${groupedInteger}${decimalSeparatorIndex === -1 ? '' : `,${decimalPart}`}`
-}
-
-function handleDiscountInputChange(
-  event: ChangeEvent<HTMLInputElement>,
-  setValue: (value: string) => void,
-  allowDecimals: boolean,
-) {
-  const input = event.currentTarget
-  const cursorPosition = input.selectionStart ?? input.value.length
-  const valueBeforeCursor = input.value.slice(0, cursorPosition)
-  const digitsBeforeCursor = valueBeforeCursor.replace(/\D/g, '').length
-  const decimalSeparatorBeforeCursor = allowDecimals && /[.,]/.test(valueBeforeCursor)
-  const formattedValue = formatDiscountInputValue(input.value, allowDecimals)
-
-  setValue(formattedValue)
-
-  requestAnimationFrame(() => {
-    let nextCursorPosition = 0
-    let digitsAtCursor = 0
-
-    let decimalSeparatorAtCursor = false
-
-    while (
-      nextCursorPosition < formattedValue.length &&
-      (digitsAtCursor < digitsBeforeCursor ||
-        (decimalSeparatorBeforeCursor && !decimalSeparatorAtCursor))
-    ) {
-      const character = formattedValue[nextCursorPosition]
-      if (/\d/.test(character)) digitsAtCursor += 1
-      if (character === ',') decimalSeparatorAtCursor = true
-      nextCursorPosition += 1
-    }
-
-    input.setSelectionRange(nextCursorPosition, nextCursorPosition)
-  })
-}
-
 export function POSSummaryNavigation({
   selectedLink,
+  selectedCustomer,
+  onSelectCustomer,
   onSelectLink,
   onOpenCashRegister,
+  totalIliquidoInCents,
+  discountEditRequest,
 }: POSSummaryNavigationProps) {
   const navigate = useNavigate()
-  const [selectedCustomer, setSelectedCustomer] =
-    useState<POSCustomer>(defaultPOSCustomer)
-  const [discountTab, setDiscountTab] = useState<'money' | 'percentage'>('money')
-  const [moneyDiscount, setMoneyDiscount] = useState('')
-  const [percentageDiscount, setPercentageDiscount] = useState('')
+  const discount = usePOSCartStore((state) => state.discount)
+  const setDiscount = usePOSCartStore((state) => state.setDiscount)
+  const previousDiscountState = useRef({
+    discount,
+    totalIliquidoInCents,
+  })
   const [selectedInvoiceFormat, setSelectedInvoiceFormat] = useState<string | null>('A4')
-  const moneyInput = useRef<HTMLInputElement>(null)
-  const percentageInput = useRef<HTMLInputElement>(null)
   const selectedInvoiceFormatLabel = invoiceFormats.find(
     (format) => format.value === selectedInvoiceFormat,
   )?.label
+  const maximumDiscountInCents = calculateMaximumDiscountInCents(
+    totalIliquidoInCents,
+  )
+  useEffect(() => {
+    const previous = previousDiscountState.current
+    const currentDiscountValue = discount?.type === 'money'
+      ? parseCartItemPriceInCents(discount.value)
+      : null
+    const previousDiscountValue = previous.discount?.type === 'money'
+      ? parseCartItemPriceInCents(previous.discount.value)
+      : null
 
-  useLayoutEffect(() => {
-    if (selectedLink !== 'discount') return
+    if (
+      totalIliquidoInCents > 0 &&
+      previous.totalIliquidoInCents !== totalIliquidoInCents &&
+      previousDiscountValue !== null &&
+      (currentDiscountValue === null || currentDiscountValue < previousDiscountValue)
+    ) {
+      toast.warning('Limite de desconto actualizado', {
+        description: `Só pode aplicar desconto até ${formatKwanza(maximumDiscountInCents)}`,
+      })
+    }
 
-    const input = discountTab === 'money' ? moneyInput.current : percentageInput.current
-    input?.focus()
-  }, [selectedLink, discountTab])
+    previousDiscountState.current = { discount, totalIliquidoInCents }
+  }, [discount, maximumDiscountInCents, totalIliquidoInCents])
+
+  useEffect(() => {
+    if (totalIliquidoInCents === 0 && selectedLink === 'discount') {
+      onSelectLink(null)
+    }
+  }, [onSelectLink, selectedLink, totalIliquidoInCents])
 
   function getButtonClassName(link: POSSummaryLink) {
-    return `${buttonClassName} ${selectedLink === link ? 'bg-muted' : 'bg-transparent hover:bg-muted'}`
+    const isDisabled = link === 'discount' && totalIliquidoInCents === 0
+    const stateClassName = isDisabled
+      ? 'cursor-not-allowed text-muted-foreground'
+      : selectedLink === link
+        ? 'bg-muted'
+        : 'bg-transparent hover:bg-muted'
+    return `${buttonClassName} ${stateClassName}`
+  }
+
+  function handlePopoverOpenChange(link: POSSummaryLink, open: boolean) {
+    if (open) {
+      onSelectLink(link)
+    } else {
+      onSelectLink((currentLink) => (currentLink === link ? null : currentLink))
+    }
   }
 
   return (
@@ -146,29 +146,31 @@ export function POSSummaryNavigation({
       aria-label="Resumo da operação POS"
       className="flex w-full items-center justify-center gap-6"
     >
-      <div className="relative">
-        <button
-          aria-pressed={selectedLink === 'pos'}
-          className={getButtonClassName('pos')}
-          onClick={(event) => {
-            event.stopPropagation()
-            onSelectLink('pos')
-          }}
-          type="button"
-        >
-          <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
-            <ShoppingCart aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
-            POS
-          </p>
-          <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
-            Página Activa
-          </p>
-        </button>
-        {selectedLink === 'pos' && (
-          <div
-            className="absolute left-0 top-full z-20 mt-1 w-[25rem] overflow-hidden rounded-md border border-border bg-background shadow-sm"
-            onClick={(event) => event.stopPropagation()}
+      <Popover
+        onOpenChange={(open) => handlePopoverOpenChange('pos', open)}
+        open={selectedLink === 'pos'}
+      >
+        <PopoverTrigger asChild>
+          <button
+            aria-pressed={selectedLink === 'pos'}
+            className={getButtonClassName('pos')}
+            type="button"
           >
+            <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
+              <ShoppingCart aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
+              POS
+            </p>
+            <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
+              Página Activa
+            </p>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-[25rem] overflow-hidden rounded-md border border-border bg-background p-0 shadow-sm"
+          side="bottom"
+          sideOffset={4}
+        >
             <div className="flex">
               <nav
                 aria-label="Navegação do POS"
@@ -189,162 +191,108 @@ export function POSSummaryNavigation({
               </nav>
               <div aria-label="Área de conteúdo do POS" className="min-w-0 flex-1" />
             </div>
-          </div>
-        )}
-      </div>
-      <div className="relative">
-        <button
-          aria-pressed={selectedLink === 'customer'}
-          className={getButtonClassName('customer')}
-          onClick={(event) => {
-            event.stopPropagation()
-            onSelectLink('customer')
-          }}
-          type="button"
+        </PopoverContent>
+      </Popover>
+      <Popover
+        onOpenChange={(open) => handlePopoverOpenChange('customer', open)}
+        open={selectedLink === 'customer'}
+      >
+        <PopoverTrigger asChild>
+          <button
+            aria-pressed={selectedLink === 'customer'}
+            className={getButtonClassName('customer')}
+            type="button"
+          >
+            <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
+              <UserRound aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
+              {selectedCustomer.name}
+            </p>
+            <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
+              Cliente Selecionado
+            </p>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-[18.75rem] overflow-visible rounded-md border border-border bg-background p-0 shadow-sm"
+          side="bottom"
+          sideOffset={4}
         >
-          <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
-            <UserRound aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
-          {selectedCustomer.name}
-          </p>
-          <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
-            Cliente Selecionado
-          </p>
-        </button>
-        {selectedLink === 'customer' && (
           <POSCustomerSelector
             onSelectCustomer={(customer) => {
-              setSelectedCustomer(customer)
+              onSelectCustomer(customer)
               onSelectLink(null)
             }}
             selectedCustomer={selectedCustomer}
           />
-        )}
-      </div>
-      <div className="relative">
-        <button
-          aria-pressed={selectedLink === 'discount'}
-          className={getButtonClassName('discount')}
-          onClick={(event) => {
-            event.stopPropagation()
-            onSelectLink('discount')
-          }}
-          type="button"
-        >
-          <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
-            <BadgePercent aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
-            0% de desc.
-          </p>
-          <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
-            Desconto na factura
-          </p>
-        </button>
-        {selectedLink === 'discount' && (
-          <div
-            aria-label="Contentor de desconto"
-            className="absolute left-0 top-full z-20 mt-1 w-[18.75rem] rounded-md border border-border bg-background p-4 shadow-sm"
-            onClick={(event) => event.stopPropagation()}
+        </PopoverContent>
+      </Popover>
+      <Popover
+        onOpenChange={(open) => handlePopoverOpenChange('discount', open)}
+        open={selectedLink === 'discount'}
+      >
+        <PopoverTrigger asChild>
+          <button
+            aria-pressed={selectedLink === 'discount'}
+            className={getButtonClassName('discount')}
+            disabled={totalIliquidoInCents === 0}
+            type="button"
           >
-            <Tabs
-              className="flex w-full flex-col gap-0"
-              onValueChange={(value) => {
-                setDiscountTab(value as 'money' | 'percentage')
+            <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
+              <BadgePercent aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
+              0% de desc.
+            </p>
+            <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
+              Desconto na factura
+            </p>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          aria-label="Contentor de desconto"
+          className="w-[18.75rem] rounded-md border border-border bg-background p-4 shadow-sm"
+          side="bottom"
+          sideOffset={4}
+        >
+            <POSDiscountEditor
+              discount={discount}
+              focusRequest={discountEditRequest}
+              inputIdPrefix="invoice-discount"
+              onApply={(nextDiscount) => {
+                setDiscount(nextDiscount)
+                onSelectLink(null)
               }}
-              value={discountTab}
-            >
-              <TabsList className="w-fit rounded-t-md rounded-br-none rounded-bl-none bg-muted" variant="default">
-                <TabsTrigger
-                  className="data-[state=active]:bg-background data-[state=active]:text-foreground"
-                  onClick={() => {
-                    if (discountTab === 'money') moneyInput.current?.focus()
-                  }}
-                  value="money"
-                >
-                  Dinheiro
-                </TabsTrigger>
-                <TabsTrigger
-                  className="data-[state=active]:bg-background data-[state=active]:text-foreground"
-                  onClick={() => {
-                    if (discountTab === 'percentage') percentageInput.current?.focus()
-                  }}
-                  value="percentage"
-                >
-                  Porcento
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent className="mt-0 w-full flex-none" value="money">
-                <div className="flex flex-col gap-3 rounded-b-md rounded-tr-md bg-muted p-3">
-                  <label className="text-[0.625rem] leading-3 text-muted-foreground" htmlFor="discount-money">
-                    Informa o valor do desconto em kwanza
-                  </label>
-                  <InputGroup className="h-9 rounded-md bg-background focus-within:shadow-[0_8px_24px_rgba(16,16,16,0.12)]">
-                    <InputGroupInput
-                      aria-label="Desconto em dinheiro"
-                      className="h-full text-xs leading-4"
-                      id="discount-money"
-                      inputMode="decimal"
-                      onChange={(event) => handleDiscountInputChange(event, setMoneyDiscount, true)}
-                      ref={moneyInput}
-                      type="text"
-                      value={moneyDiscount}
-                    />
-                    <InputGroupAddon align="inline-end">Kz</InputGroupAddon>
-                  </InputGroup>
-                  <div className="flex justify-end">
-                    <Button type="button">Aplicar</Button>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent className="mt-0 w-full flex-none" value="percentage">
-                <div className="flex flex-col gap-3 rounded-b-md rounded-tr-md bg-muted p-3">
-                  <label className="text-[0.625rem] leading-3 text-muted-foreground" htmlFor="discount-percentage">
-                    Informa o valor do desconto em Percentagem
-                  </label>
-                  <InputGroup className="h-9 rounded-md bg-background focus-within:shadow-[0_8px_24px_rgba(16,16,16,0.12)]">
-                    <InputGroupInput
-                      aria-label="Desconto em porcentagem"
-                      className="h-full text-xs leading-4"
-                      id="discount-percentage"
-                      inputMode="decimal"
-                      onChange={(event) => handleDiscountInputChange(event, setPercentageDiscount, false)}
-                      ref={percentageInput}
-                      type="text"
-                      value={percentageDiscount}
-                    />
-                    <InputGroupAddon align="inline-end">%</InputGroupAddon>
-                  </InputGroup>
-                  <div className="flex justify-end">
-                    <Button type="button">Aplicar</Button>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-        )}
-      </div>
-      <div className="relative">
-        <button
-          aria-pressed={selectedLink === 'invoice-format'}
-          className={getButtonClassName('invoice-format')}
-          onClick={(event) => {
-            event.stopPropagation()
-            onSelectLink('invoice-format')
-          }}
-          type="button"
-        >
-          <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
-            <FileText aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
-            Formato {selectedInvoiceFormatLabel ?? 'A4'}
-          </p>
-          <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
-            Formato da Factura
-          </p>
-        </button>
-        {selectedLink === 'invoice-format' && (
-          <div
-            aria-label="Contentor do formato da factura"
-            className="absolute left-0 top-full z-20 mt-1 w-[18.75rem] rounded-md border border-border bg-background p-4 shadow-sm"
-            onClick={(event) => event.stopPropagation()}
+              targetLabel="esta factura"
+              totalIliquidoInCents={totalIliquidoInCents}
+            />
+        </PopoverContent>
+      </Popover>
+      <Popover
+        onOpenChange={(open) => handlePopoverOpenChange('invoice-format', open)}
+        open={selectedLink === 'invoice-format'}
+      >
+        <PopoverTrigger asChild>
+          <button
+            aria-pressed={selectedLink === 'invoice-format'}
+            className={getButtonClassName('invoice-format')}
+            type="button"
           >
+            <p className="inline-flex items-center gap-1 font-medium text-foreground text-[0.6875rem] leading-[0.75rem]">
+              <FileText aria-hidden="true" size="0.6875rem" strokeWidth={1.75} />
+              Formato {selectedInvoiceFormatLabel ?? 'A4'}
+            </p>
+            <p className="text-muted-foreground text-[0.625rem] leading-[0.75rem]">
+              Formato da Factura
+            </p>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          aria-label="Contentor do formato da factura"
+          className="w-[18.75rem] rounded-md border border-border bg-background p-4 shadow-sm"
+          side="bottom"
+          sideOffset={4}
+        >
             <p className="mb-3 text-[0.625rem] leading-3 text-secondary-foreground">
               {selectedInvoiceFormatLabel
                 ? `O formato da folha para imprimir a factura é ${selectedInvoiceFormatLabel}.`
@@ -420,15 +368,14 @@ export function POSSummaryNavigation({
                     {format.dimensions && (
                       <span className="text-[0.5rem] leading-[0.625rem] text-secondary-foreground">
                         {format.dimensions}
-                      </span>
+                        </span>
                     )}
                   </button>
                 )
               })}
             </div>
-          </div>
-        )}
-      </div>
+        </PopoverContent>
+      </Popover>
       <button
         aria-pressed={selectedLink === 'cash-register'}
         className={getButtonClassName('cash-register')}

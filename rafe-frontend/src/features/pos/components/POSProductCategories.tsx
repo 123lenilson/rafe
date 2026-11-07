@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { POSHorizontalCardSelector } from '@/features/pos/components/POSHorizontalCardSelector'
 
 const categories = [
@@ -16,18 +15,24 @@ const categories = [
   'Acessórios',
 ]
 
-export function POSProductCategories() {
-  const [activeCategory, setActiveCategory] = useState('Todos')
+interface POSProductCategoriesProps {
+  selectedCategory: string
+  onSelectCategory: (category: string) => void
+}
 
+export function POSProductCategories({
+  selectedCategory,
+  onSelectCategory,
+}: POSProductCategoriesProps) {
   return (
     <POSHorizontalCardSelector
       ariaLabel="Categorias de produtos"
       className="relative mt-2 w-full"
       items={categories}
       nextButtonLabel="Ver mais categorias"
-      onSelect={setActiveCategory}
+      onSelect={onSelectCategory}
       previousButtonLabel="Ver categorias anteriores"
-      selectedItem={activeCategory}
+      selectedItem={selectedCategory}
     />
   )
 }

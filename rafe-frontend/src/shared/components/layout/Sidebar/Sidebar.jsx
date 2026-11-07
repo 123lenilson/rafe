@@ -596,7 +596,7 @@ export function AppSidebar() {
                 side={state === 'collapsed' ? "right" : "top"}
                 align="end"
                 sideOffset={12}
-                className="w-56 bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1"
+                className="w-56 bg-white border border-zinc-200 text-black shadow-lg rounded-lg p-1 outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               >
                 <DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-zinc-500">
                   A minha conta

@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { CashRegisterEntry } from '@/features/pos/types/cash.types'
 import { ValueTimeline } from '@/shared/components/ui/ValueTimeline'
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/components/ui/avatar'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 function getMonthAndDay(dateStr?: string): { month: string; day: string } {
   if (!dateStr) return { month: '---', day: '' }
@@ -43,7 +44,12 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
   const formattedDiff = entry.isClosed ? `${cashRegister.formatCurrency(entry.difference)} Kz` : '---'
 
   return (
-    <div className="h-full bg-white border border-zinc-200/80 rounded-lg overflow-auto px-4 py-4 flex flex-col font-sans font-normal tracking-wide" style={{ boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06), 0 1px 4px 0 rgba(0,0,0,0.04)' }}>
+    <ScrollArea
+      className="h-full rounded-lg border border-zinc-200/80 bg-white"
+      viewportClassName="px-4 py-4"
+      style={{ boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06), 0 1px 4px 0 rgba(0,0,0,0.04)' }}
+    >
+    <div className="flex min-h-full flex-col font-sans font-normal tracking-wide">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-zinc-100 shrink-0">
         <span className="text-[0.75rem] font-normal tracking-wide text-zinc-900">
@@ -110,5 +116,6 @@ export function EntryDetailPanel({ entry, cashRegister, onClose }: EntryDetailPa
         </div>
       </div>
     </div>
+    </ScrollArea>
   )
 }

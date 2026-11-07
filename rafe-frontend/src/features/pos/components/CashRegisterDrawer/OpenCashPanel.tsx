@@ -6,6 +6,7 @@ import { RippleButton } from '@/shared/components/ui/ripple-button'
 import { NumericKeypad } from '@/shared/components/NumericKeypad'
 import { MonetaryDisplay } from '@/shared/components/MonetaryDisplay'
 import { useCashRegister } from '@/features/pos/hooks/useCashRegister'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 import { toast } from 'sonner'
 
 interface SentObservation {
@@ -243,9 +244,10 @@ export function OpenCashPanel({
       </div>
 
       {/* Área Central Scrollável (Display + Teclado + Feed de Observações por Cima do Input) */}
-      <div 
-        ref={chatFeedRef}
-        className="flex-1 min-h-0 overflow-y-auto rafe-table-scroll flex flex-col gap-3 pr-1"
+      <ScrollArea
+        className="flex-1 min-h-0"
+        viewportRef={chatFeedRef}
+        viewportClassName="rafe-table-scroll flex flex-col gap-3 pr-1"
       >
         <div className="flex flex-col gap-4 bg-transparent shrink-0">
           <MonetaryDisplay value={cashRegister.formatDisplayValue(cashRegisterValue)} />
@@ -292,7 +294,7 @@ export function OpenCashPanel({
             ))}
           </div>
         )}
-      </div>
+      </ScrollArea>
 
       {/* Rodapé Fixo Permanente (Input WhatsApp + Botão Abrir/Fechar Caixa) */}
       <div className="shrink-0 flex flex-col gap-3 pt-3 mt-2 border-t border-zinc-200/60 bg-[#F5F5F5]">

@@ -4,9 +4,8 @@ import { formatKwanza } from '@/features/pos/utils/posCartFormatters'
 
 interface POSPaymentEntryProps {
   activePaymentMethod: string | null
-  currentAmount: string
+  displayValue: string
   changeInCents: number
-  formatDisplayValue: (value: string) => string
   isExactDisabled: boolean
   onKeypadPress: (key: string) => void
   onExactPayment: () => void
@@ -14,9 +13,8 @@ interface POSPaymentEntryProps {
 
 export function POSPaymentEntry({
   activePaymentMethod,
-  currentAmount,
+  displayValue,
   changeInCents,
-  formatDisplayValue,
   isExactDisabled,
   onKeypadPress,
   onExactPayment,
@@ -28,7 +26,7 @@ export function POSPaymentEntry({
           activePaymentMethod === null ? 'pointer-events-none opacity-40' : 'opacity-100'
         }`}
       >
-        <MonetaryDisplay value={activePaymentMethod ? formatDisplayValue(currentAmount) : '0,00 Kz'} />
+        <MonetaryDisplay value={activePaymentMethod ? displayValue : '0,00 Kz'} />
       </div>
       <div
         aria-label="Troco"
@@ -49,7 +47,6 @@ export function POSPaymentEntry({
         clearKeyLabel="Ex"
         onClearKeyPress={onExactPayment}
         onKeyPress={onKeypadPress}
-        showMathOperators={Boolean(activePaymentMethod)}
       />
     </div>
   )

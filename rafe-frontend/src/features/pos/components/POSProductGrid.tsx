@@ -1,19 +1,21 @@
 import { usePOSCartStore } from '@/features/pos/stores/usePOSCartStore'
+import { toast } from 'sonner'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 const products = [
-  { name: 'Água Mineral', price: 'Kz 500', quantity: 0 },
-  { name: 'Sumo de Laranja', price: 'Kz 1 200', quantity: 6 },
-  { name: 'Pão de Forma', price: 'Kz 2 500', quantity: 12 },
-  { name: 'Arroz 1 kg', price: 'Kz 1 800', quantity: 3 },
-  { name: 'Leite 1 L', price: 'Kz 1 300', quantity: 5 },
-  { name: 'Açúcar 1 kg', price: 'Kz 1 500', quantity: 9 },
-  { name: 'Sabão', price: 'Kz 900', quantity: 1 },
-  { name: 'Café 250 g', price: 'Kz 3 500', quantity: 8 },
-  { name: 'Óleo 1 L', price: 'Kz 2 800', quantity: 11 },
-  { name: 'Bolachas', price: 'Kz 750', quantity: 4 },
-  { name: 'Massa 500 g', price: 'Kz 1 000', quantity: 10 },
-  { name: 'Água 1,5 L', price: 'Kz 700', quantity: 15 },
-  { name: 'Serviço de Entrega', price: 'Kz 1 500', type: 'service' },
+  { name: 'Água Mineral', price: 'Kz 500', quantity: 0, categories: ['Bebidas'] },
+  { name: 'Sumo de Laranja', price: 'Kz 1 200', quantity: 6, categories: ['Bebidas'] },
+  { name: 'Pão de Forma', price: 'Kz 2 500', quantity: 12, categories: ['Alimentos', 'Padaria'] },
+  { name: 'Arroz 1 kg', price: 'Kz 1 800', quantity: 3, categories: ['Alimentos', 'Mercearia'] },
+  { name: 'Leite 1 L', price: 'Kz 1 300', quantity: 5, categories: ['Alimentos', 'Laticínios'] },
+  { name: 'Açúcar 1 kg', price: 'Kz 1 500', quantity: 9, categories: ['Alimentos', 'Mercearia'] },
+  { name: 'Sabão', price: 'Kz 900', quantity: 1, categories: ['Higiene'] },
+  { name: 'Café 250 g', price: 'Kz 3 500', quantity: 8, categories: ['Alimentos', 'Mercearia'] },
+  { name: 'Óleo 1 L', price: 'Kz 2 800', quantity: 11, categories: ['Alimentos', 'Mercearia'] },
+  { name: 'Bolachas', price: 'Kz 750', quantity: 4, categories: ['Alimentos', 'Mercearia'] },
+  { name: 'Massa 500 g', price: 'Kz 1 000', quantity: 10, categories: ['Alimentos', 'Mercearia'] },
+  { name: 'Água 1,5 L', price: 'Kz 700', quantity: 15, categories: ['Bebidas'] },
+  { name: 'Serviço de Entrega', price: 'Kz 1 500', type: 'service', categories: [] },
 ]
 
 function getStockStatus(quantity: number) {
@@ -145,20 +147,45 @@ function ServiceImagePlaceholder() {
   )
 }
 
-export function POSProductGrid() {
+interface POSProductGridProps {
+  selectedCategory: string
+  searchTerm: string
+}
+
+export function POSProductGrid({
+  selectedCategory,
+  searchTerm,
+}: POSProductGridProps) {
   const cartItems = usePOSCartStore((state) => state.items)
   const addProduct = usePOSCartStore((state) => state.addProduct)
+  const normalizedSearchTerm = searchTerm
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase()
+  const filteredProducts = products.filter((product) =>
+    (selectedCategory === 'Todos' || product.categories.includes(selectedCategory)) &&
+    product.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase()
+      .includes(normalizedSearchTerm),
+  )
 
   return (
-    <div
-      aria-label="Produtos"
-      className="grid min-h-0 w-full flex-1 content-start gap-2 overflow-y-auto"
-      role="list"
-      style={{
-        gridTemplateColumns: 'repeat(4, minmax(8rem, 1fr))',
-      }}
+    <ScrollArea
+      className="min-h-0 w-full flex-1"
+      viewportClassName="pr-3"
     >
-      {products.map((product) => {
+      <div
+        aria-label="Produtos"
+        className="grid min-h-full w-full content-start gap-2"
+        role="list"
+        style={{
+          gridTemplateColumns: 'repeat(4, minmax(8rem, 1fr))',
+        }}
+      >
+        {filteredProducts.map((product) => {
         const isSelected = cartItems.some((item) => item.id === product.name)
 
         return (
@@ -170,9 +197,34 @@ export function POSProductGrid() {
                 : 'border-border bg-background text-foreground hover:shadow-md'
             }`}
             key={product.name}
-            onClick={() =>
-              addProduct({ id: product.name, name: product.name, price: product.price })
-            }
+            onClick={() => {
+              const availableQuantity =
+                'quantity' in product ? product.quantity : null
+              const result = addProduct({
+                id: product.name,
+                name: product.name,
+                price: product.price,
+                availableQuantity,
+              })
+
+              if (result === 'out-of-stock') {
+                toast.warning('Sem stock', {
+                  description: (
+                    <>
+                      Este produto não tem stock. Pode adicionar stock clicando{' '}
+                      <span aria-disabled="true" className="underline">
+                        aqui
+                      </span>
+                      .
+                    </>
+                  ),
+                })
+              } else if (result === 'stock-limit-reached') {
+                toast.warning('Limite de stock', {
+                  description: `Stock disponível: ${availableQuantity} ${availableQuantity === 1 ? 'unidade' : 'unidades'}.`,
+                })
+              }
+            }}
             role="listitem"
             type="button"
           >
@@ -196,7 +248,8 @@ export function POSProductGrid() {
             </div>
           </button>
         )
-      })}
-    </div>
+        })}
+      </div>
+    </ScrollArea>
   )
 }

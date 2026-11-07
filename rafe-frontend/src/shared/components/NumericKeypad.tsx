@@ -7,7 +7,6 @@ interface NumericKeypadProps {
   clearKeyLabel?: string
   onClearKeyPress?: () => void
   clearKeyDisabled?: boolean
-  showMathOperators?: boolean
 }
 
 export function NumericKeypad({
@@ -15,7 +14,6 @@ export function NumericKeypad({
   clearKeyLabel = 'C',
   onClearKeyPress,
   clearKeyDisabled = false,
-  showMathOperators = false,
 }: NumericKeypadProps) {
   const keys = [
     { label: '1', value: '1' },
@@ -28,7 +26,7 @@ export function NumericKeypad({
     { label: '7', value: '7' },
     { label: '8', value: '8' },
     { label: '9', value: '9' },
-    ...(showMathOperators ? [{ label: '+', value: '+' }, { label: '-', value: '-' }] : [{ label: '.', value: '.' }]),
+    { label: '.', value: '.' },
     { label: '0', value: '0' },
     { label: clearKeyLabel, value: 'clear' }
   ]

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 
 interface POSHorizontalCardSelectorProps {
   ariaLabel: string
@@ -57,16 +58,19 @@ export function POSHorizontalCardSelector({
 
   return (
     <div className={className}>
-      <div
-        aria-label={ariaLabel}
-        className="flex w-full flex-nowrap gap-2 overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden"
-        onScroll={updateScrollButtons}
-        ref={viewportRef}
-        role="region"
-        style={{ scrollbarWidth: 'none' }}
-        tabIndex={0}
+      <ScrollArea
+        className="relative w-full"
+        orientation="horizontal"
+        showScrollbars={false}
+        viewportAriaLabel={ariaLabel}
+        viewportClassName="h-auto w-full"
+        viewportOnScroll={updateScrollButtons}
+        viewportRef={viewportRef}
+        viewportRole="region"
+        viewportTabIndex={0}
       >
-        {items.map((item) => {
+        <div className="flex w-max min-w-full flex-nowrap gap-2">
+          {items.map((item) => {
           const isSelected = selectedItem === item
 
           return (
@@ -84,8 +88,9 @@ export function POSHorizontalCardSelector({
               {item}
             </button>
           )
-        })}
-      </div>
+          })}
+        </div>
+      </ScrollArea>
 
       {canScrollLeft && (
         <div className="absolute inset-y-0 left-0 z-10 flex items-center bg-gradient-to-r from-background to-transparent pl-1 pr-4">
