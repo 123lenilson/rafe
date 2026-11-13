@@ -177,90 +177,100 @@ export function POSDiscountEditor({
           Porcento
         </TabsTrigger>
       </TabsList>
-      <TabsContent className="mt-0 w-full flex-none" value="money">
-        <div className="flex flex-col gap-3 rounded-b-md rounded-tr-md bg-muted p-3">
-          <label
-            className="text-[0.625rem] leading-3 text-muted-foreground"
-            htmlFor={moneyInputId}
-          >
-            Limite para {targetLabel}: até {formatKwanza(maximumDiscountInCents)}
-          </label>
-          <InputGroup className="h-9 rounded-md bg-background focus-within:shadow-[0_8px_24px_rgba(16,16,16,0.12)]">
-            <InputGroupInput
-              aria-label={`Desconto em dinheiro para ${targetLabel}`}
-              className="h-full text-xs leading-4"
-              id={moneyInputId}
-              inputMode="decimal"
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && canApplyDiscount) {
-                  event.preventDefault()
-                  applyDiscount()
+      <div className="grid w-full">
+        <TabsContent
+          className="col-start-1 row-start-1 mt-0 w-full flex-none data-[state=inactive]:block data-[state=inactive]:invisible"
+          forceMount
+          value="money"
+        >
+          <div className="flex flex-col gap-3 rounded-b-md rounded-tr-md bg-muted p-3">
+            <label
+              className="text-[0.625rem] leading-3 text-muted-foreground"
+              htmlFor={moneyInputId}
+            >
+              Limite para {targetLabel}: até {formatKwanza(maximumDiscountInCents)}
+            </label>
+            <InputGroup className="h-9 rounded-md bg-background focus-within:shadow-[0_8px_24px_rgba(16,16,16,0.12)]">
+              <InputGroupInput
+                aria-label={`Desconto em dinheiro para ${targetLabel}`}
+                className="h-full text-xs leading-4"
+                id={moneyInputId}
+                inputMode="decimal"
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && canApplyDiscount) {
+                    event.preventDefault()
+                    applyDiscount()
+                  }
+                }}
+                onChange={(event) =>
+                  handleDiscountInputChange(
+                    event,
+                    setDiscountDraft,
+                    'money',
+                    maximumDiscountInCents,
+                    warningShown,
+                  )
                 }
-              }}
-              onChange={(event) =>
-                handleDiscountInputChange(
-                  event,
-                  setDiscountDraft,
-                  'money',
-                  maximumDiscountInCents,
-                  warningShown,
-                )
-              }
-              ref={moneyInput}
-              type="text"
-              value={discountDraft}
-            />
-            <InputGroupAddon align="inline-end">Kz</InputGroupAddon>
-          </InputGroup>
-          <div className="flex justify-end">
-            <Button disabled={!canApplyDiscount} onClick={applyDiscount} type="button">
-              Aplicar
-            </Button>
+                ref={moneyInput}
+                type="text"
+                value={discountDraft}
+              />
+              <InputGroupAddon align="inline-end">Kz</InputGroupAddon>
+            </InputGroup>
+            <div className="flex justify-end">
+              <Button disabled={!canApplyDiscount} onClick={applyDiscount} type="button">
+                Aplicar
+              </Button>
+            </div>
           </div>
-        </div>
-      </TabsContent>
-      <TabsContent className="mt-0 w-full flex-none" value="percentage">
-        <div className="flex flex-col gap-3 rounded-b-md rounded-tr-md bg-muted p-3">
-          <label
-            className="text-[0.625rem] leading-3 text-muted-foreground"
-            htmlFor={percentageInputId}
-          >
-            Limite permitido: até {getMaximumDiscountPercentage()}%
-          </label>
-          <InputGroup className="h-9 rounded-md bg-background focus-within:shadow-[0_8px_24px_rgba(16,16,16,0.12)]">
-            <InputGroupInput
-              aria-label={`Desconto em porcentagem para ${targetLabel}`}
-              className="h-full text-xs leading-4"
-              id={percentageInputId}
-              inputMode="decimal"
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && canApplyDiscount) {
-                  event.preventDefault()
-                  applyDiscount()
+        </TabsContent>
+        <TabsContent
+          className="col-start-1 row-start-1 mt-0 w-full flex-none data-[state=inactive]:block data-[state=inactive]:invisible"
+          forceMount
+          value="percentage"
+        >
+          <div className="flex flex-col gap-3 rounded-b-md rounded-tr-md bg-muted p-3">
+            <label
+              className="text-[0.625rem] leading-3 text-muted-foreground"
+              htmlFor={percentageInputId}
+            >
+              Limite permitido: até {getMaximumDiscountPercentage()}%
+            </label>
+            <InputGroup className="h-9 rounded-md bg-background focus-within:shadow-[0_8px_24px_rgba(16,16,16,0.12)]">
+              <InputGroupInput
+                aria-label={`Desconto em porcentagem para ${targetLabel}`}
+                className="h-full text-xs leading-4"
+                id={percentageInputId}
+                inputMode="decimal"
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && canApplyDiscount) {
+                    event.preventDefault()
+                    applyDiscount()
+                  }
+                }}
+                onChange={(event) =>
+                  handleDiscountInputChange(
+                    event,
+                    setDiscountDraft,
+                    'percentage',
+                    maximumPercentageInBasisPoints,
+                    warningShown,
+                  )
                 }
-              }}
-              onChange={(event) =>
-                handleDiscountInputChange(
-                  event,
-                  setDiscountDraft,
-                  'percentage',
-                  maximumPercentageInBasisPoints,
-                  warningShown,
-                )
-              }
-              ref={percentageInput}
-              type="text"
-              value={discountDraft}
-            />
-            <InputGroupAddon align="inline-end">%</InputGroupAddon>
-          </InputGroup>
-          <div className="flex justify-end">
-            <Button disabled={!canApplyDiscount} onClick={applyDiscount} type="button">
-              Aplicar
-            </Button>
+                ref={percentageInput}
+                type="text"
+                value={discountDraft}
+              />
+              <InputGroupAddon align="inline-end">%</InputGroupAddon>
+            </InputGroup>
+            <div className="flex justify-end">
+              <Button disabled={!canApplyDiscount} onClick={applyDiscount} type="button">
+                Aplicar
+              </Button>
+            </div>
           </div>
-        </div>
-      </TabsContent>
+        </TabsContent>
+      </div>
     </Tabs>
   )
 }
